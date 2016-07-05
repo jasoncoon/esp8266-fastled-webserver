@@ -66,6 +66,14 @@ $("#inputBrightness").on("change", function() {
    delaySetBrightness();
 });
 
+$("#btnBrightnessDown").click( function() {
+  stepBrightness(false);
+});
+
+$("#btnBrightnessUp").click( function() {
+  stepBrightness(true);
+});
+
 $("#inputPattern").change(function() {
    setPattern($("#inputPattern option:selected").index());
 });
@@ -164,6 +172,15 @@ function delaySetBrightness() {
 function setBrightness(value) {
   $.post(urlBase + "brightness?value=" + value, function(data) {
     $("#status").html("Set Brightness: " + data);
+  });
+}
+
+function stepBrightness(up) {
+  $.post(urlBase + (up ? "brightnessUp" : "brightnessDown"), function(data) {
+    data = JSON.parse(data);
+    $("#status").html("Set Brightness: " + data);
+    $("#spanBrightness").html(data);
+    $("#inputBrightness").val(data);
   });
 }
 

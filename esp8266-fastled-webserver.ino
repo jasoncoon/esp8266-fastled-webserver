@@ -57,11 +57,7 @@ ESP8266WebServer server(80);
 CRGB leds[NUM_LEDS];
 
 uint8_t patternIndex = 0;
-
-const uint8_t brightnessCount = 5;
-uint8_t brightnessMap[brightnessCount] = { 16, 32, 64, 128, 255 };
-int brightnessIndex = 0;
-uint8_t brightness = brightnessMap[brightnessIndex];
+uint8_t brightness = 16;
 
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
@@ -774,18 +770,14 @@ void setPalette(int value)
 // adjust the brightness, and wrap around at the ends
 void adjustBrightness(bool up)
 {
-  if (up)
-    brightnessIndex++;
-  else
-    brightnessIndex--;
-
-  // wrap around at the ends
-  if (brightnessIndex < 0)
-    brightnessIndex = brightnessCount - 1;
-  else if (brightnessIndex >= brightnessCount)
-    brightnessIndex = 0;
-
-  brightness = brightnessMap[brightnessIndex];
+  if (up) {
+    if (brightness > 254) brightness = 0;
+    else brightness++;
+  }
+  else {
+    if (brightness < 1) brightness = 255;
+    else brightness--;
+  }
 
   FastLED.setBrightness(brightness);
 
