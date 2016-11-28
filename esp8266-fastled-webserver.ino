@@ -29,27 +29,21 @@ extern "C" {
 #include <EEPROM.h>
 #include <IRremoteESP8266.h>
 #include "GradientPalettes.h"
+#include "wifiSettings.h"
 
 #define RECV_PIN 12
 IRrecv irReceiver(RECV_PIN);
 
 #include "Commands.h"
 
-const bool apMode = false;
-
-// AP mode password
-const char WiFiAPPSK[] = "";
-
-// Wi-Fi network to connect to (if not in AP mode)
-const char* ssid = "";
-const char* password = "";
+//Wifi settings moved to wifiSettings.h
 
 ESP8266WebServer server(80);
 
-#define DATA_PIN      13     // for Huzzah: Pins w/o special function:  #4, #5, #12, #13, #14; // #16 does not work :(
+#define DATA_PIN      2     // for Huzzah: Pins w/o special function:  #4, #5, #12, #13, #14; // #16 does not work :(
 #define LED_TYPE      WS2812
-#define COLOR_ORDER   GRB
-#define NUM_LEDS      24
+#define COLOR_ORDER   RGB
+#define NUM_LEDS      8
 
 #define MILLI_AMPS         2000     // IMPORTANT: set here the max milli-Amps of your power supply 5V 2A = 2000
 #define FRAMES_PER_SECOND  120 // here you can control the speed. With the Access Point / Web Server the animations run a bit slower.
@@ -82,6 +76,23 @@ uint8_t gCurrentPaletteNumber = 0;
 
 CRGBPalette16 gCurrentPalette( CRGB::Black);
 CRGBPalette16 gTargetPalette( gGradientPalettes[0] );
+
+
+// Gradient palette "fire", originally from
+// http://soliton.vm.bytemark.co.uk/pub/cpt-city/neota/elem/tn/fire.png.index.html
+// converted for FastLED with gammas (2.6, 2.2, 2.5)
+// Size: 28 bytes of program space.
+
+DEFINE_GRADIENT_PALETTE( gp_fire ) {
+    0,   1,  1,  0,
+   20,  32,  5,  0,
+  60, 192, 24,  0,
+  100, 220,105,  5,
+  240, 252,255, 31,
+  250, 252,255,111,
+  255, 255,255,255};
+
+
 
 uint8_t currentPatternIndex = 0; // Index number of which pattern is current
 bool autoplayEnabled = false;
@@ -276,6 +287,7 @@ PatternAndNameList patterns = {
   { rainbowWithGlitter, "Rainbow With Glitter" },
   { confetti, "Confetti" },
   { sinelon, "Sinelon" },
+  { fire, "Fire" },
   { juggle, "Juggle" },
   { bpm, "BPM" },
   { showSolidColor, "Solid Color" },
@@ -866,10 +878,62 @@ void colorwaves()
     uint8_t index = hue8;
     //index = triwave8( index);
     index = scale8( index, 240);
-
     CRGB newcolor = ColorFromPalette(gCurrentPalette, index, bri8);
 
     nblend(leds[i], newcolor, 128);
+  }
+}
+
+// adapted from ColorWavesWithPalettes by Mark Kriegsman: https://gist.github.com/kriegsman/8281905786e8b2632aeb
+// This function draws color waves with an ever-changing,
+// widely-varying set of parameters, using a color palette.
+void fire()
+{
+  static uint16_t sPseudotime = 0;
+  static uint16_t sLastMillis = 0;
+  static uint16_t sHue16 = 0;
+
+  // uint8_t sat8 = beatsin88( 87, 220, 250);
+  uint8_t brightdepth = beatsin88( 341, 96, 224);
+  uint16_t brightnessthetainc16 = beatsin88( 203, (25 * 256), (40 * 256));
+  uint8_t msmultiplier = beatsin88(147, 23, 60);
+
+  uint16_t hue16 = sHue16;//gHue * 256;
+  uint16_t hueinc16 = beatsin88(113, 300, 1500);
+
+  uint16_t ms = millis();
+  uint16_t deltams = ms - sLastMillis ;
+  sLastMillis  = ms;
+  sPseudotime += deltams * msmultiplier;
+  sHue16 += deltams * beatsin88( 400, 5, 9);
+  uint16_t brightnesstheta16 = sPseudotime;
+
+  for ( uint16_t i = 0 ; i < NUM_LEDS; i++) {
+    if (random(0,255) > 200) {
+    hue16 += hueinc16;
+    uint8_t hue8 = hue16 / 256;
+    uint16_t h16_128 = hue16 >> 7;
+    if ( h16_128 & 0x100) {
+      hue8 = 255 - (h16_128 >> 1);
+    } else {
+      hue8 = h16_128 >> 1;
+    }
+
+    brightnesstheta16  += brightnessthetainc16;
+    uint16_t b16 = sin16( brightnesstheta16  ) + 32768;
+
+    uint16_t bri16 = (uint32_t)((uint32_t)b16 * (uint32_t)b16) / 65536;
+    uint8_t bri8 = (uint32_t)(((uint32_t)bri16) * brightdepth) / 65536;
+    bri8 += (255 - brightdepth);
+
+    uint8_t index = random(0,255);
+    //index = triwave8( index);
+    index = scale8( index, 240);
+    gCurrentPalette = gp_fire;
+    CRGB newcolor = ColorFromPalette(gCurrentPalette, index, bri8);
+
+    nblend(leds[i], newcolor, 128);
+    }
   }
 }
 
