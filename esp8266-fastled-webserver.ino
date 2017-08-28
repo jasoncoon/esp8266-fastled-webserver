@@ -27,13 +27,7 @@ extern "C" {
 #include <ESP8266WebServer.h>
 #include <FS.h>
 #include <EEPROM.h>
-#include <IRremoteESP8266.h>
 #include "GradientPalettes.h"
-
-#define RECV_PIN 12
-IRrecv irReceiver(RECV_PIN);
-
-#include "Commands.h"
 
 const bool apMode = false;
 
@@ -41,18 +35,18 @@ const bool apMode = false;
 const char WiFiAPPSK[] = "";
 
 // Wi-Fi network to connect to (if not in AP mode)
-const char* ssid = "";
-const char* password = "";
+const char *ssid = "__ENTER_WIFI_NAME_HERE__";
+const char *password = "__ENTER_WIFI_PASSWORD_HERE__";
 
 ESP8266WebServer server(80);
 
-#define DATA_PIN      D8     // for Huzzah: Pins w/o special function:  #4, #5, #12, #13, #14; // #16 does not work :(
-#define LED_TYPE      WS2812
+#define DATA_PIN      4     // for Huzzah: Pins w/o special function:  #4, #5, #12, #13, #14; // #16 does not work :(
+#define LED_TYPE      WS2812B
 #define COLOR_ORDER   GRB
-#define NUM_LEDS      24
+#define NUM_LEDS      30
 
-#define MILLI_AMPS         2000     // IMPORTANT: set here the max milli-Amps of your power supply 5V 2A = 2000
-#define FRAMES_PER_SECOND  120 // here you can control the speed. With the Access Point / Web Server the animations run a bit slower.
+#define MILLI_AMPS         4000     // IMPORTANT: set here the max milli-Amps of your power supply 5V 2A = 2000
+#define FRAMES_PER_SECOND  60 // here you can control the speed. With the Access Point / Web Server the animations run a bit slower.
 
 CRGB leds[NUM_LEDS];
 
@@ -67,7 +61,7 @@ uint8_t brightness = brightnessMap[brightnessIndex];
 
 // ten seconds per color palette makes a good demo
 // 20-120 is better for deployment
-#define SECONDS_PER_PALETTE 10
+#define SECONDS_PER_PALETTE 30
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -95,7 +89,7 @@ uint8_t gHue = 0; // rotating "base color" used by many of the patterns
 
 CRGB solidColor = CRGB::Blue;
 
-uint8_t power = 1;
+uint8_t power = 0;
 
 void setup(void) {
   Serial.begin(115200);
@@ -103,7 +97,6 @@ void setup(void) {
   Serial.setDebugOutput(true);
 
   FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);         // for WS2812 (Neopixel)
-  //FastLED.addLeds<LED_TYPE,DATA_PIN,CLK_PIN,COLOR_ORDER>(leds, NUM_LEDS); // for APA102 (Dotstar)
   FastLED.setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(brightness);
   FastLED.setMaxPowerInVoltsAndMilliamps(5, MILLI_AMPS);
@@ -114,8 +107,6 @@ void setup(void) {
   loadSettings();
 
   FastLED.setBrightness(brightness);
-
-  irReceiver.enableIRIn(); // Start the receiver
 
   Serial.println();
   Serial.print( F("Heap: ") ); Serial.println(system_get_free_heap_size());
@@ -181,8 +172,6 @@ void setup(void) {
     Serial.println(" in your browser");
   }
 
-  //  server.serveStatic("/", SPIFFS, "/index.htm"); // ,"max-age=86400"
-
   server.on("/all", HTTP_GET, []() {
     sendAll();
   });
@@ -207,6 +196,23 @@ void setup(void) {
     String b = server.arg("b");
     setSolidColor(r.toInt(), g.toInt(), b.toInt());
     sendSolidColor();
+  });
+
+  server.on("/solidHexColor", HTTP_GET, []() {
+    sendSolidHexColor();
+  });
+
+  server.on("/solidHexColor", HTTP_POST, []() {
+    String hex = server.arg("value");
+    long number = strtol( &hex[0], NULL, 16);
+
+    // Split them up into r, g, b values
+    long r = number >> 16;
+    long g = number >> 8 & 0xFF;
+    long b = number & 0xFF;
+
+    setSolidColor(r, g, b);
+    sendSolidHexColor();
   });
 
   server.on("/pattern", HTTP_GET, []() {
@@ -238,6 +244,18 @@ void setup(void) {
     setBrightness(value.toInt());
     sendBrightness();
   });
+
+  server.on("/brightnessPercent", HTTP_GET, []() {
+    sendBrightnessPercent();
+  });
+
+  server.on("/brightnessPercent", HTTP_POST, []() {
+    String percent = server.arg("value");
+    int value = 255 * (percent.toFloat() / 100);
+    setBrightness(value);
+    sendBrightnessPercent();
+  });
+
 
   server.on("/brightnessUp", HTTP_POST, []() {
     adjustBrightness(true);
@@ -332,18 +350,12 @@ void loop(void) {
 
   server.handleClient();
 
-  handleIrInput();
-
   if (power == 0) {
     fill_solid(leds, NUM_LEDS, CRGB::Black);
     FastLED.show();
     FastLED.delay(15);
     return;
   }
-
-  // EVERY_N_SECONDS(10) {
-  //   Serial.print( F("Heap: ") ); Serial.println(system_get_free_heap_size());
-  // }
 
   EVERY_N_MILLISECONDS( 20 ) {
     gHue++;  // slowly cycle the "base color" through the rainbow
@@ -372,213 +384,6 @@ void loop(void) {
 
   // insert a delay to keep the framerate modest
   FastLED.delay(1000 / FRAMES_PER_SECOND);
-}
-
-void handleIrInput()
-{
-  InputCommand command = readCommand(defaultHoldDelay);
-
-  if (command != InputCommand::None) {
-    Serial.print("command: ");
-    Serial.println((int) command);
-  }
-
-  switch (command) {
-    case InputCommand::Up: {
-        adjustPattern(true);
-        break;
-      }
-    case InputCommand::Down: {
-        adjustPattern(false);
-        break;
-      }
-    case InputCommand::Power: {
-        power = power == 0 ? 1 : 0;
-        break;
-      }
-    case InputCommand::BrightnessUp: {
-        adjustBrightness(true);
-        break;
-      }
-    case InputCommand::BrightnessDown: {
-        adjustBrightness(false);
-        break;
-      }
-    case InputCommand::PlayMode: { // toggle pause/play
-        autoplayEnabled = !autoplayEnabled;
-        break;
-      }
-
-    // pattern buttons
-
-    case InputCommand::Pattern1: {
-        setPattern(0);
-        break;
-      }
-    case InputCommand::Pattern2: {
-        setPattern(1);
-        break;
-      }
-    case InputCommand::Pattern3: {
-        setPattern(2);
-        break;
-      }
-    case InputCommand::Pattern4: {
-        setPattern(3);
-        break;
-      }
-    case InputCommand::Pattern5: {
-        setPattern(4);
-        break;
-      }
-    case InputCommand::Pattern6: {
-        setPattern(5);
-        break;
-      }
-    case InputCommand::Pattern7: {
-        setPattern(6);
-        break;
-      }
-    case InputCommand::Pattern8: {
-        setPattern(7);
-        break;
-      }
-    case InputCommand::Pattern9: {
-        setPattern(8);
-        break;
-      }
-    case InputCommand::Pattern10: {
-        setPattern(9);
-        break;
-      }
-    case InputCommand::Pattern11: {
-        setPattern(10);
-        break;
-      }
-    case InputCommand::Pattern12: {
-        setPattern(11);
-        break;
-      }
-
-    // custom color adjustment buttons
-
-    case InputCommand::RedUp: {
-        solidColor.red += 8;
-        setSolidColor(solidColor);
-        break;
-      }
-    case InputCommand::RedDown: {
-        solidColor.red -= 8;
-        setSolidColor(solidColor);
-        break;
-      }
-    case InputCommand::GreenUp: {
-        solidColor.green += 8;
-        setSolidColor(solidColor);
-        break;
-      }
-    case InputCommand::GreenDown: {
-        solidColor.green -= 8;
-        setSolidColor(solidColor);
-        break;
-      }
-    case InputCommand::BlueUp: {
-        solidColor.blue += 8;
-        setSolidColor(solidColor);
-        break;
-      }
-    case InputCommand::BlueDown: {
-        solidColor.blue -= 8;
-        setSolidColor(solidColor);
-        break;
-      }
-
-    // color buttons
-
-    case InputCommand::Red: {
-        setSolidColor(CRGB::Red);
-        break;
-      }
-    case InputCommand::RedOrange: {
-        setSolidColor(CRGB::OrangeRed);
-        break;
-      }
-    case InputCommand::Orange: {
-        setSolidColor(CRGB::Orange);
-        break;
-      }
-    case InputCommand::YellowOrange: {
-        setSolidColor(CRGB::Goldenrod);
-        break;
-      }
-    case InputCommand::Yellow: {
-        setSolidColor(CRGB::Yellow);
-        break;
-      }
-
-    case InputCommand::Green: {
-        setSolidColor(CRGB::Green);
-        break;
-      }
-    case InputCommand::Lime: {
-        setSolidColor(CRGB::Lime);
-        break;
-      }
-    case InputCommand::Aqua: {
-        setSolidColor(CRGB::Aqua);
-        break;
-      }
-    case InputCommand::Teal: {
-        setSolidColor(CRGB::Teal);
-        break;
-      }
-    case InputCommand::Navy: {
-        setSolidColor(CRGB::Navy);
-        break;
-      }
-
-    case InputCommand::Blue: {
-        setSolidColor(CRGB::Blue);
-        break;
-      }
-    case InputCommand::RoyalBlue: {
-        setSolidColor(CRGB::RoyalBlue);
-        break;
-      }
-    case InputCommand::Purple: {
-        setSolidColor(CRGB::Purple);
-        break;
-      }
-    case InputCommand::Indigo: {
-        setSolidColor(CRGB::Indigo);
-        break;
-      }
-    case InputCommand::Magenta: {
-        setSolidColor(CRGB::Magenta);
-        break;
-      }
-
-    case InputCommand::White: {
-        setSolidColor(CRGB::White);
-        break;
-      }
-    case InputCommand::Pink: {
-        setSolidColor(CRGB::Pink);
-        break;
-      }
-    case InputCommand::LightPink: {
-        setSolidColor(CRGB::LightPink);
-        break;
-      }
-    case InputCommand::BabyBlue: {
-        setSolidColor(CRGB::CornflowerBlue);
-        break;
-      }
-    case InputCommand::LightBlue: {
-        setSolidColor(CRGB::LightBlue);
-        break;
-      }
-  }
 }
 
 void loadSettings()
@@ -689,6 +494,14 @@ void sendBrightness()
   json = String();
 }
 
+void sendBrightnessPercent()
+{
+  int percent = (brightness / 255.0) * 100;
+  String json = String(percent);
+  server.send(200, "text/json", json);
+  json = String();
+}
+
 void sendSolidColor()
 {
   String json = "{";
@@ -696,6 +509,15 @@ void sendSolidColor()
   json += ",\"g\":" + String(solidColor.g);
   json += ",\"b\":" + String(solidColor.b);
   json += "}";
+  server.send(200, "text/json", json);
+  json = String();
+}
+
+void sendSolidHexColor()
+{
+  char hexout[6];
+  sprintf(hexout, "%02x%02x%02x", solidColor.r, solidColor.g, solidColor.b);
+  String json = String(hexout);
   server.send(200, "text/json", json);
   json = String();
 }
@@ -838,7 +660,6 @@ void confetti()
   // random colored speckles that blink in and fade smoothly
   fadeToBlackBy( leds, NUM_LEDS, 10);
   int pos = random16(NUM_LEDS);
-  //  leds[pos] += CHSV( gHue + random8(64), 200, 255);
   leds[pos] += ColorFromPalette(palettes[currentPaletteIndex], gHue + random8(64));
 }
 
@@ -847,7 +668,6 @@ void sinelon()
   // a colored dot sweeping back and forth, with fading trails
   fadeToBlackBy( leds, NUM_LEDS, 20);
   int pos = beatsin16(13, 0, NUM_LEDS - 1);
-  //  leds[pos] += CHSV( gHue, 255, 192);
   leds[pos] += ColorFromPalette(palettes[currentPaletteIndex], gHue, 192);
 }
 
@@ -857,7 +677,7 @@ void bpm()
   uint8_t BeatsPerMinute = 62;
   CRGBPalette16 palette = palettes[currentPaletteIndex];
   uint8_t beat = beatsin8( BeatsPerMinute, 64, 255);
-  for ( int i = 0; i < NUM_LEDS; i++) { //9948
+  for ( int i = 0; i < NUM_LEDS; i++) {
     leds[i] = ColorFromPalette(palette, gHue + (i * 2), beat - gHue + (i * 10));
   }
 }
@@ -869,7 +689,6 @@ void juggle()
   byte dothue = 0;
   for ( int i = 0; i < 8; i++)
   {
-    //    leds[beatsin16(i + 7, 0, NUM_LEDS)] |= CHSV(dothue, 200, 255);
     leds[beatsin16(i + 7, 0, NUM_LEDS)] |= ColorFromPalette(palettes[currentPaletteIndex], dothue);
     dothue += 32;
   }
@@ -888,7 +707,7 @@ void pride() {
   uint16_t brightnessthetainc16 = beatsin88( 203, (25 * 256), (40 * 256));
   uint8_t msmultiplier = beatsin88(147, 23, 60);
 
-  uint16_t hue16 = sHue16;//gHue * 256;
+  uint16_t hue16 = sHue16;
   uint16_t hueinc16 = beatsin88(113, 1, 3000);
 
   uint16_t ms = millis();
@@ -924,12 +743,11 @@ void colorwaves()
   static uint16_t sLastMillis = 0;
   static uint16_t sHue16 = 0;
 
-  // uint8_t sat8 = beatsin88( 87, 220, 250);
   uint8_t brightdepth = beatsin88( 341, 96, 224);
   uint16_t brightnessthetainc16 = beatsin88( 203, (25 * 256), (40 * 256));
   uint8_t msmultiplier = beatsin88(147, 23, 60);
 
-  uint16_t hue16 = sHue16;//gHue * 256;
+  uint16_t hue16 = sHue16;
   uint16_t hueinc16 = beatsin88(113, 300, 1500);
 
   uint16_t ms = millis();
@@ -957,7 +775,6 @@ void colorwaves()
     bri8 += (255 - brightdepth);
 
     uint8_t index = hue8;
-    //index = triwave8( index);
     index = scale8( index, 240);
 
     CRGB newcolor = ColorFromPalette(gCurrentPalette, index, bri8);

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart Lighting</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.2.6/jquery.minicolors.min.css" integrity="sha256-2RwM3b9l2phMxtm6wE9pe2qUDY4J+IONK0lyuXH9mzM=" crossorigin="anonymous">
+  <link rel="icon" href="images/atom196.png">
+  <style>
+    body {
+      padding-top:56px
+    }
+    #status {
+      border-radius:0;
+      padding:.75rem 1rem;
+      border:none;
+      border-bottom:1px solid #e7e8ea
+    }
+    input[type="range"] {
+      height: 2.35rem;
+      padding: 0;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      width: 1rem;
+      height: 2.25rem;
+      background-color: #464a4c;
+      border: 1px solid #464a4c;
+      border-radius: .2rem;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 1rem;
+      height: 2.25rem;
+      background-color: #464a4c;
+      border: 1px solid #464a4c;
+      border-radius: .2rem;
+      -moz-appearance: none;
+    }
+    input[type="range"]::-ms-thumb {
+      width: 1rem;
+      height: 2.25rem;
+      background-color: #464a4c;
+      border: 1px solid #464a4c;
+      border-radius: .2rem;
+    }
+    input[type="range"]::-webkit-slider-runnable-track,
+    input[type="range"]::-moz-range-track {
+      height: 2.25rem;
+      background: transparent;
+      border: 0;
+    }
+    input[type="range"]::-moz-range-progress {
+      height: 2.25rem;
+      background: #e9ecef;
+    }
+    input[type="range"]::-moz-focus-inner {
+      border: 0;
+    }
+    input[type="range"]::-ms-track {
+      height: 2.25rem;
+      color: transparent;
+      background: transparent;
+      border-color: transparent;
+      border-width: 6px 0;
+    }
+    input[type="range"]::-ms-fill-lower {
+      background: #e9ecef;
+      border-radius: 0.25rem;
+    }
+    input[type="range"]::-ms-fill-upper {
+      background: transparent;
+      border-radius: 0.25rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar navbar-dark bg-dark fixed-top" id="top" role="banner">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/">Smart Lighting</a>
+    </div>
+    <button type="button" class="btn btn-outline-secondary float-right">
+      <span class="fa fa-refresh" id="btnRefresh"></span>
+    </button>
+  </header>
+  <div class="alert alert-secondary small text-secondary" id="status" role="alert">Status</div>
+  <div class="container">
+    <form class="form-horizontal">
+      <div class="form-group">
+        <label>Power</label>
+        <div>
+          <div class="btn-group" role="group" aria-label="Power">
+            <button type="button" class="btn btn-outline-secondary" id="btnPowerOn">On</button>
+            <button type="button" class="btn btn-outline-secondary" id="btnPowerOff">Off</button>
+          </div>
+        </div>
+      </div>
+      <div class="form-group" id="groupBrightness">
+        <label for="inputBrightness">Brightness</label>
+        <div class="input-group">
+          <span class="input-group-addon" id="spanBrightness">128</span>
+          <input class="form-control" id="inputBrightness" type="range" step="1" min="0" max="255">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputPattern">Pattern</label>
+        <select class="form-control" id="inputPattern"></select>
+      </div>
+      <div class="form-group" id="groupPalette">
+        <label for="inputPalette">Palette</label>
+        <select class="form-control" id="inputPalette"></select>
+      </div>
+      <div class="form-group" id="groupColor">
+        <label for="inputColor">Color</label>
+        <input class="form-control" id="inputColor" type="hidden">
+      </div>
+    </form>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>  
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.2.6/jquery.minicolors.min.js" integrity="sha256-V5ebkEjJU7qHZIKg2pzzKiH/Ghw1AJgRfKvgMyw09ug=" crossorigin="anonymous"></script>
+  <script src="js/scripts.js"></script>
+</body>
+</html>

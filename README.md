@@ -1,7 +1,28 @@
 FastLED + ESP8266 Web Server
 =========
 
-Control an addressable LED strip with an ESP8266 via a web browser or infrared remote control.
+Control an addressable LED strip with an ESP8266 via a web browser or via HomeBridge and a HomeKit iOS device.
+
+Changes in this fork
+--------------------
+In order to have this library work with HomeKit, or more specifically the 
+[![Homebridge Better HTTP RGB](https://github.com/jnovack/homebridge-better-http-rgb)] plugin, two extra API routes were needed:
+* One, for hexadecimal color values (`/solidHexColor`)
+* Two, for percentage based brightness values (`/brightnessPercent`)
+
+In addition to this, web interface updates include:
+* Updating to the latest Bootstrap 4 beta
+* Switching to CDN scripts to reduce upload size
+* Hiding irrelevant fields based on selections made
+* General UI tweaks
+
+Additional changes include:
+* Removal of IR support, HomeKit is implemented as a replacement
+* Setting default power state to "off"
+
+This is a brilliant piece of software originally written by @jnovack, all credit goes to him.
+The changes I made have simply been to bring this software up-to-date with current technologies, I hope you can find it useful!
+
 
 Hardware
 --------
@@ -16,7 +37,7 @@ Addressable LED strip, such as the [Adafruit NeoPixel Ring]:
 
 Features
 --------
-* Turn the NeoPixel Ring on and off
+* Turn the strip on and off
 * Adjust the brightness
 * Change the display pattern
 * Adjust the color
@@ -24,7 +45,7 @@ Features
 Web App
 --------
 
-![Web App](webapp.png)
+![Web App](screenshot.png)
 
 Patterns are requested by the app from the ESP8266, so as new patterns are added, they're automatically listed in the app.
 
@@ -41,7 +62,6 @@ The app is installed via the Arduino IDE which can be [downloaded here](https://
 The app depends on the following libraries. They must either be downloaded from GitHub and placed in the Arduino 'libraries' folder, or installed as [described here](https://www.arduino.cc/en/Guide/Libraries) by using the Arduino library manager.
 
 * [FastLED](https://github.com/FastLED/FastLED)
-* [IRremoteESP8266](https://github.com/sebastienwarin/IRremoteESP8266)
 * [Arduino WebSockets](https://github.com/Links2004/arduinoWebSockets)
 
 Download the app code from GitHub using the green Clone or Download button from [the GitHub project main page](https://github.com/jasoncoon/esp8266-fastled-webserver) and click Download ZIP. Decompress the ZIP file in your Arduino sketch folder.
@@ -59,19 +79,9 @@ The web app files can be gzip compressed before uploading to SPIFFS by running t
 
 `gzip -r data/`
 
-The ESP8266WebServer will automatically serve any .gz file.  The file index.htm.gz will get served as index.htm, with the content-encoding header set to gzip, so the browser knows to decompress it.  The ESP8266WebServer doesn't seem to like the Glyphicon fonts gzipped, though, so I decompress them with this command:
-
-`gunzip -r data/fonts/`
+The ESP8266WebServer will automatically serve any .gz file.  The file index.html.gz will get served as index.html, with the content-encoding header set to gzip, so the browser knows to decompress it.
 
 REST Web services
 -----------------
 
 The firmware implements basic [RESTful web services](https://en.wikipedia.org/wiki/Representational_state_transfer) using the ESP8266WebServer library.  Current values are requested with HTTP GETs, and values are set with POSTs using query string parameters.  It can run in connected or standalone access point modes.
-
-Infrared Remote Control
------------------------
-
-Control via infrared remote control is also supported, via the [ESP8266 port of the IRremote library](https://github.com/sebastienwarin/IRremoteESP8266).
-
-[Adafruit NeoPixel Ring]:https://www.adafruit.com/product/1586
-[Adafruit HUZZAH ESP8266 Breakout]:https://www.adafruit.com/products/2471
