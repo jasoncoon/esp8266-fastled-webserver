@@ -48,6 +48,7 @@ ESP8266WebServer server(80);
 #define MILLI_AMPS         4000     // IMPORTANT: set here the max milli-Amps of your power supply 5V 2A = 2000
 #define FRAMES_PER_SECOND  60 // here you can control the speed. With the Access Point / Web Server the animations run a bit slower.
 
+CRGB ledsPrev[NUM_LEDS];
 CRGB leds[NUM_LEDS];
 
 uint8_t patternIndex = 0;
@@ -87,7 +88,7 @@ uint8_t currentPaletteIndex = 0;
 
 uint8_t gHue = 0; // rotating "base color" used by many of the patterns
 
-CRGB solidColor = CRGB::Blue;
+CRGB solidColor = CRGB::Black;
 
 uint8_t power = 0;
 
@@ -277,12 +278,12 @@ void setup(void) {
     sendPalette();
   });
 
-  server.serveStatic("/index.htm", SPIFFS, "/index.htm");
+  server.serveStatic("/index.html", SPIFFS, "/index.html");
   server.serveStatic("/fonts", SPIFFS, "/fonts", "max-age=86400");
   server.serveStatic("/js", SPIFFS, "/js");
   server.serveStatic("/css", SPIFFS, "/css", "max-age=86400");
   server.serveStatic("/images", SPIFFS, "/images", "max-age=86400");
-  server.serveStatic("/", SPIFFS, "/index.htm");
+  server.serveStatic("/", SPIFFS, "/index.html");
 
   server.begin();
 
@@ -380,7 +381,11 @@ void loop(void) {
   // Call the current pattern function once, updating the 'leds' array
   patterns[currentPatternIndex].pattern();
 
-  FastLED.show();
+  // only update if theres a change, cuts out chance of flicker
+  if(leds != ledsPrev){
+    memcpy(ledsPrev, leds, NUM_LEDS);
+    FastLED.show();
+  }
 
   // insert a delay to keep the framerate modest
   FastLED.delay(1000 / FRAMES_PER_SECOND);
@@ -791,4 +796,3 @@ void palettetest()
   startindex--;
   fill_palette( leds, NUM_LEDS, startindex, (256 / NUM_LEDS) + 1, gCurrentPalette, 255, LINEARBLEND);
 }
-

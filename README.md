@@ -6,7 +6,7 @@ Control an addressable LED strip with an ESP8266 via a web browser or via HomeBr
 Changes in this fork
 --------------------
 In order to have this library work with HomeKit, or more specifically the 
-[![Homebridge Better HTTP RGB](https://github.com/jnovack/homebridge-better-http-rgb)] plugin, two extra API routes were needed:
+[Homebridge Better HTTP RGB](https://github.com/jnovack/homebridge-better-http-rgb) plugin, two extra API routes were needed:
 * One, for hexadecimal color values (`/solidHexColor`)
 * Two, for percentage based brightness values (`/brightnessPercent`)
 

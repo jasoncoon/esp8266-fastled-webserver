@@ -10,7 +10,8 @@ $(document).ready(function() {
     changeDelay: 200,
     control: "wheel",
     format: "rgb",
-    position: "top right"
+    position: "top right",
+    inline: false
   });
 
   getAll();
@@ -42,11 +43,9 @@ $("#inputPattern").change(function() {
   if ($("#inputPattern option:selected").index() === 9) {
     $("#groupPalette").hide();
     $("#groupColor").show();
-    $("#groupBrightness").hide();
   } else {
     $("#groupPalette").show();
     $("#groupColor").hide();
-    $("#groupBrightness").show();
   }
 });
 
@@ -108,7 +107,6 @@ function getAll() {
     $("#inputPattern").val(data.currentPattern.index);
     if (data.currentPattern.index === 9) {
       $("#groupPalette").hide();
-      $("#groupBrightness").hide();
     } else {
       $("#groupColor").hide();
     }
