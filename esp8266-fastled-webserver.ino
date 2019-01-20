@@ -1136,7 +1136,7 @@ void heatMap(CRGBPalette16 palette, bool up)
   random16_add_entropy(random(256));
 
   // Array of temperature readings at each simulation cell
-  static byte heat[256];
+  static byte heat[NUM_LEDS];
 
   byte colorindex;
 
