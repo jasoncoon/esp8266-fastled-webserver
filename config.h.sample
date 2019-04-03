@@ -10,6 +10,10 @@ char* password = "";
 
 const bool apMode = false; // Whether if ESP8266 should connect to an existing WIFI or mount its own AP
 
+// IP configuration for AP
+IPAddress WiFiIp(192, 168, 4, 1);
+IPAddress WiFiNMask(255, 255, 255, 0);
+
 //--------------------------------------------------------------------------------
 // LEDs Strip configuration
 //--------------------------------------------------------------------------------

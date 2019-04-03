@@ -249,6 +249,8 @@ void setup() {
   if (apMode)
   {
     WiFi.mode(WIFI_AP);
+    // Set IP and mask for AP
+    WiFi.softAPConfig(WiFiIp, WiFiIp, WiFiNMask);
 
     // Do a little work to get a unique-ish name. Append the
     // last two bytes of the MAC (HEX'd) to "Thing-":
@@ -266,9 +268,12 @@ void setup() {
       AP_NameChar[i] = AP_NameString.charAt(i);
 
     WiFi.softAP(AP_NameChar, WiFiAPPSK);
+    IPAddress apIP = WiFi.softAPIP();
 
     Serial.printf("Connect to Wi-Fi access point: %s\n", AP_NameChar);
-    Serial.println("and open http://192.168.4.1 in your browser");
+    Serial.print("and open http://"); 
+    Serial.print(apIP); 
+    Serial.println(" in your browser");
   }
   else
   {
