@@ -1,0 +1,22 @@
+//--------------------------------------------------------------------------------
+// WIFI configuration
+//--------------------------------------------------------------------------------
+// AP mode password
+const char WiFiAPPSK[] = "";
+
+// Wi-Fi network to connect to (if not in AP mode)
+char* ssid = "";
+char* password = "";
+
+const bool apMode = false; // Whether if ESP8266 should connect to an existing WIFI or mount its own AP
+
+//--------------------------------------------------------------------------------
+// LEDs Strip configuration
+//--------------------------------------------------------------------------------
+#define DATA_PIN      D5
+#define LED_TYPE      WS2811
+#define COLOR_ORDER   RGB
+#define NUM_LEDS      200
+
+#define MILLI_AMPS         2000 // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
+#define FRAMES_PER_SECOND  120  // here you can control the speed. With the Access Point / Web Server the animations run a bit slower.

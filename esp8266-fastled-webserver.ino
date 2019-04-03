@@ -37,6 +37,8 @@ extern "C" {
 //#include <IRremoteESP8266.h>
 #include "GradientPalettes.h"
 
+#include "config.h" // this file is intentionally not included in the sketch, so nobody accidentally commits their secret information or thier own parameter values. Please copy config.h.sample to config.h 
+
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
 #include "Field.h"
@@ -51,27 +53,6 @@ ESP8266WebServer webServer(80);
 ESP8266HTTPUpdateServer httpUpdateServer;
 
 #include "FSBrowser.h"
-
-#define DATA_PIN      D5
-#define LED_TYPE      WS2811
-#define COLOR_ORDER   RGB
-#define NUM_LEDS      200
-
-#define MILLI_AMPS         2000 // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
-#define FRAMES_PER_SECOND  120  // here you can control the speed. With the Access Point / Web Server the animations run a bit slower.
-
-const bool apMode = false;
-
-#include "Secrets.h" // this file is intentionally not included in the sketch, so nobody accidentally commits their secret information.
-// create a Secrets.h file with the following:
-
-// AP mode password
-// const char WiFiAPPSK[] = "your-password";
-
-// Wi-Fi network to connect to (if not in AP mode)
-// char* ssid = "your-ssid";
-// char* password = "your-password";
-
 
 CRGB leds[NUM_LEDS];
 

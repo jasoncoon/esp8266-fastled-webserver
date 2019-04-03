@@ -74,7 +74,9 @@ The web app needs to be uploaded to the ESP8266's SPIFFS.  You can do this withi
 
 With ESP8266FS installed upload the web app using `ESP8266 Sketch Data Upload` command in the Arduino Tools menu.
 
-Then enter your wi-fi network SSID and password in the WiFi.h file, and upload the sketch using the Upload button.
+Copy the config.h.sample file to config.h
+
+Then enter your wi-fi network SSID and password in the config.h file, adjust some parameter as the number of LEDs in your Strip, and upload the sketch using the Upload button.
 
 Compression
 -----------
