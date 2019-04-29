@@ -193,37 +193,38 @@ void drawTwinkles()
   }
 
   uint8_t backgroundBrightness = bg.getAverageLight();
+  for (int s = 0; s < NUM_STRIPS; s++) {
+    for(uint16_t i = 0; i < Strips[s].num_leds; i++) {
+      CRGB& pixel = Strips[s].leds[i];
 
-  for(uint16_t i = 0; i < NUM_LEDS; i++) {
-    CRGB& pixel = leds[i];
+      PRNG16 = (uint16_t)(PRNG16 * 2053) + 1384; // next 'random' number
+      uint16_t myclockoffset16= PRNG16; // use that number as clock offset
+      PRNG16 = (uint16_t)(PRNG16 * 2053) + 1384; // next 'random' number
+      // use that number as clock speed adjustment factor (in 8ths, from 8/8ths to 23/8ths)
+      uint8_t myspeedmultiplierQ5_3 =  ((((PRNG16 & 0xFF)>>4) + (PRNG16 & 0x0F)) & 0x0F) + 0x08;
+      uint32_t myclock30 = (uint32_t)((clock32 * myspeedmultiplierQ5_3) >> 3) + myclockoffset16;
+      uint8_t  myunique8 = PRNG16 >> 8; // get 'salt' value for this pixel
 
-    PRNG16 = (uint16_t)(PRNG16 * 2053) + 1384; // next 'random' number
-    uint16_t myclockoffset16= PRNG16; // use that number as clock offset
-    PRNG16 = (uint16_t)(PRNG16 * 2053) + 1384; // next 'random' number
-    // use that number as clock speed adjustment factor (in 8ths, from 8/8ths to 23/8ths)
-    uint8_t myspeedmultiplierQ5_3 =  ((((PRNG16 & 0xFF)>>4) + (PRNG16 & 0x0F)) & 0x0F) + 0x08;
-    uint32_t myclock30 = (uint32_t)((clock32 * myspeedmultiplierQ5_3) >> 3) + myclockoffset16;
-    uint8_t  myunique8 = PRNG16 >> 8; // get 'salt' value for this pixel
+      // We now have the adjusted 'clock' for this pixel, now we call
+      // the function that computes what color the pixel should be based
+      // on the "brightness = f( time )" idea.
+      CRGB c = computeOneTwinkle( myclock30, myunique8);
 
-    // We now have the adjusted 'clock' for this pixel, now we call
-    // the function that computes what color the pixel should be based
-    // on the "brightness = f( time )" idea.
-    CRGB c = computeOneTwinkle( myclock30, myunique8);
-
-    uint8_t cbright = c.getAverageLight();
-    int16_t deltabright = cbright - backgroundBrightness;
-    if( deltabright >= 32 || (!bg)) {
-      // If the new pixel is significantly brighter than the background color,
-      // use the new color.
-      pixel = c;
-    } else if( deltabright > 0 ) {
-      // If the new pixel is just slightly brighter than the background color,
-      // mix a blend of the new color and the background color
-      pixel = blend( bg, c, deltabright * 8);
-    } else {
-      // if the new pixel is not at all brighter than the background color,
-      // just use the background color.
-      pixel = bg;
+      uint8_t cbright = c.getAverageLight();
+      int16_t deltabright = cbright - backgroundBrightness;
+      if( deltabright >= 32 || (!bg)) {
+        // If the new pixel is significantly brighter than the background color,
+        // use the new color.
+        pixel = c;
+      } else if( deltabright > 0 ) {
+        // If the new pixel is just slightly brighter than the background color,
+        // mix a blend of the new color and the background color
+        pixel = blend( bg, c, deltabright * 8);
+      } else {
+        // if the new pixel is not at all brighter than the background color,
+        // just use the background color.
+        pixel = bg;
+      }
     }
   }
 }

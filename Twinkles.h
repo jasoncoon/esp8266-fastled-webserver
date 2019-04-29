@@ -26,44 +26,46 @@ CRGB makeDarker( const CRGB& color, fract8 howMuchDarker)
 // per pixel.  This requires a bunch of bit wrangling,
 // but conserves precious RAM.  The cost is a few
 // cycles and about 100 bytes of flash program memory.
-uint8_t  directionFlags[ (NUM_LEDS + 7) / 8];
 
-bool getPixelDirection( uint16_t i)
+// Pilooz : This now in the Strip Structure.
+//uint8_t  directionFlags[ (NUM_LEDS + 7) / 8];
+
+bool getPixelDirection( Strip strip, uint16_t i)
 {
   uint16_t index = i / 8;
   uint8_t  bitNum = i & 0x07;
 
   uint8_t  andMask = 1 << bitNum;
-  return (directionFlags[index] & andMask) != 0;
+  return (strip.directionFlags[index] & andMask) != 0;
 }
 
-void setPixelDirection( uint16_t i, bool dir)
+void setPixelDirection( Strip strip, uint16_t i, bool dir)
 {
   uint16_t index = i / 8;
   uint8_t  bitNum = i & 0x07;
 
   uint8_t  orMask = 1 << bitNum;
   uint8_t andMask = 255 - orMask;
-  uint8_t value = directionFlags[index] & andMask;
+  uint8_t value = strip.directionFlags[index] & andMask;
   if ( dir ) {
     value += orMask;
   }
-  directionFlags[index] = value;
+  strip.directionFlags[index] = value;
 }
 
-void brightenOrDarkenEachPixel( fract8 fadeUpAmount, fract8 fadeDownAmount)
+void brightenOrDarkenEachPixel( Strip strip, fract8 fadeUpAmount, fract8 fadeDownAmount)
 {
-  for ( uint16_t i = 0; i < NUM_LEDS; i++) {
-    if ( getPixelDirection(i) == GETTING_DARKER) {
+  for ( uint16_t i = 0; i < strip.num_leds; i++) {
+    if ( getPixelDirection(strip, i) == GETTING_DARKER) {
       // This pixel is getting darker
-      leds[i] = makeDarker( leds[i], fadeDownAmount);
+      strip.leds[i] = makeDarker( strip.leds[i], fadeDownAmount);
     } else {
       // This pixel is getting brighter
-      leds[i] = makeBrighter( leds[i], fadeUpAmount);
+      strip.leds[i] = makeBrighter( strip.leds[i], fadeUpAmount);
       // now check to see if we've maxxed out the brightness
-      if ( leds[i].r == 255 || leds[i].g == 255 || leds[i].b == 255) {
+      if ( strip.leds[i].r == 255 || strip.leds[i].g == 255 || strip.leds[i].b == 255) {
         // if so, turn around and start getting darker
-        setPixelDirection(i, GETTING_DARKER);
+        setPixelDirection(strip, i, GETTING_DARKER);
       }
     }
   }
@@ -75,14 +77,16 @@ void colortwinkles()
   {
     // Make each pixel brighter or darker, depending on
     // its 'direction' flag.
-    brightenOrDarkenEachPixel( FADE_IN_SPEED, FADE_OUT_SPEED);
-  
-    // Now consider adding a new random twinkle
-    if ( random8() < DENSITY ) {
-      int pos = random16(NUM_LEDS);
-      if ( !leds[pos]) {
-        leds[pos] = ColorFromPalette( gCurrentPalette, random8(), STARTING_BRIGHTNESS, NOBLEND);
-        setPixelDirection(pos, GETTING_BRIGHTER);
+    for (int s = 0; s < NUM_STRIPS; s++) {
+      brightenOrDarkenEachPixel(Strips[s], FADE_IN_SPEED, FADE_OUT_SPEED);
+    
+      // Now consider adding a new random twinkle
+      if ( random8() < DENSITY ) {
+        int pos = random16(Strips[s].num_leds);
+        if ( !Strips[s].leds[pos]) {
+          Strips[s].leds[pos] = ColorFromPalette( gCurrentPalette, random8(), STARTING_BRIGHTNESS, NOBLEND);
+          setPixelDirection(Strips[s], pos, GETTING_BRIGHTER);
+        }
       }
     }
   }

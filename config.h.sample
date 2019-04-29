@@ -17,10 +17,11 @@ IPAddress WiFiNMask(255, 255, 255, 0);
 //--------------------------------------------------------------------------------
 // LEDs Strip configuration
 //--------------------------------------------------------------------------------
-#define DATA_PIN      D5
+#define NUM_STRIPS    4
 #define LED_TYPE      WS2811
-#define COLOR_ORDER   RGB
-#define NUM_LEDS      200
+#define COLOR_ORDER   GRB
+const int data_pin_list = { D5, D6, D7, D8 };
+const int num_leds_list = { 200, 200, 200, 200 };
 
 #define MILLI_AMPS         2000 // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
 #define FRAMES_PER_SECOND  120  // here you can control the speed. With the Access Point / Web Server the animations run a bit slower.

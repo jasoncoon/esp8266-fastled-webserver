@@ -54,7 +54,18 @@ ESP8266HTTPUpdateServer httpUpdateServer;
 
 #include "FSBrowser.h"
 
-CRGB leds[NUM_LEDS];
+//CRGB leds[NUM_LEDS];
+
+typedef struct
+{
+  int data_pin;
+  int num_leds;
+  CRGB leds[]; 
+  uint8_t  directionFlags[];
+} Strip;
+
+Strip Strips[NUM_STRIPS];
+
 
 const uint8_t brightnessCount = 5;
 uint8_t brightnessMap[brightnessCount] = { 16, 32, 64, 128, 255 };
@@ -105,8 +116,10 @@ CRGB solidColor = CRGB::Blue;
 // scale the brightness of all pixels down
 void dimAll(byte value)
 {
-  for (int i = 0; i < NUM_LEDS; i++) {
-    leds[i].nscale8(value);
+  for (int s = 0; s < NUM_STRIPS; s++) {
+    for (int i = 0; i < Strips[s].num_leds; i++) {
+      Strips[s].leds[i].nscale8(value);
+    }
   }
 }
 
@@ -116,6 +129,7 @@ typedef struct {
   Pattern pattern;
   String name;
 } PatternAndName;
+
 typedef PatternAndName PatternAndNameList[];
 
 #include "Twinkles.h"
@@ -203,14 +217,42 @@ void setup() {
   delay(100);
   Serial.setDebugOutput(true);
 
-  FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);         // for WS2812 (Neopixel)
+  //FastLED.addLeds<LED_TYPE, 2, COLOR_ORDER>(leds, NUM_LEDS);         // for WS2812 (Neopixel)
   //FastLED.addLeds<LED_TYPE,DATA_PIN,CLK_PIN,COLOR_ORDER>(leds, NUM_LEDS); // for APA102 (Dotstar)
+
+  // Init all strips
+  FastLED.addLeds<LED_TYPE, DATA_PIN1, COLOR_ORDER>(Strips[0].leds, NUM_LEDS1);
+  FastLED.addLeds<LED_TYPE, DATA_PIN2, COLOR_ORDER>(Strips[1].leds, NUM_LEDS2);
+  //FastLED.addLeds<LED_TYPE, DATA_PIN3, COLOR_ORDER>(Strips[2].leds, NUM_LEDS3);
+  //FastLED.addLeds<LED_TYPE, DATA_PIN4, COLOR_ORDER>(Strips[3].leds, NUM_LEDS4);
+
+  Strips[0].data_pin = DATA_PIN1;
+  Strips[1].data_pin = DATA_PIN2;
+  //Strips[2].data_pin = DATA_PIN3;
+  //Strips[3].data_pin = DATA_PIN4;
+  
+  Strips[0].num_leds = NUM_LEDS1;
+  Strips[1].num_leds = NUM_LEDS2;
+  //Strips[2].num_leds = NUM_LEDS3;
+  //Strips[3].num_leds = NUM_LEDS4;
+  
+  /*
+  for (int s = 0; s < NUM_STRIPS; s++) {
+    Strips[s].data_pin = data_pin_list[s];
+    Strips[s].num_leds = num_leds_list[s];
+    FastLED.addLeds<LED_TYPE, Strips[s].data_pin, COLOR_ORDER>(Strips[s].leds, NUM);
+    Strips[s].directionFlags[(Strips[s].num_leds + 7) / 8] = 0;
+  }
+  */
+
   FastLED.setDither(false);
   FastLED.setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(brightness);
   FastLED.setMaxPowerInVoltsAndMilliamps(5, MILLI_AMPS);
-  fill_solid(leds, NUM_LEDS, CRGB::Black);
-  FastLED.show();
+  for (int s = 0; s < NUM_STRIPS; s++) {
+    fill_solid(Strips[s].leds, Strips[s].num_leds, CRGB::Black);
+    FastLED.show();
+  }
 
   EEPROM.begin(512);
   loadSettings();
@@ -460,8 +502,10 @@ void loop() {
   //  handleIrInput();
 
   if (power == 0) {
-    fill_solid(leds, NUM_LEDS, CRGB::Black);
-    FastLED.show();
+    for (int s = 0; s < NUM_STRIPS; s++) {
+      fill_solid(Strips[s].leds, Strips[s].num_leds, CRGB::Black);
+      FastLED.show();
+    }
     // FastLED.delay(15);
     return;
   }
@@ -944,31 +988,39 @@ void setBrightness(uint8_t value)
 
 void strandTest()
 {
+  for (int s = 0; s < NUM_STRIPS; s++) {
   static uint8_t i = 0;
 
-  EVERY_N_SECONDS(1)
-  {
-    i++;
-    if (i >= NUM_LEDS)
-      i = 0;
+    EVERY_N_SECONDS(1)
+    {
+      i++;
+      if (i >= Strips[s].num_leds)
+        i = 0;
+
+    }
+
+  // fill_solid(leds, NUM_LEDS, CRGB::Black);
+    fill_solid(Strips[s].leds, Strips[s].num_leds, CRGB::Black);
+
+    Strips[s].leds[i] = solidColor;
   }
-
-  fill_solid(leds, NUM_LEDS, CRGB::Black);
-
-  leds[i] = solidColor;
 }
 
 void showSolidColor()
 {
-  fill_solid(leds, NUM_LEDS, solidColor);
+  for (int s = 0; s < NUM_STRIPS; s++) {
+    fill_solid(Strips[s].leds, Strips[s].num_leds, solidColor);
+  } 
 }
 
 // Patterns from FastLED example DemoReel100: https://github.com/FastLED/FastLED/blob/master/examples/DemoReel100/DemoReel100.ino
 
 void rainbow()
 {
-  // FastLED's built-in rainbow generator
-  fill_rainbow( leds, NUM_LEDS, gHue, 255 / NUM_LEDS);
+  for (int s = 0; s < NUM_STRIPS; s++) {
+    // FastLED's built-in rainbow generator
+    fill_rainbow( Strips[s].leds, Strips[s].num_leds, gHue, 255 / Strips[s].num_leds);
+  }
 }
 
 void rainbowWithGlitter()
@@ -980,40 +1032,48 @@ void rainbowWithGlitter()
 
 void rainbowSolid()
 {
-  fill_solid(leds, NUM_LEDS, CHSV(gHue, 255, 255));
+  for (int s = 0; s < NUM_STRIPS; s++) {
+    fill_solid(Strips[s].leds, Strips[s].num_leds, CHSV(gHue, 255, 255));
+  }
 }
 
 void confetti()
 {
-  // random colored speckles that blink in and fade smoothly
-  fadeToBlackBy( leds, NUM_LEDS, 10);
-  int pos = random16(NUM_LEDS);
-  // leds[pos] += CHSV( gHue + random8(64), 200, 255);
-  leds[pos] += ColorFromPalette(palettes[currentPaletteIndex], gHue + random8(64));
+  for (int s = 0; s < NUM_STRIPS; s++) {
+    // random colored speckles that blink in and fade smoothly
+    fadeToBlackBy( Strips[s].leds, Strips[s].num_leds, 10);
+    int pos = random16(Strips[s].num_leds);
+    // leds[pos] += CHSV( gHue + random8(64), 200, 255);
+    Strips[s].leds[pos] += ColorFromPalette(palettes[currentPaletteIndex], gHue + random8(64));
+  }
 }
 
 void sinelon()
 {
-  // a colored dot sweeping back and forth, with fading trails
-  fadeToBlackBy( leds, NUM_LEDS, 20);
-  int pos = beatsin16(speed, 0, NUM_LEDS);
-  static int prevpos = 0;
-  CRGB color = ColorFromPalette(palettes[currentPaletteIndex], gHue, 255);
-  if ( pos < prevpos ) {
-    fill_solid( leds + pos, (prevpos - pos) + 1, color);
-  } else {
-    fill_solid( leds + prevpos, (pos - prevpos) + 1, color);
+  for (int s = 0; s < NUM_STRIPS; s++) {
+    // a colored dot sweeping back and forth, with fading trails
+    fadeToBlackBy( Strips[s].leds, Strips[s].num_leds, 20);
+    int pos = beatsin16(speed, 0, Strips[s].num_leds);
+    static int prevpos = 0;
+    CRGB color = ColorFromPalette(palettes[currentPaletteIndex], gHue, 255);
+    if ( pos < prevpos ) {
+      fill_solid( Strips[s].leds + pos, (prevpos - pos) + 1, color);
+    } else {
+      fill_solid( Strips[s].leds + prevpos, (pos - prevpos) + 1, color);
+    }
+    prevpos = pos;
   }
-  prevpos = pos;
 }
 
 void bpm()
 {
-  // colored stripes pulsing at a defined Beats-Per-Minute (BPM)
-  uint8_t beat = beatsin8( speed, 64, 255);
-  CRGBPalette16 palette = palettes[currentPaletteIndex];
-  for ( int i = 0; i < NUM_LEDS; i++) {
-    leds[i] = ColorFromPalette(palette, gHue + (i * 2), beat - gHue + (i * 10));
+  for (int s = 0; s < NUM_STRIPS; s++) {
+    // colored stripes pulsing at a defined Beats-Per-Minute (BPM)
+    uint8_t beat = beatsin8( speed, 64, 255);
+    CRGBPalette16 palette = palettes[currentPaletteIndex];
+    for ( int i = 0; i < Strips[s].num_leds; i++) {
+      Strips[s].leds[i] = ColorFromPalette(palette, gHue + (i * 2), beat - gHue + (i * 10));
+    }
   }
 }
 
@@ -1043,11 +1103,13 @@ void juggle()
 
   // Several colored dots, weaving in and out of sync with each other
   curhue = thishue; // Reset the hue values.
-  fadeToBlackBy(leds, NUM_LEDS, faderate);
-  for ( int i = 0; i < numdots; i++) {
-    //beat16 is a FastLED 3.1 function
-    leds[beatsin16(basebeat + i + numdots, 0, NUM_LEDS)] += CHSV(gHue + curhue, thissat, thisbright);
-    curhue += hueinc;
+  for (int s = 0; s < NUM_STRIPS; s++) {
+    fadeToBlackBy(Strips[s].leds, Strips[s].num_leds, faderate);
+    for ( int i = 0; i < numdots; i++) {
+      //beat16 is a FastLED 3.1 function
+      Strips[s].leds[beatsin16(basebeat + i + numdots, 0, Strips[s].num_leds)] += CHSV(gHue + curhue, thissat, thisbright);
+      curhue += hueinc;
+    }
   }
 }
 
@@ -1085,84 +1147,92 @@ void pride()
   sHue16 += deltams * beatsin88( 400, 5, 9);
   uint16_t brightnesstheta16 = sPseudotime;
 
-  for ( uint16_t i = 0 ; i < NUM_LEDS; i++) {
-    hue16 += hueinc16;
-    uint8_t hue8 = hue16 / 256;
+for (int s = 0; s < NUM_STRIPS; s++) {
+    for ( uint16_t i = 0 ; i < Strips[s].num_leds; i++) {
+      hue16 += hueinc16;
+      uint8_t hue8 = hue16 / 256;
 
-    brightnesstheta16  += brightnessthetainc16;
-    uint16_t b16 = sin16( brightnesstheta16  ) + 32768;
+      brightnesstheta16  += brightnessthetainc16;
+      uint16_t b16 = sin16( brightnesstheta16  ) + 32768;
 
-    uint16_t bri16 = (uint32_t)((uint32_t)b16 * (uint32_t)b16) / 65536;
-    uint8_t bri8 = (uint32_t)(((uint32_t)bri16) * brightdepth) / 65536;
-    bri8 += (255 - brightdepth);
+      uint16_t bri16 = (uint32_t)((uint32_t)b16 * (uint32_t)b16) / 65536;
+      uint8_t bri8 = (uint32_t)(((uint32_t)bri16) * brightdepth) / 65536;
+      bri8 += (255 - brightdepth);
 
-    CRGB newcolor = CHSV( hue8, sat8, bri8);
+      CRGB newcolor = CHSV( hue8, sat8, bri8);
 
-    uint16_t pixelnumber = i;
-    pixelnumber = (NUM_LEDS - 1) - pixelnumber;
+      uint16_t pixelnumber = i;
+      pixelnumber = (Strips[s].num_leds - 1) - pixelnumber;
 
-    nblend( leds[pixelnumber], newcolor, 64);
+      nblend( Strips[s].leds[pixelnumber], newcolor, 64);
+    }
   }
 }
 
 void radialPaletteShift()
 {
-  for (uint16_t i = 0; i < NUM_LEDS; i++) {
-    // leds[i] = ColorFromPalette( gCurrentPalette, gHue + sin8(i*16), brightness);
-    leds[i] = ColorFromPalette(gCurrentPalette, i + gHue, 255, LINEARBLEND);
+  for (int s = 0; s < NUM_STRIPS; s++) {
+    for (uint16_t i = 0; i < Strips[s].num_leds; i++) {
+      Strips[s].leds[i] = ColorFromPalette(gCurrentPalette, i + gHue, 255, LINEARBLEND);
+    }
   }
 }
 
 // based on FastLED example Fire2012WithPalette: https://github.com/FastLED/FastLED/blob/master/examples/Fire2012WithPalette/Fire2012WithPalette.ino
 void heatMap(CRGBPalette16 palette, bool up)
 {
-  fill_solid(leds, NUM_LEDS, CRGB::Black);
+  for (int s = 0; s < NUM_STRIPS; s++) {
+    fill_solid(Strips[s].leds, Strips[s].num_leds, CRGB::Black);
+ 
+    // Add entropy to random number generator; we use a lot of it.
+    random16_add_entropy(random(256));
 
-  // Add entropy to random number generator; we use a lot of it.
-  random16_add_entropy(random(256));
+    // Array of temperature readings at each simulation cell
+    //static
+    byte heat[Strips[s].num_leds];
 
-  // Array of temperature readings at each simulation cell
-  static byte heat[NUM_LEDS];
+    byte colorindex;
 
-  byte colorindex;
-
-  // Step 1.  Cool down every cell a little
-  for ( uint16_t i = 0; i < NUM_LEDS; i++) {
-    heat[i] = qsub8( heat[i],  random8(0, ((cooling * 10) / NUM_LEDS) + 2));
-  }
-
-  // Step 2.  Heat from each cell drifts 'up' and diffuses a little
-  for ( uint16_t k = NUM_LEDS - 1; k >= 2; k--) {
-    heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2] ) / 3;
-  }
-
-  // Step 3.  Randomly ignite new 'sparks' of heat near the bottom
-  if ( random8() < sparking ) {
-    int y = random8(7);
-    heat[y] = qadd8( heat[y], random8(160, 255) );
-  }
-
-  // Step 4.  Map from heat cells to LED colors
-  for ( uint16_t j = 0; j < NUM_LEDS; j++) {
-    // Scale the heat value from 0-255 down to 0-240
-    // for best results with color palettes.
-    colorindex = scale8(heat[j], 190);
-
-    CRGB color = ColorFromPalette(palette, colorindex);
-
-    if (up) {
-      leds[j] = color;
+    // Step 1.  Cool down every cell a little
+    for ( uint16_t i = 0; i < Strips[s].num_leds; i++) {
+      heat[i] = qsub8( heat[i],  random8(0, ((cooling * 10) / Strips[s].num_leds) + 2));
     }
-    else {
-      leds[(NUM_LEDS - 1) - j] = color;
+
+    // Step 2.  Heat from each cell drifts 'up' and diffuses a little
+    for ( uint16_t k = Strips[s].num_leds - 1; k >= 2; k--) {
+      heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2] ) / 3;
+    }
+
+    // Step 3.  Randomly ignite new 'sparks' of heat near the bottom
+    if ( random8() < sparking ) {
+      int y = random8(7);
+      heat[y] = qadd8( heat[y], random8(160, 255) );
+    }
+
+    // Step 4.  Map from heat cells to LED colors
+    for ( uint16_t j = 0; j < Strips[s].num_leds; j++) {
+      // Scale the heat value from 0-255 down to 0-240
+      // for best results with color palettes.
+      colorindex = scale8(heat[j], 190);
+
+      CRGB color = ColorFromPalette(palette, colorindex);
+
+      if (up) {
+        Strips[s].leds[j] = color;
+      }
+      else {
+        Strips[s].leds[(Strips[s].num_leds - 1) - j] = color;
+      }
     }
   }
 }
 
 void addGlitter( uint8_t chanceOfGlitter)
 {
-  if ( random8() < chanceOfGlitter) {
-    leds[ random16(NUM_LEDS) ] += CRGB::White;
+  for (int s = 0; s < NUM_STRIPS; s++) {
+    if ( random8() < chanceOfGlitter) {
+      Strips[s].leds[ random16(Strips[s].num_leds) ] += CRGB::White;
+    }
   }
 }
 
@@ -1187,7 +1257,9 @@ uint8_t beatsaw8( accum88 beats_per_minute, uint8_t lowest = 0, uint8_t highest 
 
 void colorWaves()
 {
-  colorwaves( leds, NUM_LEDS, gCurrentPalette);
+  for (int s = 0; s < NUM_STRIPS; s++) {
+    colorwaves( Strips[s].leds, Strips[s].num_leds, gCurrentPalette);
+  }
 }
 
 // ColorWavesWithPalettes by Mark Kriegsman: https://gist.github.com/kriegsman/8281905786e8b2632aeb
@@ -1250,5 +1322,7 @@ void palettetest( CRGB* ledarray, uint16_t numleds, const CRGBPalette16& gCurren
 {
   static uint8_t startindex = 0;
   startindex--;
-  fill_palette( ledarray, numleds, startindex, (256 / NUM_LEDS) + 1, gCurrentPalette, 255, LINEARBLEND);
+  for (int s = 0; s < NUM_STRIPS; s++) {
+    fill_palette( ledarray, numleds, startindex, (256 / Strips[s].num_leds) + 1, gCurrentPalette, 255, LINEARBLEND);
+  }
 }
