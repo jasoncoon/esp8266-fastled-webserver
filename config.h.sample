@@ -1,8 +1,13 @@
 //--------------------------------------------------------------------------------
 // WIFI configuration
 //--------------------------------------------------------------------------------
-// AP mode password
+// AP mode name and password
+const char WiFiAPName[] = "LightControlAP";
 const char WiFiAPPSK[] = "";
+
+// IP configuration for AP
+IPAddress WiFiIp(192, 168, 10, 1);
+IPAddress WiFiNMask(255, 255, 255, 0);
 
 // Wi-Fi network to connect to (if not in AP mode)
 char* ssid = "";
