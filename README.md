@@ -76,7 +76,7 @@ With ESP8266FS installed upload the web app using `ESP8266 Sketch Data Upload` c
 
 Copy the config.h.sample file to config.h
 
-Then enter your wi-fi network SSID and password in the config.h file, adjust some parameter as the number of LEDs in your Strip, and upload the sketch using the Upload button.
+Then enter your wi-fi network SSID and password in the config.h file or the wifi AP name and password if you prefer a standalone wifi network, adjust some parameters as the number of LEDs in your Strip, and upload the sketch using the Upload button.
 
 Compression
 -----------

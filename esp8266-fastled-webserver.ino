@@ -294,25 +294,10 @@ void setup() {
     // Set IP and mask for AP
     WiFi.softAPConfig(WiFiIp, WiFiIp, WiFiNMask);
 
-    // Do a little work to get a unique-ish name. Append the
-    // last two bytes of the MAC (HEX'd) to "Thing-":
-    uint8_t mac[WL_MAC_ADDR_LENGTH];
-    WiFi.softAPmacAddress(mac);
-    String macID = String(mac[WL_MAC_ADDR_LENGTH - 2], HEX) +
-                   String(mac[WL_MAC_ADDR_LENGTH - 1], HEX);
-    macID.toUpperCase();
-    String AP_NameString = "ESP8266 Thing " + macID;
-
-    char AP_NameChar[AP_NameString.length() + 1];
-    memset(AP_NameChar, 0, AP_NameString.length() + 1);
-
-    for (int i = 0; i < AP_NameString.length(); i++)
-      AP_NameChar[i] = AP_NameString.charAt(i);
-
-    WiFi.softAP(AP_NameChar, WiFiAPPSK);
+    WiFi.softAP(WiFiAPName, WiFiAPPSK);
     IPAddress apIP = WiFi.softAPIP();
 
-    Serial.printf("Connect to Wi-Fi access point: %s\n", AP_NameChar);
+    Serial.printf("Connect to Wi-Fi access point: %s\n", WiFiAPName);
     Serial.print("and open http://"); 
     Serial.print(apIP); 
     Serial.println(" in your browser");
