@@ -7,6 +7,14 @@
 
 enum { GETTING_DARKER = 0, GETTING_BRIGHTER = 1 };
 
+// Compact implementation of
+// the directionFlags array, using just one BIT of RAM
+// per pixel.  This requires a bunch of bit wrangling,
+// but conserves precious RAM.  The cost is a few
+// cycles and about 100 bytes of flash program memory.
+
+uint8_t  directionFlags[NUM_STRIPS][MAX_LEDS_PER_STRIP]; 
+
 CRGB makeBrighter( const CRGB& color, fract8 howMuchBrighter)
 {
   CRGB incrementalColor = color;
@@ -21,71 +29,69 @@ CRGB makeDarker( const CRGB& color, fract8 howMuchDarker)
   return newcolor;
 }
 
-// Compact implementation of
-// the directionFlags array, using just one BIT of RAM
-// per pixel.  This requires a bunch of bit wrangling,
-// but conserves precious RAM.  The cost is a few
-// cycles and about 100 bytes of flash program memory.
-
-// Pilooz : This now in the Strip Structure.
-//uint8_t  directionFlags[ (NUM_LEDS + 7) / 8];
-
-bool getPixelDirection( Strip strip, uint16_t i)
+bool getPixelDirection( uint16_t stripIndex, uint16_t i)
 {
   uint16_t index = i / 8;
   uint8_t  bitNum = i & 0x07;
 
   uint8_t  andMask = 1 << bitNum;
-  return (strip.directionFlags[index] & andMask) != 0;
+  return (directionFlags[stripIndex][index] & andMask) != 0;
 }
 
-void setPixelDirection( Strip strip, uint16_t i, bool dir)
+void setPixelDirection( uint16_t stripIndex, uint16_t i, bool dir)
 {
   uint16_t index = i / 8;
   uint8_t  bitNum = i & 0x07;
 
   uint8_t  orMask = 1 << bitNum;
   uint8_t andMask = 255 - orMask;
-  uint8_t value = strip.directionFlags[index] & andMask;
+  uint8_t value = directionFlags[stripIndex][index] & andMask;
   if ( dir ) {
     value += orMask;
   }
-  strip.directionFlags[index] = value;
+  directionFlags[stripIndex][index] = value;
 }
 
-void brightenOrDarkenEachPixel( Strip strip, fract8 fadeUpAmount, fract8 fadeDownAmount)
+void brightenOrDarkenEachPixel(uint16_t stripIndex, fract8 fadeUpAmount, fract8 fadeDownAmount)
 {
-  for ( uint16_t i = 0; i < strip.num_leds; i++) {
-    if ( getPixelDirection(strip, i) == GETTING_DARKER) {
+  for ( uint16_t i = 0; i < num_leds_list[stripIndex]; i++) {
+    if ( getPixelDirection(stripIndex, i) == GETTING_DARKER) {
       // This pixel is getting darker
-      strip.leds[i] = makeDarker( strip.leds[i], fadeDownAmount);
+      leds[stripIndex][i] = makeDarker( leds[stripIndex][i], fadeDownAmount);
     } else {
       // This pixel is getting brighter
-      strip.leds[i] = makeBrighter( strip.leds[i], fadeUpAmount);
+      leds[stripIndex][i] = makeBrighter( leds[stripIndex][i], fadeUpAmount);
       // now check to see if we've maxxed out the brightness
-      if ( strip.leds[i].r == 255 || strip.leds[i].g == 255 || strip.leds[i].b == 255) {
+      if ( leds[stripIndex][i].r == 255 || leds[stripIndex][i].g == 255 || leds[stripIndex][i].b == 255) {
         // if so, turn around and start getting darker
-        setPixelDirection(strip, i, GETTING_DARKER);
+        setPixelDirection(stripIndex, i, GETTING_DARKER);
       }
     }
   }
 }
 
+void init_directions() {
+  for (int s = 0; s < NUM_STRIPS; s++) {
+    directionFlags[s][(num_leds_list[s] + 7) / 8] = 0;
+  }
+}
+
 void colortwinkles()
 {
+  init_directions();
   EVERY_N_MILLIS(30)
   {
     // Make each pixel brighter or darker, depending on
     // its 'direction' flag.
     for (int s = 0; s < NUM_STRIPS; s++) {
-      brightenOrDarkenEachPixel(Strips[s], FADE_IN_SPEED, FADE_OUT_SPEED);
+      brightenOrDarkenEachPixel(s, FADE_IN_SPEED, FADE_OUT_SPEED);
     
       // Now consider adding a new random twinkle
       if ( random8() < DENSITY ) {
-        int pos = random16(Strips[s].num_leds);
-        if ( !Strips[s].leds[pos]) {
-          Strips[s].leds[pos] = ColorFromPalette( gCurrentPalette, random8(), STARTING_BRIGHTNESS, NOBLEND);
-          setPixelDirection(Strips[s], pos, GETTING_BRIGHTER);
+        int pos = random16(num_leds_list[s]);
+        if ( !leds[s][pos]) {
+          leds[s][pos] = ColorFromPalette( gCurrentPalette, random8(), STARTING_BRIGHTNESS, NOBLEND);
+          setPixelDirection(s, pos, GETTING_BRIGHTER);
         }
       }
     }
@@ -119,4 +125,3 @@ void incandescentTwinkles()
   gCurrentPalette = CRGBPalette16( l, l, l, l, l, l, l, l, l, l, l, l, l, l, l, l );
   colortwinkles();
 }
-

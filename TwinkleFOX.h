@@ -194,8 +194,8 @@ void drawTwinkles()
 
   uint8_t backgroundBrightness = bg.getAverageLight();
   for (int s = 0; s < NUM_STRIPS; s++) {
-    for(uint16_t i = 0; i < Strips[s].num_leds; i++) {
-      CRGB& pixel = Strips[s].leds[i];
+    for(uint16_t i = 0; i < num_leds_list[s]; i++) {
+      CRGB& pixel = leds[s][i];
 
       PRNG16 = (uint16_t)(PRNG16 * 2053) + 1384; // next 'random' number
       uint16_t myclockoffset16= PRNG16; // use that number as clock offset
