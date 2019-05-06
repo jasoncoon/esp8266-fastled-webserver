@@ -78,40 +78,62 @@ $(document).ready(function() {
 
   $.get(urlBase + "all", function(data) {
     $("#status").html("Loading, please wait...");
-
+    
     $.each(data, function(index, field) {
-      switch (field.name) {
-        case "power":
-          if(field.value == 1) {
-            $("#btnOn").attr("class", "btn btn-primary");
-          } else {
-            $("#btnOff").attr("class", "btn btn-primary");
-          }
-          break;
-
-        case "pattern":
-          addPatternButtons(field);
-          break;
+      if (field.name == "power") {
+        addBooleanField(field);
+      } else if (field.name == "pattern") {
+        addPatternButtons(field);
       }
     });
+
   });
 
   addColorButtons();
 
-  $("#btnOn").click(function() {
-    postValue("power", 1);
-    $("#btnOn").attr("class", "btn btn-primary");
-    $("#btnOff").attr("class", "btn btn-default");
-  });
-
-  $("#btnOff").click(function() {
-    postValue("power", 0);
-    $("#btnOff").attr("class", "btn btn-primary");
-    $("#btnOn").attr("class", "btn btn-default");
-  });
-
   $("#status").html("Ready");
 });
+
+function addBooleanField(field) {
+  var template = $("#booleanTemplate").clone();
+
+  template.attr("id", "form-group-" + field.name);
+  template.attr("data-field-type", field.type);
+
+  var label = template.find(".control-label");
+  label.attr("for", "btn-group-" + field.name);
+  label.text(field.label);
+
+  var btngroup = template.find(".btn-group");
+  btngroup.attr("id", "btn-group-" + field.name);
+
+  var btnOn = template.find("#btnOn");
+  var btnOff = template.find("#btnOff");
+
+  btnOn.attr("id", "btnOn" + field.name);
+  btnOff.attr("id", "btnOff" + field.name);
+
+  btnOn.attr("class", field.value ? "btn btn-primary" : "btn btn-default");
+  btnOff.attr("class", !field.value ? "btn btn-primary" : "btn btn-default");
+
+  btnOn.click(function() {
+    setBooleanFieldValue(field, btnOn, btnOff, 1)
+  });
+  btnOff.click(function() {
+    setBooleanFieldValue(field, btnOn, btnOff, 0)
+  });
+
+  $("#powerButtonsRow").append(template);
+}
+
+function setBooleanFieldValue(field, btnOn, btnOff, value) {
+  field.value = value;
+
+  btnOn.attr("class", field.value ? "btn btn-primary" : "btn btn-default");
+  btnOff.attr("class", !field.value ? "btn btn-primary" : "btn btn-default");
+
+  postValue(field.name, field.value);
+}
 
 function addColorButtons() {
   var hues = 25;
@@ -180,10 +202,13 @@ function addPatternButtons(patternField) {
 }
 
 function postValue(name, value) {
+  console.log("name : " + name);
+  console.log("value : " + value);
   $("#status").html("Setting " + name + ": " + value + ", please wait...");
 
   var body = { name: name, value: value };
-
+  console.log(body);
+  console.log("url : " + urlBase + name );
   $.post(urlBase + name, body, function(data) {
     if (data.name != null) {
       $("#status").html("Set " + name + ": " + data.name);
