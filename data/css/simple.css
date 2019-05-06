@@ -2,10 +2,15 @@
   padding-bottom: 70px;
 }*/
 
+.grid-color {
+  line-height: 0;
+} 
+
 .grid-item-color {
   width: 4%;
   height: 32px;
   cursor: pointer;
+  display: inline-block;
 }
 
 .grid-item-pattern {
