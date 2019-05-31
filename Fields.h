@@ -16,8 +16,6 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-uint8_t power = 1;
-uint8_t brightness = brightnessMap[brightnessIndex];
 
 //String setPower(String value) {
 //  power = value.toInt();
@@ -98,11 +96,11 @@ String getSpeed() {
 }
 
 String getTwinkleSpeed() {
-  return String(twinkleSpeed);
+  return String(twinkleSpeed[0]);
 }
 
 String getTwinkleDensity() {
-  return String(twinkleDensity);
+  return String(twinkleDensity[0]);
 }
 
 FieldList fields = {
