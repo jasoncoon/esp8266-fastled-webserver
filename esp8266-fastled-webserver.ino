@@ -42,6 +42,8 @@ extern "C" {
 // uncomment to enable Access Point mode
 // #define AP_MODE
 
+// name of the device in the local network
+const char * mDNS_Name = "lights";
 
 #include "Secrets.h" // this file is intentionally not included in the sketch, so nobody accidentally commits their secret information.
 // create a Secrets.h file with the following:
@@ -127,7 +129,7 @@ void setup() {
   //  webSocketsServer.onEvent(webSocketEvent);
   //  Serial.println("Web socket server started");
 
-  if (!MDNS.begin("coolLights")) {             // Start the mDNS responder for esp8266.local
+  if (!MDNS.begin(mDNS_Name)) { // Start the mDNS responder for esp8266.local
     Serial.println("Error setting up MDNS responder!");
   }
 
@@ -163,6 +165,8 @@ void loop() {
     else if (!hasConnected) {
       hasConnected = true;
       Serial.print("Connected! Open http://");
+      Serial.print(mDNS_Name);
+      Serial.print(" or http://");
       Serial.print(WiFi.localIP());
       Serial.println(" in your browser");
     }
