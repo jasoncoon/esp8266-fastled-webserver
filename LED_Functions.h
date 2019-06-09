@@ -1,20 +1,8 @@
-#define FASTLED_INTERRUPT_RETRY_COUNT 1
-//#define FASTLED_ALLOW_INTERRUPTS 1
-#define FASTLED_ESP8266_RAW_PIN_ORDER
-#define FASTLED_ESP8266_DMA
-
+#include "LED_Settings.h"
 #include <FastLED.h>
 FASTLED_USING_NAMESPACE
 
 #include "GradientPalettes.h"
-
-#define DATA_PIN      4
-#define LED_TYPE      WS2811
-#define COLOR_ORDER   RGB
-#define NUM_LEDS      150
-
-#define MILLI_AMPS         2000 // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
-#define FRAMES_PER_SECOND  120  // here you can control the speed. With the Access Point / Web Server the animations run a bit slower.
 
 ///////////////////////////////////////////////////////////////////////
 /////////////////////////  Globals  ///////////////////////////////////
@@ -114,48 +102,7 @@ typedef PatternAndName PatternAndNameList[];
 #include "Twinkles.h"
 #include "TwinkleFOX.h"
 
-// List of patterns to cycle through.  Each is defined as a separate function below.
-
-PatternAndNameList patterns = {
-  { pride,                  "Pride" },
-  { colorWaves,             "Color Waves" },
-
-  // twinkle patterns
-  { rainbowTwinkles,        "Rainbow Twinkles" },
-  { snowTwinkles,           "Snow Twinkles" },
-  { cloudTwinkles,          "Cloud Twinkles" },
-  { incandescentTwinkles,   "Incandescent Twinkles" },
-
-  // TwinkleFOX patterns
-  { ifusTwinkles,           "IfusTwinkles"},
-  { retroC9Twinkles,        "Retro C9 Twinkles" },
-  { redWhiteTwinkles,       "Red & White Twinkles" },
-  { blueWhiteTwinkles,      "Blue & White Twinkles" },
-  { redGreenWhiteTwinkles,  "Red, Green & White Twinkles" },
-  { fairyLightTwinkles,     "Fairy Light Twinkles" },
-  { snow2Twinkles,          "Snow 2 Twinkles" },
-  { hollyTwinkles,          "Holly Twinkles" },
-  { iceTwinkles,            "Ice Twinkles" },
-  { partyTwinkles,          "Party Twinkles" },
-  { forestTwinkles,         "Forest Twinkles" },
-  { lavaTwinkles,           "Lava Twinkles" },
-  { fireTwinkles,           "Fire Twinkles" },
-  { cloud2Twinkles,         "Cloud 2 Twinkles" },
-  { oceanTwinkles,          "Ocean Twinkles" },
-
-  { rainbow,                "Rainbow" },
-  { rainbowWithGlitter,     "Rainbow With Glitter" },
-  { rainbowSolid,           "Solid Rainbow" },
-  { confetti,               "Confetti" },
-  { sinelon,                "Sinelon" },
-  { bpm,                    "Beat" },
-  { juggle,                 "Juggle" },
-  { fire,                   "Fire" },
-  { water,                  "Water" },
-
-  { showSolidColor,         "Solid Color" }
-};
-
+#include "LED_Customization.h"
 const uint8_t patternCount = ARRAY_SIZE(patterns);
 
 typedef struct {
@@ -163,30 +110,6 @@ typedef struct {
   String name;
 } PaletteAndName;
 typedef PaletteAndName PaletteAndNameList[];
-
-const CRGBPalette16 palettes[] = {
-  RainbowColors_p,
-  RainbowStripeColors_p,
-  CloudColors_p,
-  LavaColors_p,
-  OceanColors_p,
-  ForestColors_p,
-  PartyColors_p,
-  HeatColors_p
-};
-
-const uint8_t paletteCount = ARRAY_SIZE(palettes);
-
-const String paletteNames[paletteCount] = {
-  "Rainbow",
-  "Rainbow Stripe",
-  "Cloud",
-  "Lava",
-  "Ocean",
-  "Forest",
-  "Party",
-  "Heat",
-};
 
 ///////////////////////////////////////////////////////////////////////
 // Forward declarations of an array of cpt-city gradient palettes, and

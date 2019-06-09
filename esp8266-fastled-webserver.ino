@@ -19,6 +19,7 @@
 //#define FASTLED_ALLOW_INTERRUPTS 1
 //#define INTERRUPT_THRESHOLD 1
 
+#include "CustomPalettes.h"
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 extern "C" {
 #include "user_interface.h"
