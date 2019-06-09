@@ -67,7 +67,8 @@ void dimAll(byte);
 void strandTest(void);
 void showSolidColor(void);
 void rainbow(void);
-void addGlitter(uint8_t);
+void addGlitter();
+void addGlitter(CRGB&);
 void rainbowWithGlitter(void);
 void rainbowSolid(void);
 void confetti(void);
@@ -151,31 +152,44 @@ void showSolidColor()
   fill_solid(leds, NUM_LEDS, solidColor);
 }
 
+void showSolidSparkling()
+{
+	fill_solid(leds, NUM_LEDS, solidColor);
+	addGlitter(solidColor.lerp8(CRGB::White, ~cooling));
+}
+
 // Patterns from FastLED example DemoReel100: https://github.com/FastLED/FastLED/blob/master/examples/DemoReel100/DemoReel100.ino
 
 void rainbow()
 {
-  // FastLED's built-in rainbow generator
-  fill_rainbow( leds, NUM_LEDS, gHue, 255 / NUM_LEDS);
+  uint8_t thishue = beat8(speed);
+  fill_rainbow(leds, NUM_LEDS, thishue, 255 / NUM_LEDS);
 }
 
-
-void addGlitter( uint8_t chanceOfGlitter)
+void addGlitter()
 {
-  if ( random8() < chanceOfGlitter) {
-    leds[ random16(NUM_LEDS) ] += CRGB::White;
+  if ( random8() < sparking) {
+    leds[random16(NUM_LEDS)] += CRGB::White;
   }
 }
+void addGlitter(CRGB& set)
+{
+  if (random8() < sparking) {
+    leds[random16(NUM_LEDS)] += set;
+  }
+}
+
 void rainbowWithGlitter()
 {
   // built-in FastLED rainbow, plus some random sparkly glitter
   rainbow();
-  addGlitter(80);
+  addGlitter();
 }
 
 void rainbowSolid()
-{
-  fill_solid(leds, NUM_LEDS, CHSV(gHue, 255, 255));
+{ 
+  uint8_t thishue = beat8(speed);
+  fill_solid(leds, NUM_LEDS, CHSV(thishue, 255, 255));
 }
 
 void confetti()
