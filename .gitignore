@@ -1,0 +1,8 @@
+Debug/
+Release/
+Secrets.h
+.vs/
+__vm/
+esp8266-fastled-webserver.vcxproj.filters
+esp8266-fastled-webserver.vcxproj
+FastledWebserver.sln
