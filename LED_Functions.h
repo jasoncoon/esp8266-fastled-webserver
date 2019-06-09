@@ -1,15 +1,10 @@
-
-
-
 #define FASTLED_INTERRUPT_RETRY_COUNT 1
 //#define FASTLED_ALLOW_INTERRUPTS 1
 #define FASTLED_ESP8266_RAW_PIN_ORDER
 #define FASTLED_ESP8266_DMA
 
-
 #include <FastLED.h>
 FASTLED_USING_NAMESPACE
-
 
 #include "GradientPalettes.h"
 
@@ -26,8 +21,6 @@ FASTLED_USING_NAMESPACE
 ///////////////////////////////////////////////////////////////////////
 
 CRGB leds[NUM_LEDS];
-
-
 
 const uint8_t brightnessCount = 5;
 uint8_t brightnessMap[brightnessCount] = { 16, 32, 64, 128, 255 };
@@ -196,13 +189,11 @@ const String paletteNames[paletteCount] = {
 };
 
 ///////////////////////////////////////////////////////////////////////
-
 // Forward declarations of an array of cpt-city gradient palettes, and
 // a count of how many there are.  The actual color palette definitions
 // are at the bottom of this file.
 extern const TProgmemRGBGradientPalettePtr gGradientPalettes[];
 extern const uint8_t gGradientPaletteCount;
-
 
 ///////////////////////////////////////////////////////////////////////
 /////////////////////////  Animation Declarations  ////////////////////

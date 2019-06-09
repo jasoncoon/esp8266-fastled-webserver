@@ -31,16 +31,10 @@ extern "C" {
 #include "Field.h"
 #include "Fields.h"
 
-
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 #include <ESP8266HTTPUpdateServer.h>
 #include "Webserver_Functions.h"
-
-#include <WiFiManager.h>                                      // https://github.com/tzapu/WiFiManager WiFi Configuration Magic
-
-
-
 
 const bool apMode = false;
 
@@ -57,7 +51,7 @@ const bool apMode = false;
 void setup() {
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
 
-    LEDSetup();
+  LEDSetup();
 
   Serial.begin(115200);
   delay(100);
@@ -65,10 +59,6 @@ void setup() {
 
   EEPROM.begin(512);
   loadSettings();
-
-
-
-
 
   Serial.println();
   Serial.print( F("Heap: ") ); Serial.println(system_get_free_heap_size());
@@ -94,49 +84,17 @@ void setup() {
     Serial.printf("\n");
   }
 
-  WiFiManager wifiManager;
-
-  wifiManager.autoConnect("CoolTest");
   //disabled due to https://github.com/jasoncoon/esp8266-fastled-webserver/issues/62
   //initializeWiFi();
-/*
-  if (apMode)
-  {
-    WiFi.mode(WIFI_AP);
-
-    // Do a little work to get a unique-ish name. Append the
-    // last two bytes of the MAC (HEX'd) to "Thing-":
-    uint8_t mac[WL_MAC_ADDR_LENGTH];
-    WiFi.softAPmacAddress(mac);
-    String macID = String(mac[WL_MAC_ADDR_LENGTH - 2], HEX) +
-                   String(mac[WL_MAC_ADDR_LENGTH - 1], HEX);
-    macID.toUpperCase();
-    String AP_NameString = "ESP8266 Thing " + macID;
-
-    char AP_NameChar[AP_NameString.length() + 1];
-    memset(AP_NameChar, 0, AP_NameString.length() + 1);
-
-    for (int i = 0; i < AP_NameString.length(); i++)
-      AP_NameChar[i] = AP_NameString.charAt(i);
-
-    WiFi.softAP(AP_NameChar, WiFiAPPSK);
-
-    Serial.printf("Connect to Wi-Fi access point: %s\n", AP_NameChar);
-    Serial.println("and open http://192.168.4.1 in your browser");
-  }
-  else
-  {
-    WiFi.mode(WIFI_STA);
-    Serial.printf("Connecting to %s\n", ssid);
-    if (String(WiFi.SSID()) != String(ssid)) {
-      WiFi.begin(ssid, password);
-    }
-  }*/
+	WiFi.mode(WIFI_STA);
+	Serial.printf("Connecting to %s\n", ssid);
+	if (String(WiFi.SSID()) != String(ssid)) {
+		WiFi.begin(ssid, password);
+	}
   //  webSocketsServer.begin();
   //  webSocketsServer.onEvent(webSocketEvent);
   //  Serial.println("Web socket server started");
 
-  
   if (!MDNS.begin("coolLights")) {             // Start the mDNS responder for esp8266.local
     Serial.println("Error setting up MDNS responder!");
   }
