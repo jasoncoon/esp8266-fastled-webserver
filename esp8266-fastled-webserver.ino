@@ -37,7 +37,11 @@ extern "C" {
 #include <ESP8266HTTPUpdateServer.h>
 #include "Webserver_Functions.h"
 
-const bool apMode = false;
+// ===== Settings =====
+
+// uncomment to enable Access Point mode
+// #define AP_MODE
+
 
 #include "Secrets.h" // this file is intentionally not included in the sketch, so nobody accidentally commits their secret information.
 // create a Secrets.h file with the following:
@@ -62,14 +66,14 @@ void setup() {
   loadSettings();
 
   Serial.println();
-  Serial.print( F("Heap: ") ); Serial.println(system_get_free_heap_size());
-  Serial.print( F("Boot Vers: ") ); Serial.println(system_get_boot_version());
-  Serial.print( F("CPU: ") ); Serial.println(system_get_cpu_freq());
-  Serial.print( F("SDK: ") ); Serial.println(system_get_sdk_version());
-  Serial.print( F("Chip ID: ") ); Serial.println(system_get_chip_id());
-  Serial.print( F("Flash ID: ") ); Serial.println(spi_flash_get_id());
-  Serial.print( F("Flash Size: ") ); Serial.println(ESP.getFlashChipRealSize());
-  Serial.print( F("Vcc: ") ); Serial.println(ESP.getVcc());
+  Serial.print(F("Heap: ")); Serial.println(system_get_free_heap_size());
+  Serial.print(F("Boot Vers: ")); Serial.println(system_get_boot_version());
+  Serial.print(F("CPU: ")); Serial.println(system_get_cpu_freq());
+  Serial.print(F("SDK: ")); Serial.println(system_get_sdk_version());
+  Serial.print(F("Chip ID: ")); Serial.println(system_get_chip_id());
+  Serial.print(F("Flash ID: ")); Serial.println(spi_flash_get_id());
+  Serial.print(F("Flash Size: ")); Serial.println(ESP.getFlashChipRealSize());
+  Serial.print(F("Vcc: ")); Serial.println(ESP.getVcc());
   Serial.println();
 
   SPIFFS.begin();
@@ -87,11 +91,38 @@ void setup() {
 
   //disabled due to https://github.com/jasoncoon/esp8266-fastled-webserver/issues/62
   //initializeWiFi();
-	WiFi.mode(WIFI_STA);
-	Serial.printf("Connecting to %s\n", ssid);
-	if (String(WiFi.SSID()) != String(ssid)) {
-		WiFi.begin(ssid, password);
-	}
+
+#ifdef AP_MODE
+  WiFi.mode(WIFI_AP);
+
+  // Do a little work to get a unique-ish name. Append the
+  // last two bytes of the MAC (HEX'd) to "Thing-":
+  uint8_t mac[WL_MAC_ADDR_LENGTH];
+  WiFi.softAPmacAddress(mac);
+  String macID = String(mac[WL_MAC_ADDR_LENGTH - 2], HEX) +
+    String(mac[WL_MAC_ADDR_LENGTH - 1], HEX);
+  macID.toUpperCase();
+  String AP_NameString = "ESP8266 Thing " + macID;
+
+  int apNameSize = AP_NameString.length() + 1;
+  char AP_NameChar[AP_NameString.length() + 1];
+  memset(AP_NameChar, 0, AP_NameString.length() + 1);
+
+  for (int i = 0; i < AP_NameString.length(); i++)
+    AP_NameChar[i] = AP_NameString.charAt(i);
+
+  WiFi.softAP(AP_NameChar, WiFiAPPSK);
+
+  Serial.printf("Connect to Wi-Fi access point: %s\n", AP_NameChar);
+  Serial.println("and open http://192.168.4.1 in your browser");
+#else
+  WiFi.mode(WIFI_STA);
+  Serial.printf("Connecting to %s\n", ssid);
+  if (String(WiFi.SSID()) != String(ssid)) {
+    WiFi.begin(ssid, password);
+  }
+#endif // AP_MODE
+
   //  webSocketsServer.begin();
   //  webSocketsServer.onEvent(webSocketEvent);
   //  Serial.println("Web socket server started");
@@ -142,14 +173,14 @@ void loop() {
   // }
 
   // change to a new cpt-city gradient palette
-  EVERY_N_SECONDS( secondsPerPalette ) {
-    gCurrentPaletteNumber = addmod8( gCurrentPaletteNumber, 1, gGradientPaletteCount);
-    gTargetPalette = gGradientPalettes[ gCurrentPaletteNumber ];
+  EVERY_N_SECONDS(secondsPerPalette) {
+    gCurrentPaletteNumber = addmod8(gCurrentPaletteNumber, 1, gGradientPaletteCount);
+    gTargetPalette = gGradientPalettes[gCurrentPaletteNumber];
   }
 
   EVERY_N_MILLISECONDS(40) {
     // slowly blend the current palette to the next
-    nblendPaletteTowardPalette( gCurrentPalette, gTargetPalette, 8);
+    nblendPaletteTowardPalette(gCurrentPalette, gTargetPalette, 8);
     gHue++;  // slowly cycle the "base color" through the rainbow
   }
 
