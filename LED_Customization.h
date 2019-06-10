@@ -1,8 +1,9 @@
 #ifndef _LED_CUSTOMIZATION_h
 #define _LED_CUSTOMIZATION_h
 
-// List of patterns to cycle through.  Each is defined as a separate function below.
+#include "CustomPalettes.h"
 
+// List of patterns to cycle through.  Each is defined as a separate function below.
 PatternAndNameList patterns = {
   { pride,                  "Pride" },
   { colorWaves,             "Color Waves" },

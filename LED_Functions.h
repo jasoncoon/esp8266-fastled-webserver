@@ -68,7 +68,7 @@ void strandTest(void);
 void showSolidColor(void);
 void rainbow(void);
 void addGlitter();
-void addGlitter(CRGB&);
+void addGlitter2(const CRGB&);
 void rainbowWithGlitter(void);
 void rainbowSolid(void);
 void confetti(void);
@@ -85,6 +85,8 @@ void colorWaves(void);
 void colorwaves( CRGB*, uint16_t, CRGBPalette16&);
 void palettetest( CRGB* , uint16_t , const CRGBPalette16&);
 void LEDSetup(void);
+
+void showSolidSparkling(void);
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -155,7 +157,7 @@ void showSolidColor()
 void showSolidSparkling()
 {
 	fill_solid(leds, NUM_LEDS, solidColor);
-	addGlitter(solidColor.lerp8(CRGB::White, ~cooling));
+	addGlitter2(solidColor.lerp8(CRGB::White, ~cooling));
 }
 
 // Patterns from FastLED example DemoReel100: https://github.com/FastLED/FastLED/blob/master/examples/DemoReel100/DemoReel100.ino
@@ -172,7 +174,7 @@ void addGlitter()
     leds[random16(NUM_LEDS)] += CRGB::White;
   }
 }
-void addGlitter(CRGB& set)
+void addGlitter2(const CRGB& set)
 {
   if (random8() < sparking) {
     leds[random16(NUM_LEDS)] += set;
