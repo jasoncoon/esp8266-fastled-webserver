@@ -41,8 +41,8 @@ PatternAndNameList patterns = {
   //{ fire,                   "Fire" },
   //{ water,                  "Water" },
 
+  { showSolidSparkling,     "Solid Color & Glitter" },
   { showSolidColor,         "Solid Color" },
-  { showSolidSparkling,         "Solid Color & Glitter" },
 };
 
 // list of pallette entries
