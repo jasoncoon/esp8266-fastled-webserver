@@ -6,3 +6,4 @@ __vm/
 esp8266-fastled-webserver.vcxproj.filters
 esp8266-fastled-webserver.vcxproj
 FastledWebserver.sln
+esp8266-fastled-webserver.ino.d1_mini.bin
