@@ -163,6 +163,7 @@ void loop() {
       hasConnected = false;
     }
     else if (!hasConnected) {
+      WiFi.hostname(mDNS_Name);
       hasConnected = true;
       Serial.print("Connected! Open http://");
       Serial.print(mDNS_Name);
@@ -235,5 +236,3 @@ void loadSettings()
   else if (currentPaletteIndex >= paletteCount)
     currentPaletteIndex = paletteCount - 1;
 }
-
-
