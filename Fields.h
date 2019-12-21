@@ -19,6 +19,9 @@
 uint8_t power = 1;
 uint8_t brightness = brightnessMap[brightnessIndex];
 
+uint8_t timer = 0;
+uint8_t timer_duration = 30;
+
 //String setPower(String value) {
 //  power = value.toInt();
 //  if(power < 0) power = 0;
@@ -28,6 +31,14 @@ uint8_t brightness = brightnessMap[brightnessIndex];
 
 String getPower() {
   return String(power);
+}
+
+String getTimer() {
+  return String(timer);
+}
+
+String getTimer_Duration() {
+  return String(timer_duration);
 }
 
 //String setBrightness(String value) {
@@ -107,6 +118,8 @@ String getTwinkleDensity() {
 
 FieldList fields = {
   { "power", "Power", BooleanFieldType, 0, 1, getPower },
+  { "timer", "Timer", BooleanFieldType, 0, 1, getTimer },
+  { "timer_duration", "Timer Duration", NumberFieldType, 3, 255, getTimer_Duration },
   { "brightness", "Brightness", NumberFieldType, 1, 255, getBrightness },
   { "pattern", "Pattern", SelectFieldType, 0, patternCount, getPattern, getPatterns },
   { "palette", "Palette", SelectFieldType, 0, paletteCount, getPalette, getPalettes },

@@ -23,6 +23,8 @@
 #include <FastLED.h>
 FASTLED_USING_NAMESPACE
 
+#include <cmath>
+
 extern "C" {
 #include "user_interface.h"
 }
@@ -41,6 +43,11 @@ extern "C" {
 
 #include "Field.h"
 
+
+unsigned long previousMillis = 0;
+long time_left{0};
+const long interval = 1000;
+
 //#define RECV_PIN D4
 //IRrecv irReceiver(RECV_PIN);
 
@@ -52,9 +59,9 @@ ESP8266HTTPUpdateServer httpUpdateServer;
 
 #include "FSBrowser.h"
 
-#define DATA_PIN      D5
+#define DATA_PIN      D4
 #define LED_TYPE      WS2811
-#define COLOR_ORDER   RGB
+#define COLOR_ORDER   GRB
 #define NUM_LEDS      200
 
 #define MILLI_AMPS         2000 // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
@@ -324,6 +331,18 @@ void setup() {
     sendInt(power);
   });
 
+  webServer.on("/timer", HTTP_POST, []() {
+    String value = webServer.arg("value");
+    setTimer(value.toInt());
+    sendInt(timer);
+  });
+
+  webServer.on("/timer_duration", HTTP_POST, []() {
+    String value = webServer.arg("value");
+    setTimerDuration(value.toInt());
+    sendInt(timer_duration);
+  });
+
   webServer.on("/cooling", HTTP_POST, []() {
     String value = webServer.arg("value");
     cooling = value.toInt();
@@ -478,6 +497,42 @@ void loop() {
     FastLED.show();
     // FastLED.delay(15);
     return;
+  }
+
+  unsigned long currentMillis = millis();
+
+  if (power == 1 && timer == 1) {
+    if ((currentMillis - previousMillis) >= interval) {
+      previousMillis = currentMillis;
+
+      time_left = time_left - (interval / 1000);
+      uint8_t brightness_step = round((double)(timer_duration * 60) / brightness);
+      int8_t b{brightness - brightness_step};
+      if (b < 0) {
+        b = 0;
+      }
+      setBrightness(b);
+
+      Serial.println("== Timer Step ==");
+      Serial.print("currentMillis: ");
+      Serial.println(currentMillis);
+      Serial.print("previousMillis: ");
+      Serial.println(previousMillis);
+      Serial.print("timer: ");
+      Serial.println(timer);
+      Serial.print("time_left: ");
+      Serial.println(time_left);
+      Serial.print("brightness: ");
+      Serial.println(brightness);
+      Serial.print("brightness_step: ");
+      Serial.println(brightness_step);
+
+      if (time_left <= 0 || brightness == 0) {
+        Serial.println("power off");
+        setTimer(0);
+        setPower(0);
+      }
+    }
   }
 
   static bool hasConnected = false;
@@ -811,6 +866,31 @@ void setPower(uint8_t value)
 
   broadcastInt("power", power);
 }
+
+void setTimer(uint8_t value)
+{
+  if (value == 0) {
+    timer = 0;
+  } else {
+    timer = 1;
+    time_left = timer_duration * 60;
+  }
+
+  broadcastInt("timer", timer);
+}
+
+void setTimerDuration(uint8_t value)
+{
+  Serial.println(value);
+  if (value < 3) {
+    value = 3;
+  }
+  timer_duration = value;
+  time_left = value * 60;
+
+  broadcastInt("timer_duration", timer_duration);
+}
+
 
 void setAutoplay(uint8_t value)
 {
