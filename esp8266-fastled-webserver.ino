@@ -172,7 +172,9 @@ PatternAndNameList patterns = {
   { cloud2Twinkles,         "Cloud 2 Twinkles" },
   { oceanTwinkles,          "Ocean Twinkles" },
 
-  { palettebow,             "PaletteBow" },
+  { coolerpalettebow,       "PaletteBow" },
+  { palettebowglitter,      "PaletteBow With Glitter" },
+  { palettebow,             "Solid PaletteBow" },
   { rainbow,                "Rainbow" },
   { rainbowWithGlitter,     "Rainbow With Glitter" },
   { rainbowSolid,           "Solid Rainbow" },
@@ -1091,6 +1093,20 @@ void palettebow()
   fill_solid(leds, NUM_LEDS, ColorFromPalette(palettes[currentPaletteIndex], gHue, 255));
 }
 
+void coolerpalettebow()
+{
+  static uint8_t startindex = 0;
+  startindex--;
+  fill_palette( leds, NUM_LEDS, startindex, (256 / NUM_LEDS) + 1, palettes[currentPaletteIndex], 255, LINEARBLEND);
+}
+
+void palettebowglitter()
+{
+  // built-in FastLED rainbow, plus some random sparkly glitter
+  palettebow();
+  addGlitter(80);
+}
+
 void rainbowWithGlitter()
 {
   // built-in FastLED rainbow, plus some random sparkly glitter
@@ -1373,9 +1389,8 @@ void colorwaves( CRGB* ledarray, uint16_t numleds, CRGBPalette16& palette)
 }
 
 // Alternate rendering function just scrolls the current palette
-// across the defined LED strip.
-void palettetest( CRGB* ledarray, uint16_t numleds, const CRGBPalette16& gCurrentPalette)
-{
+// across the defined LED strip.a
+void palettetest( CRGB* ledarray, uint16_t numleds, const CRGBPalette16& gCurrentPalette) {
   static uint8_t startindex = 0;
   startindex--;
   fill_palette( ledarray, numleds, startindex, (256 / NUM_LEDS) + 1, gCurrentPalette, 255, LINEARBLEND);
