@@ -61,7 +61,7 @@ ESP8266HTTPUpdateServer httpUpdateServer;
 
 #define DATA_PIN      D8
 #define LED_TYPE      WS2811
-#define COLOR_ORDER   RGB
+#define COLOR_ORDER   GRB
 #define NUM_LEDS      30
 
 #define MILLI_AMPS         8000 // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
@@ -184,6 +184,8 @@ PatternAndNameList patterns = {
   { juggle,                 "Juggle" },
   { fire,                   "Fire" },
   { water,                  "Water" },
+  { firepal,                "PaletteFire" },
+  { waterpal,               "PaletteWater" },
 
   { showSolidColor,         "Solid Color" }
 };
@@ -1195,6 +1197,16 @@ void fire()
 void water()
 {
   heatMap(IceColors_p, false);
+}
+
+void firepal()
+{
+  heatMap(palettes[currentPaletteIndex], true);
+}
+
+void waterpal()
+{
+  heatMap(palettes[currentPaletteIndex], false);
 }
 
 // Pride2015 by Mark Kriegsman: https://gist.github.com/kriegsman/964de772d64c502760e5
