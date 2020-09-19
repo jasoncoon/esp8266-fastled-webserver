@@ -32,35 +32,39 @@ extern "C" {
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPUpdateServer.h>
 #include <ESP8266HTTPClient.h>
-//#include <WebSocketsServer.h>
+#include <WebSockets.h>
+#include <WebSocketsServer.h>
 #include <FS.h>
 #include <EEPROM.h>
-//#include <IRremoteESP8266.h>
+#include <IRremoteESP8266.h>
+#include <IRrecv.h>
+#include <IRutils.h>
 #include <WiFiManager.h> // https://github.com/tzapu/WiFiManager/tree/development
+#include <ArduinoOTA.h>
 #include "GradientPalettes.h"
 
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
 #include "Field.h"
 
-//#define RECV_PIN D4
-//IRrecv irReceiver(RECV_PIN);
+#define RECV_PIN D7
+IRrecv irReceiver(RECV_PIN);
 
-//#include "Commands.h"
+#include "Commands.h"
 
 WiFiManager wifiManager;
 ESP8266WebServer webServer(80);
-//WebSocketsServer webSocketsServer = WebSocketsServer(81);
+WebSocketsServer webSocketsServer = WebSocketsServer(81);
 ESP8266HTTPUpdateServer httpUpdateServer;
 
 #include "FSBrowser.h"
 
-#define DATA_PIN      D5
+#define DATA_PIN      D8
 #define LED_TYPE      WS2811
 #define COLOR_ORDER   RGB
-#define NUM_LEDS      200
+#define NUM_LEDS      30
 
-#define MILLI_AMPS         2000 // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
+#define MILLI_AMPS         8000 // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
 #define FRAMES_PER_SECOND  120  // here you can control the speed. With the Access Point / Web Server the animations run a bit slower.
 
 String nameString;
@@ -146,6 +150,7 @@ PatternAndNameList patterns = {
   { colorWavesPlayground,   "Color Waves Playground" },
 
   // twinkle patterns
+  { twinkels,               "Twinkels" },
   { rainbowTwinkles,        "Rainbow Twinkles" },
   { snowTwinkles,           "Snow Twinkles" },
   { cloudTwinkles,          "Cloud Twinkles" },
@@ -167,6 +172,7 @@ PatternAndNameList patterns = {
   { cloud2Twinkles,         "Cloud 2 Twinkles" },
   { oceanTwinkles,          "Ocean Twinkles" },
 
+  { palettebow,             "PaletteBow" },
   { rainbow,                "Rainbow" },
   { rainbowWithGlitter,     "Rainbow With Glitter" },
   { rainbowSolid,           "Solid Rainbow" },
@@ -189,33 +195,101 @@ typedef struct {
 typedef PaletteAndName PaletteAndNameList[];
 
 const CRGBPalette16 palettes[] = {
-    RainbowColors_p,
-    RainbowStripeColors_p,
-    CloudColors_p,
-    LavaColors_p,
-    OceanColors_p,
-    ForestColors_p,
-    PartyColors_p,
-    HeatColors_p
+  RainbowColors_p,
+  RainbowStripeColors_p,
+  CloudColors_p,
+  LavaColors_p,
+  OceanColors_p,
+  ForestColors_p,
+  PartyColors_p,
+  HeatColors_p,
+  Vapour,
+  Sunset_Real_gp,
+  es_rivendell_15_gp,
+  es_ocean_breeze_036_gp,
+  rgi_15_gp,
+  retro2_16_gp,
+  Analogous_1_gp,
+  es_pinksplash_08_gp,
+  Coral_reef_gp,
+  es_ocean_breeze_068_gp,
+  es_pinksplash_07_gp,
+  es_vintage_01_gp,
+  departure_gp,
+  es_landscape_64_gp,
+  es_landscape_33_gp,
+  rainbowsherbet_gp,
+  gr65_hult_gp,
+  gr64_hult_gp,
+  GMT_drywet_gp,
+  ib_jul01_gp,
+  es_vintage_57_gp,
+  ib15_gp,
+  Fuschia_7_gp,
+  es_emerald_dragon_08_gp,
+  lava_gp,
+  fire_gp,
+  Colorfull_gp,
+  Magenta_Evening_gp,
+  Pink_Purple_gp,
+  es_autumn_19_gp,
+  BlacK_Blue_Magenta_White_gp,
+  BlacK_Magenta_Red_gp,
+  BlacK_Red_Magenta_Yellow_gp,
+  Blue_Cyan_Yellow_gp
 };
 
 const uint8_t paletteCount = ARRAY_SIZE(palettes);
 
 const String paletteNames[paletteCount] = {
-    "Rainbow",
-    "Rainbow Stripe",
-    "Cloud",
-    "Lava",
-    "Ocean",
-    "Forest",
-    "Party",
-    "Heat",
+  "Rainbow",
+  "Rainbow Stripe",
+  "Cloud",
+  "Lava",
+  "Ocean",
+  "Forest",
+  "Party",
+  "Heat",
+  "Vapourwave",
+  "Sunset Real gp",
+  "rivendell 15",
+  "ocean breeze 036",
+  "rgi 15",
+  "retro2 16",
+  "Analogous 1",
+  "pinksplash 08",
+  "Coral reef",
+  "ocean breeze 068",
+  "pinksplash 07",
+  "vintage 01",
+  "departure",
+  "landscape 64",
+  "landscape 33",
+  "rainbowsherbet",
+  "gr65 hult",
+  "gr64 hult",
+  "GMT drywet",
+  "ib jul01",
+  "vintage 57",
+  "ib15",
+  "Fuschia 7",
+  "emerald dragon 08",
+  "lava",
+  "fire",
+  "Colorfull",
+  "Magenta Evening",
+  "Pink Purple",
+  "autumn 19",
+  "BlacK Blue Magenta White",
+  "BlacK Magenta Red",
+  "BlacK Red Magenta Yellow",
+  "Blue Cyan Yellow"
 };
 
 #include "Fields.h"
 
 void setup() {
-  WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP    
+  WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
 
   Serial.begin(115200);
@@ -235,7 +309,7 @@ void setup() {
 
   FastLED.setBrightness(brightness);
 
-  //  irReceiver.enableIRIn(); // Start the receiver
+  irReceiver.enableIRIn(); // Start the receiver
 
   Serial.println();
   Serial.print( F("Heap: ") ); Serial.println(system_get_free_heap_size());
@@ -286,13 +360,13 @@ void setup() {
 
   //automatically connect using saved credentials if they exist
   //If connection fails it starts an access point with the specified name
-  if(wifiManager.autoConnect(nameChar)){
+  if (wifiManager.autoConnect(nameChar)) {
     Serial.println("Wi-Fi connected");
   }
   else {
     Serial.println("Wi-Fi manager portal running");
   }
-  
+
   httpUpdateServer.setup(&webServer);
 
   webServer.on("/all", HTTP_GET, []() {
@@ -438,9 +512,9 @@ void setup() {
   //first callback is called after the request has ended with all parsed arguments
   //second callback handles file uploads at that location
   webServer.on("/edit", HTTP_POST, []() {
-        webServer.sendHeader("Access-Control-Allow-Origin", "*");
-        webServer.send(200, "text/plain", "");
-      }, handleFileUpload);
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
+    webServer.send(200, "text/plain", "");
+  }, handleFileUpload);
 
   webServer.serveStatic("/", SPIFFS, "/", "max-age=86400");
 
@@ -450,11 +524,13 @@ void setup() {
   webServer.begin();
   Serial.println("HTTP web server started");
 
-  //  webSocketsServer.begin();
-  //  webSocketsServer.onEvent(webSocketEvent);
-  //  Serial.println("Web socket server started");
+  webSocketsServer.begin();
+  webSocketsServer.onEvent(webSocketEvent);
+  Serial.println("Web socket server started");
 
   autoPlayTimeout = millis() + (autoplayDuration * 1000);
+
+  ArduinoOTA.begin();
 }
 
 void sendInt(uint8_t value)
@@ -467,29 +543,30 @@ void sendString(String value)
   webServer.send(200, "text/plain", value);
 }
 
+
 void broadcastInt(String name, uint8_t value)
 {
   String json = "{\"name\":\"" + name + "\",\"value\":" + String(value) + "}";
-  //  webSocketsServer.broadcastTXT(json);
+  webSocketsServer.broadcastTXT(json);
 }
 
 void broadcastString(String name, String value)
 {
   String json = "{\"name\":\"" + name + "\",\"value\":\"" + String(value) + "\"}";
-  //  webSocketsServer.broadcastTXT(json);
+  webSocketsServer.broadcastTXT(json);
 }
 
 void loop() {
   // Add entropy to random number generator; we use a lot of it.
   random16_add_entropy(random(65535));
 
-  //  webSocketsServer.loop();
+  //webSocketsServer.loop();
 
   wifiManager.process();
   webServer.handleClient();
   MDNS.update();
 
-  //  timeClient.update();
+  // timeClient.update();
 
   static bool hasConnected = false;
   EVERY_N_SECONDS(1) {
@@ -513,7 +590,7 @@ void loop() {
 
   checkPingTimer();
 
-  //  handleIrInput();
+  handleIrInput();
 
   if (power == 0) {
     fill_solid(leds, NUM_LEDS, CRGB::Black);
@@ -522,9 +599,9 @@ void loop() {
     return;
   }
 
-  // EVERY_N_SECONDS(10) {
-  //   Serial.print( F("Heap: ") ); Serial.println(system_get_free_heap_size());
-  // }
+  EVERY_N_SECONDS(10) {
+    Serial.print( F("Heap: ") ); Serial.println(system_get_free_heap_size());
+  }
 
   // change to a new cpt-city gradient palette
   EVERY_N_SECONDS( secondsPerPalette ) {
@@ -550,251 +627,247 @@ void loop() {
 
   // insert a delay to keep the framerate modest
   FastLED.delay(1000 / FRAMES_PER_SECOND);
+
+  ArduinoOTA.handle();
 }
 
-//void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
-//
-//  switch (type) {
-//    case WStype_DISCONNECTED:
-//      Serial.printf("[%u] Disconnected!\n", num);
-//      break;
-//
-//    case WStype_CONNECTED:
-//      {
-//        IPAddress ip = webSocketsServer.remoteIP(num);
-//        Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
-//
-//        // send message to client
-//        // webSocketsServer.sendTXT(num, "Connected");
-//      }
-//      break;
-//
-//    case WStype_TEXT:
-//      Serial.printf("[%u] get Text: %s\n", num, payload);
-//
-//      // send message to client
-//      // webSocketsServer.sendTXT(num, "message here");
-//
-//      // send data to all connected clients
-//      // webSocketsServer.broadcastTXT("message here");
-//      break;
-//
-//    case WStype_BIN:
-//      Serial.printf("[%u] get binary length: %u\n", num, length);
-//      hexdump(payload, length);
-//
-//      // send message to client
-//      // webSocketsServer.sendBIN(num, payload, lenght);
-//      break;
-//  }
-//}
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
 
-//void handleIrInput()
-//{
-//  InputCommand command = readCommand();
-//
-//  if (command != InputCommand::None) {
-//    Serial.print("command: ");
-//    Serial.println((int) command);
-//  }
-//
-//  switch (command) {
-//    case InputCommand::Up: {
-//        adjustPattern(true);
-//        break;
-//      }
-//    case InputCommand::Down: {
-//        adjustPattern(false);
-//        break;
-//      }
-//    case InputCommand::Power: {
-//        setPower(power == 0 ? 1 : 0);
-//        break;
-//      }
-//    case InputCommand::BrightnessUp: {
-//        adjustBrightness(true);
-//        break;
-//      }
-//    case InputCommand::BrightnessDown: {
-//        adjustBrightness(false);
-//        break;
-//      }
-//    case InputCommand::PlayMode: { // toggle pause/play
-//        setAutoplay(!autoplay);
-//        break;
-//      }
-//
-//    // pattern buttons
-//
-//    case InputCommand::Pattern1: {
-//        setPattern(0);
-//        break;
-//      }
-//    case InputCommand::Pattern2: {
-//        setPattern(1);
-//        break;
-//      }
-//    case InputCommand::Pattern3: {
-//        setPattern(2);
-//        break;
-//      }
-//    case InputCommand::Pattern4: {
-//        setPattern(3);
-//        break;
-//      }
-//    case InputCommand::Pattern5: {
-//        setPattern(4);
-//        break;
-//      }
-//    case InputCommand::Pattern6: {
-//        setPattern(5);
-//        break;
-//      }
-//    case InputCommand::Pattern7: {
-//        setPattern(6);
-//        break;
-//      }
-//    case InputCommand::Pattern8: {
-//        setPattern(7);
-//        break;
-//      }
-//    case InputCommand::Pattern9: {
-//        setPattern(8);
-//        break;
-//      }
-//    case InputCommand::Pattern10: {
-//        setPattern(9);
-//        break;
-//      }
-//    case InputCommand::Pattern11: {
-//        setPattern(10);
-//        break;
-//      }
-//    case InputCommand::Pattern12: {
-//        setPattern(11);
-//        break;
-//      }
-//
-//    // custom color adjustment buttons
-//
-//    case InputCommand::RedUp: {
-//        solidColor.red += 8;
-//        setSolidColor(solidColor);
-//        break;
-//      }
-//    case InputCommand::RedDown: {
-//        solidColor.red -= 8;
-//        setSolidColor(solidColor);
-//        break;
-//      }
-//    case InputCommand::GreenUp: {
-//        solidColor.green += 8;
-//        setSolidColor(solidColor);
-//        break;
-//      }
-//    case InputCommand::GreenDown: {
-//        solidColor.green -= 8;
-//        setSolidColor(solidColor);
-//        break;
-//      }
-//    case InputCommand::BlueUp: {
-//        solidColor.blue += 8;
-//        setSolidColor(solidColor);
-//        break;
-//      }
-//    case InputCommand::BlueDown: {
-//        solidColor.blue -= 8;
-//        setSolidColor(solidColor);
-//        break;
-//      }
-//
-//    // color buttons
-//
-//    case InputCommand::Red: {
-//        setSolidColor(CRGB::Red);
-//        break;
-//      }
-//    case InputCommand::RedOrange: {
-//        setSolidColor(CRGB::OrangeRed);
-//        break;
-//      }
-//    case InputCommand::Orange: {
-//        setSolidColor(CRGB::Orange);
-//        break;
-//      }
-//    case InputCommand::YellowOrange: {
-//        setSolidColor(CRGB::Goldenrod);
-//        break;
-//      }
-//    case InputCommand::Yellow: {
-//        setSolidColor(CRGB::Yellow);
-//        break;
-//      }
-//
-//    case InputCommand::Green: {
-//        setSolidColor(CRGB::Green);
-//        break;
-//      }
-//    case InputCommand::Lime: {
-//        setSolidColor(CRGB::Lime);
-//        break;
-//      }
-//    case InputCommand::Aqua: {
-//        setSolidColor(CRGB::Aqua);
-//        break;
-//      }
-//    case InputCommand::Teal: {
-//        setSolidColor(CRGB::Teal);
-//        break;
-//      }
-//    case InputCommand::Navy: {
-//        setSolidColor(CRGB::Navy);
-//        break;
-//      }
-//
-//    case InputCommand::Blue: {
-//        setSolidColor(CRGB::Blue);
-//        break;
-//      }
-//    case InputCommand::RoyalBlue: {
-//        setSolidColor(CRGB::RoyalBlue);
-//        break;
-//      }
-//    case InputCommand::Purple: {
-//        setSolidColor(CRGB::Purple);
-//        break;
-//      }
-//    case InputCommand::Indigo: {
-//        setSolidColor(CRGB::Indigo);
-//        break;
-//      }
-//    case InputCommand::Magenta: {
-//        setSolidColor(CRGB::Magenta);
-//        break;
-//      }
-//
-//    case InputCommand::White: {
-//        setSolidColor(CRGB::White);
-//        break;
-//      }
-//    case InputCommand::Pink: {
-//        setSolidColor(CRGB::Pink);
-//        break;
-//      }
-//    case InputCommand::LightPink: {
-//        setSolidColor(CRGB::LightPink);
-//        break;
-//      }
-//    case InputCommand::BabyBlue: {
-//        setSolidColor(CRGB::CornflowerBlue);
-//        break;
-//      }
-//    case InputCommand::LightBlue: {
-//        setSolidColor(CRGB::LightBlue);
-//        break;
-//      }
-//  }
-//}
+  switch (type) {
+    case WStype_DISCONNECTED:
+      Serial.printf("[%u] Disconnected!\n", num);
+      break;
+
+    case WStype_CONNECTED:
+      {
+        IPAddress ip = webSocketsServer.remoteIP(num);
+        Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+
+        //send message to client
+        webSocketsServer.sendTXT(num, "Connected");
+      }
+      break;
+
+    case WStype_TEXT:
+      Serial.printf("[%u] get Text: %s\n", num, payload);
+
+      //send message to client
+      webSocketsServer.sendTXT(num, "message here");
+
+      //send data to all connected clients
+      webSocketsServer.broadcastTXT("message here");
+      break;
+
+    case WStype_BIN:
+      Serial.printf("[%u] get binary length: %u\n", num, length);
+      hexdump(payload, length);
+
+      //send message to client
+      webSocketsServer.sendBIN(num, payload, length);
+      break;
+  }
+}
+
+void handleIrInput()
+{
+  InputCommand command = readCommand();
+
+  if (command != InputCommand::None) {
+    Serial.print("command: ");
+    Serial.println((int) command);
+  }
+
+  switch (command) {
+    case InputCommand::Up: {
+        adjustPattern(true);
+        break;
+      }
+    case InputCommand::Down: {
+        adjustPattern(false);
+        break;
+      }
+    case InputCommand::Power: {
+        setPower(power == 0 ? 1 : 0);
+        break;
+      }
+    case InputCommand::BrightnessUp: {
+        adjustBrightness(true);
+        break;
+      }
+    case InputCommand::BrightnessDown: {
+        adjustBrightness(false);
+        break;
+      }
+    case InputCommand::PlayMode: {
+        setAutoplay(!autoplay);
+        break;
+      }
+
+    case InputCommand::Pattern1: {
+        setPattern(0);
+        break;
+      }
+    case InputCommand::Pattern2: {
+        setPattern(1);
+        break;
+      }
+    case InputCommand::Pattern3: {
+        setPattern(2);
+        break;
+      }
+    case InputCommand::Pattern4: {
+        setPattern(3);
+        break;
+      }
+    case InputCommand::Pattern5: {
+        setPattern(4);
+        break;
+      }
+    case InputCommand::Pattern6: {
+        setPattern(5);
+        break;
+      }
+    case InputCommand::Pattern7: {
+        setPattern(6);
+        break;
+      }
+    case InputCommand::Pattern8: {
+        setPattern(7);
+        break;
+      }
+    case InputCommand::Pattern9: {
+        setPattern(8);
+        break;
+      }
+    case InputCommand::Pattern10: {
+        setPattern(9);
+        break;
+      }
+    case InputCommand::Pattern11: {
+        setPattern(10);
+        break;
+      }
+    case InputCommand::Pattern12: {
+        setPattern(11);
+        break;
+      }
+
+    case InputCommand::RedUp: {
+        solidColor.red += 8;
+        setSolidColor(solidColor);
+        break;
+      }
+    case InputCommand::RedDown: {
+        solidColor.red -= 8;
+        setSolidColor(solidColor);
+        break;
+      }
+    case InputCommand::GreenUp: {
+        solidColor.green += 8;
+        setSolidColor(solidColor);
+        break;
+      }
+    case InputCommand::GreenDown: {
+        solidColor.green -= 8;
+        setSolidColor(solidColor);
+        break;
+      }
+    case InputCommand::BlueUp: {
+        solidColor.blue += 8;
+        setSolidColor(solidColor);
+        break;
+      }
+    case InputCommand::BlueDown: {
+        solidColor.blue -= 8;
+        setSolidColor(solidColor);
+        break;
+      }
+
+    case InputCommand::Red: {
+        setSolidColor(CRGB::Red);
+        break;
+      }
+    case InputCommand::RedOrange: {
+        setSolidColor(CRGB::OrangeRed);
+        break;
+      }
+    case InputCommand::Orange: {
+        setSolidColor(CRGB::Orange);
+        break;
+      }
+    case InputCommand::YellowOrange: {
+        setSolidColor(CRGB::Goldenrod);
+        break;
+      }
+    case InputCommand::Yellow: {
+        setSolidColor(CRGB::Yellow);
+        break;
+      }
+
+    case InputCommand::Green: {
+        setSolidColor(CRGB::Green);
+        break;
+      }
+    case InputCommand::Lime: {
+        setSolidColor(CRGB::Lime);
+        break;
+      }
+    case InputCommand::Aqua: {
+        setSolidColor(CRGB::Aqua);
+        break;
+      }
+    case InputCommand::Teal: {
+        setSolidColor(CRGB::Teal);
+        break;
+      }
+    case InputCommand::Navy: {
+        setSolidColor(CRGB::Navy);
+        break;
+      }
+
+    case InputCommand::Blue: {
+        setSolidColor(CRGB::Blue);
+        break;
+      }
+    case InputCommand::RoyalBlue: {
+        setSolidColor(CRGB::RoyalBlue);
+        break;
+      }
+    case InputCommand::Purple: {
+        setSolidColor(CRGB::Purple);
+        break;
+      }
+    case InputCommand::Indigo: {
+        setSolidColor(CRGB::Indigo);
+        break;
+      }
+    case InputCommand::Magenta: {
+        setSolidColor(CRGB::Magenta);
+        break;
+      }
+
+    case InputCommand::White: {
+        setSolidColor(CRGB::White);
+        break;
+      }
+    case InputCommand::Pink: {
+        setSolidColor(CRGB::Pink);
+        break;
+      }
+    case InputCommand::LightPink: {
+        setSolidColor(CRGB::LightPink);
+        break;
+      }
+    case InputCommand::BabyBlue: {
+        setSolidColor(CRGB::CornflowerBlue);
+        break;
+      }
+    case InputCommand::LightBlue: {
+        setSolidColor(CRGB::LightBlue);
+        break;
+      }
+  }
+}
 
 void loadSettings()
 {
@@ -1013,6 +1086,11 @@ void rainbow()
   fill_rainbow( leds, NUM_LEDS, gHue, 255 / NUM_LEDS);
 }
 
+void palettebow()
+{
+  fill_solid(leds, NUM_LEDS, ColorFromPalette(palettes[currentPaletteIndex], gHue, 255));
+}
+
 void rainbowWithGlitter()
 {
   // built-in FastLED rainbow, plus some random sparkly glitter
@@ -1070,7 +1148,7 @@ void juggle()
   static uint8_t thisbright = 255; // How bright should the LED/display be.
   static uint8_t   basebeat =   5; // Higher = faster movement.
 
- static uint8_t lastSecond =  99;  // Static variable, means it's only defined once. This is our 'debounce' variable.
+  static uint8_t lastSecond =  99;  // Static variable, means it's only defined once. This is our 'debounce' variable.
   uint8_t secondHand = (millis() / 1000) % 30; // IMPORTANT!!! Change '30' to a different value to change duration of the loop.
 
   if (lastSecond != secondHand) { // Debounce to make sure we're not repeating an assignment.
@@ -1146,6 +1224,14 @@ void pride()
     nblend( leds[pixelnumber], newcolor, 64);
   }
 }
+
+
+void twinkels()
+{
+  gCurrentPalette = palettes[currentPaletteIndex];
+  colortwinkles();
+}
+
 
 void radialPaletteShift()
 {
