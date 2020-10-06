@@ -543,6 +543,8 @@ function postValue(name, value) {
     "autoplayDuration",
     "showClock",
     "clockBackgroundFade",
+    "timeZone",
+    "dst",
   ];
 
   if (oldFieldNames.some((f) => f === name)) {

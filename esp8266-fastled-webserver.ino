@@ -120,6 +120,8 @@ unsigned long autoPlayTimeout = 0;
 
 uint8_t showClock = 0;
 uint8_t clockBackgroundFade = 240;
+uint8_t currentTimeZoneIndex = 0;
+uint8_t dst = 0; // daylight saving on/off
 
 uint8_t currentPaletteIndex = 0;
 
@@ -286,6 +288,7 @@ PatternAndNameList patterns = {
 
 const uint8_t patternCount = ARRAY_SIZE(patterns);
 
+#include "TimeZones.h"
 #include "Fields.h"
 
 void setup() {
@@ -509,6 +512,18 @@ void setup() {
     String value = webServer.arg("value");
     setClockBackgroundFade(value.toInt());
     sendInt(clockBackgroundFade);
+  });
+
+  webServer.on("/timeZone", HTTP_POST, []() {
+    String value = webServer.arg("value");
+    setTimeZone(value.toInt());
+    sendInt(currentTimeZoneIndex);
+  });
+
+  webServer.on("/dst", HTTP_POST, []() {
+    String value = webServer.arg("value");
+    setDst(value.toInt());
+    sendInt(dst);
   });
 
   //list directory
@@ -921,6 +936,14 @@ void loadSettings()
 
   showClock = EEPROM.read(9);
   clockBackgroundFade = EEPROM.read(10);
+
+  currentTimeZoneIndex = EEPROM.read(11);
+  if (currentTimeZoneIndex < 0)
+    currentTimeZoneIndex = 0;
+  else if (currentTimeZoneIndex >= timeZoneCount)
+    currentTimeZoneIndex = timeZoneCount -1;
+  dst = EEPROM.read(12);
+  timeClient.setTimeOffset(timeZones[currentTimeZoneIndex].utcOffsetInSeconds + (dst ? 3600 : 0));
 }
 
 void setPower(uint8_t value)

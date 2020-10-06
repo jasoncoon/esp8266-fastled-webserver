@@ -109,6 +109,54 @@ void setClockBackgroundFade(uint8_t value)
   broadcastInt("clockBackgroundFade", clockBackgroundFade);
 }
 
+String getTimeZone() {
+  return String(currentTimeZoneIndex);
+}
+
+String getTimeZones() {
+  String json = "";
+
+  for (uint8_t i = 0; i < timeZoneCount; i++) {
+    json += "\"" + timeZones[i].utcOffset + " – " + timeZones[i].region + "\"";
+    if (i < timeZoneCount - 1)
+      json += ",";
+  }
+
+  return json;
+}
+
+String setTimeZone(uint8_t value)
+{
+  if (value >= timeZoneCount)
+    value = timeZoneCount - 1;
+
+  currentTimeZoneIndex = value;
+
+  EEPROM.write(11, currentTimeZoneIndex);
+  EEPROM.commit();
+
+  timeClient.setTimeOffset(timeZones[currentTimeZoneIndex].utcOffsetInSeconds + (dst ? 3600 : 0));
+
+  broadcastInt("timeZone", currentTimeZoneIndex);
+}
+
+String getDst() {
+  return String(dst);
+}
+
+String setDst(uint8_t value)
+{
+  dst = value == 0 ? 0 : 1;
+
+  EEPROM.write(12, dst);
+  EEPROM.commit();
+
+  timeClient.setTimeOffset(timeZones[currentTimeZoneIndex].utcOffsetInSeconds + (dst ? 3600 : 0));
+
+  broadcastInt("dst", dst);
+}
+
+
 String getSolidColor() {
   return String(solidColor.r) + "," + String(solidColor.g) + "," + String(solidColor.b);
 }
@@ -279,9 +327,11 @@ FieldList fields = {
     {"autoplay", "Autoplay", BooleanFieldType, 0, 1, getAutoplay},
     {"autoplayDuration", "Autoplay Duration", NumberFieldType, 0, 255, getAutoplayDuration},
     
-    {"clock", "Clock", SectionFieldType},	
-    {"showClock", "Show Clock", BooleanFieldType, 0, 1, getShowClock},	
+    {"clock", "Clock", SectionFieldType},
+    {"showClock", "Show Clock", BooleanFieldType, 0, 1, getShowClock},
     {"clockBackgroundFade", "Background Fade", NumberFieldType, 0, 255, getClockBackgroundFade},
+    {"timeZone", "Time Zone", SelectFieldType, 0, timeZoneCount, getTimeZone, getTimeZones},
+    {"dst", "Daylight Saving", BooleanFieldType, 0, 1, getDst},
 
     {"solidColorSection", "Solid Color", SectionFieldType},
     {"solidColor", "Color", ColorFieldType, 0, 255, getSolidColor},
