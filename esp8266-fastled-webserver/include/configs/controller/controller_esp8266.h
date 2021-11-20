@@ -24,9 +24,9 @@ static_assert(PARALLEL_OUTPUT_CHANNELS <= 6, "ESP8266 only supports six parallel
 
 #if !defined(DATA_PIN)
    #if PARALLEL_OUTPUT_CHANNELS == 1
-      #define DATA_PIN      D5 // d1 mini
+      #define DATA_PIN   D5 // d1 mini
    #else
-      #define DATA_PIN      D7 // Fib512 uses different default for primary output pin
+      #define DATA_PIN   D7 // Fib512 uses different default for primary output pin
    #endif
 #endif
 

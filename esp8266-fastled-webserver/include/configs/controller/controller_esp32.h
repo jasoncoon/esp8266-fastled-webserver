@@ -21,7 +21,9 @@
 #define ESP8266_FASTLED_WEBSERVER_CONTROLLER_ESP32_H
 
 
-static_assert(PARALLEL_OUTPUT_CHANNELS <= 4, "ESP32 only has support for four parallel outputs defined, can be updated to support 16 outputs");
+// Would need to define (and use) the additional DATA_PIN_x symbols,
+// and update the corresponding code using those symbols.
+static_assert(PARALLEL_OUTPUT_CHANNELS <= 4, "While ESP32 supporst 16 parallel outputs, currently only support four parallel outputs");
 
 // TODO: consider using I2S (instead of RMT) on the ESP32:
 //
@@ -29,13 +31,11 @@ static_assert(PARALLEL_OUTPUT_CHANNELS <= 4, "ESP32 only has support for four pa
 //
 // See https://github.com/FastLED/FastLED/issues/1220#issuecomment-822677011
 
-#define DATA_PIN                      
-
 #if !defined(DATA_PIN)
    #if PARALLEL_OUTPUT_CHANNELS == 1
-      #define DATA_PIN      18 // d1 mini32 (same physical location as D5 on the d1 mini)
+      #define DATA_PIN   18 // d1 mini32 (same physical location as D5 on the d1 mini)
    #else
-      #define DATA_PIN      23 // d1 mini32 (same physical location as D7 on the d1 mini)
+      #define DATA_PIN   23 // d1 mini32 (same physical location as D7 on the d1 mini)
    #endif
 #endif
 
