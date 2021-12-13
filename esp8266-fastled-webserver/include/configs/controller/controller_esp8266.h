@@ -46,7 +46,7 @@ static_assert(PARALLEL_OUTPUT_CHANNELS <= 6, "ESP8266 only supports six parallel
    #define DATA_PIN_6    D2 // d1 mini
 #endif
 
-#if defined(ENABLE_IR) && !defined(IR_RECV_PIN)
+#if defined(ENABLE_IR) && ENABLE_IR && !defined(IR_RECV_PIN)
    #define IR_RECV_PIN   D4
 #endif
 

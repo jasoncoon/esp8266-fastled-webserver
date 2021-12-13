@@ -229,16 +229,16 @@ extern CRGB leds[NUM_PIXELS];
 
 
 // IR (commands.cpp)
-#if defined(ENABLE_IR)
+#if ENABLE_IR
   void InitializeIR(void);
   void handleIrInput();
 #else
   inline void handleIrInput() {}
-#endif // defined(ENABLE_IR)
+#endif // ENABLE_IR
 
 // TODO: move these functions out of main .INO file
 // they are currently used by IR & main .INO file
-#if defined(ENABLE_IR)
+#if ENABLE_IR
   void setPower(uint8_t value);
   void setAutoplay(uint8_t value);
   //void setAutoplayDuration(uint8_t value);
@@ -248,7 +248,7 @@ extern CRGB leds[NUM_PIXELS];
   void setPattern(uint8_t value);
   //void setPatternName(String name);
   void adjustBrightness(bool up);
-#endif // defined(ENABLE_IR)
+#endif // ENABLE_IR
 
 
 #if ENABLE_WEBSOCKETS

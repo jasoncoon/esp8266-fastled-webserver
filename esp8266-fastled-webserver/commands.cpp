@@ -18,7 +18,7 @@
 
 #include "common.h"
 
-#if defined(ENABLE_IR)
+#if ENABLE_IR
 
 #include <IRremoteESP8266.h>
 #include <IRrecv.h>

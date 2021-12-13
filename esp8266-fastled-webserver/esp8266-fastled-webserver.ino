@@ -322,9 +322,9 @@ void setup() {
 
   FastLED.setBrightness(brightness);
 
-#if defined(ENABLE_IR)
+#if ENABLE_IR
   InitializeIR();
-#endif
+#endif // ENABLE_IR
 
   Serial.println();
   Serial.println(F("System Info:"));
@@ -702,9 +702,9 @@ void loop() {
   }
 
   checkPingTimer();
-#if defined(ENABLE_IR)
+#if ENABLE_IR
   handleIrInput();  // empty function when ENABLE_IR is not defined
-#endif
+#endif // ENABLE_IR
 
   if (power == 0) {
     fill_solid(leds, NUM_PIXELS, CRGB::Black);

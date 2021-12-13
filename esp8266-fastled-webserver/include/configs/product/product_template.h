@@ -163,9 +163,10 @@
    #define PARALLEL_OUTPUT_CHANNELS   1
 #endif
 
-// // By default, no IR support is included.  Define ENABLE_IR to enable IR support.
-// #define ENABLE_IR
-// // When ENABLE_IR is defined, can also override controller-specific default:
+// // By default, no IR support is included.  Define ENABLE_IR as  to enable IR support.
+// #define ENABLE_IR                  1
+
+// // When ENABLE_IR is defined as 1, can also override controller-specific default:
 // // #define IR_RECV_PIN  D99
 
 

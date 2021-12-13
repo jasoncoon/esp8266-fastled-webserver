@@ -51,7 +51,7 @@ static_assert(PARALLEL_OUTPUT_CHANNELS <= 4, "While ESP32 supports 16 parallel o
 
 
 
-#if defined(ENABLE_IR) && !defined(IR_RECV_PIN)
+#if defined(ENABLE_IR) && ENABLE_IR && !defined(IR_RECV_PIN)
    // Default pin for ESP32 is 16 (for d1 mini32, this is the same physical location as D4 on the d1 mini)
    #define IR_RECV_PIN   16  // TODO: VERIFY THIS IS CORRECT VALUE
 #endif

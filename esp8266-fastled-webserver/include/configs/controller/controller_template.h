@@ -38,7 +38,7 @@
 #define FASTLED_INTERRUPT_RETRY_COUNT 0
 
 // ENABLE_IR defines whether to include support for an IR receiver
-// #define ENABLE_IR
+// #define ENABLE_IR                     1
 // #define IR_RECV_PIN                   D4 // d1 mini
 // #define IR_RECV_PIN                   16 // d1 mini32 (same physical location as D4 on the d1 mini)
 
