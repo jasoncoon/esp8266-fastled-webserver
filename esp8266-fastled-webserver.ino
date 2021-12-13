@@ -32,37 +32,40 @@ extern "C" {
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPUpdateServer.h>
 #include <ESP8266HTTPClient.h>
-#include <WebSockets.h>
-#include <WebSocketsServer.h>
+//#include <WebSockets.h>
+//#include <WebSocketsServer.h>
 #include <FS.h>
 #include <EEPROM.h>
-#include <IRremoteESP8266.h>
-#include <IRrecv.h>
-#include <IRutils.h>
+//#include <IRremoteESP8266.h>
+//#include <IRrecv.h>
+//#include <IRutils.h>
 #include <WiFiManager.h> // https://github.com/tzapu/WiFiManager/tree/development
-#include <ArduinoOTA.h>
 #include "GradientPalettes.h"
+
+#ifdef OTA
+#include <ArduinoOTA.h>
+#endif
 
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
 #include "Field.h"
 
-#define RECV_PIN D7
-IRrecv irReceiver(RECV_PIN);
+//#define RECV_PIN D7
+//IRrecv irReceiver(RECV_PIN);
 
-#include "Commands.h"
+//#include "Commands.h"
 
 WiFiManager wifiManager;
 ESP8266WebServer webServer(80);
-WebSocketsServer webSocketsServer = WebSocketsServer(81);
+//WebSocketsServer webSocketsServer = WebSocketsServer(81);
 ESP8266HTTPUpdateServer httpUpdateServer;
 
 #include "FSBrowser.h"
 
-#define DATA_PIN      D8
+#define DATA_PIN      D5
 #define LED_TYPE      WS2811
-#define COLOR_ORDER   GRB
-#define NUM_LEDS      30
+#define COLOR_ORDER   RGB
+#define NUM_LEDS      200
 
 #define MILLI_AMPS         2000 // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
 #define FRAMES_PER_SECOND  120  // here you can control the speed. With the Access Point / Web Server the animations run a bit slower.
@@ -152,7 +155,7 @@ PatternAndNameList patterns = {
   { colorWavesPlayground,   "Color Waves Playground" },
 
   // twinkle patterns
-  { twinkels,               "Twinkels" },
+  { twinkels,               "Twinkles" },
   { rainbowTwinkles,        "Rainbow Twinkles" },
   { snowTwinkles,           "Snow Twinkles" },
   { cloudTwinkles,          "Cloud Twinkles" },
@@ -556,13 +559,13 @@ void sendString(String value)
 void broadcastInt(String name, uint8_t value)
 {
   String json = "{\"name\":\"" + name + "\",\"value\":" + String(value) + "}";
-  webSocketsServer.broadcastTXT(json);
+  //webSocketsServer.broadcastTXT(json);
 }
 
 void broadcastString(String name, String value)
 {
   String json = "{\"name\":\"" + name + "\",\"value\":\"" + String(value) + "\"}";
-  webSocketsServer.broadcastTXT(json);
+  //webSocketsServer.broadcastTXT(json);
 }
 
 void loop() {
@@ -599,7 +602,7 @@ void loop() {
 
   checkPingTimer();
 
-  handleIrInput();
+  //handleIrInput();
 
   if (power == 0) {
     fill_solid(leds, NUM_LEDS, CRGB::Black);
@@ -608,9 +611,9 @@ void loop() {
     return;
   }
 
-  EVERY_N_SECONDS(10) {
+  /*EVERY_N_SECONDS(10) {
     Serial.print( F("Heap: ") ); Serial.println(system_get_free_heap_size());
-  }
+  }*/
 
   // change to a new cpt-city gradient palette
   EVERY_N_SECONDS( secondsPerPalette ) {
@@ -642,7 +645,7 @@ void loop() {
 
 }
 
-void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
+/*void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
 
   switch (type) {
     case WStype_DISCONNECTED:
@@ -662,13 +665,13 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
     case WStype_TEXT:
       Serial.printf("[%u] get Text: %s\n", num, payload);
 
-      /*
+      
       //send message to client
-      webSocketsServer.sendTXT(num, payload);
+      //webSocketsServer.sendTXT(num, payload);
 
       //send data to all connected clients
-      webSocketsServer.broadcastTXT(payload);
-      */
+      //webSocketsServer.broadcastTXT(payload);
+      
       break;
 
     case WStype_BIN:
@@ -679,8 +682,9 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
       webSocketsServer.sendBIN(num, payload, length);
       break;
   }
-}
+}*/
 
+/*
 void handleIrInput()
 {
   InputCommand command = readCommand();
@@ -880,7 +884,7 @@ void handleIrInput()
         break;
       }
   }
-}
+}*/
 
 void loadSettings()
 {
