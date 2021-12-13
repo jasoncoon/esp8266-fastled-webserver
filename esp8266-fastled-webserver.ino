@@ -662,11 +662,13 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
     case WStype_TEXT:
       Serial.printf("[%u] get Text: %s\n", num, payload);
 
+      /*
       //send message to client
-      webSocketsServer.sendTXT(num, "message here");
+      webSocketsServer.sendTXT(num, payload);
 
       //send data to all connected clients
-      webSocketsServer.broadcastTXT("message here");
+      webSocketsServer.broadcastTXT(payload);
+      */
       break;
 
     case WStype_BIN:
