@@ -67,6 +67,8 @@ ESP8266HTTPUpdateServer httpUpdateServer;
 #define MILLI_AMPS         2000 // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
 #define FRAMES_PER_SECOND  120  // here you can control the speed. With the Access Point / Web Server the animations run a bit slower.
 
+//#define OTA //Uncomment to enable ArduinoOTA
+
 String nameString;
 
 #include "Ping.h"
@@ -534,7 +536,10 @@ void setup() {
 
   autoPlayTimeout = millis() + (autoplayDuration * 1000);
 
+#ifdef OTA
   ArduinoOTA.begin();
+#endif
+
 }
 
 void sendInt(uint8_t value)
@@ -631,8 +636,10 @@ void loop() {
 
   // insert a delay to keep the framerate modest
   FastLED.delay(1000 / FRAMES_PER_SECOND);
-
+#ifdef OTA
   ArduinoOTA.handle();
+#endif
+
 }
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
