@@ -4,3 +4,9 @@ build/
 buildcache/
 arduino.json
 c_cpp_properties.json
+
+/.vscode/
+/release
+/platformio_override.ini
+/.pio/
+/esp8266-fastled-webserver/esp8266-fastled-webserver.ino.cpp

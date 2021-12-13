@@ -48,15 +48,13 @@ Features
 Web App
 --------
 
-![Web App](webapp.png)
+![Web App](Images/webapp.png)
 
 Patterns are requested by the app from the ESP8266, so as new patterns are added, they're automatically listed in the app.
 
-The web app is stored in SPIFFS (on-board flash memory).
+The web app is stored in a file system in on-board flash memory.   The file system used is LittleFS *(Note: prior versions used SPIFFS)*.
 
 The web app is a single page app that uses [jQuery](https://jquery.com) and [Bootstrap](http://getbootstrap.com).  It has buttons for On/Off, a slider for brightness, a pattern selector, and a color picker (using [jQuery MiniColors](http://labs.abeautifulsite.net/jquery-minicolors)).  Event handlers for the controls are wired up, so you don't have to click a 'Send' button after making changes.  The brightness slider and the color picker use a delayed event handler, to prevent from flooding the ESP8266 web server with too many requests too quickly.
-
-The only drawback to SPIFFS that I've found so far is uploading the files can be extremely slow, requiring several minutes, sometimes regardless of how large the files are.  It can be so slow that I've been just developing the web app and debugging locally on my desktop (with a hard-coded IP for the ESP8266), before uploading to SPIFFS and testing on the ESP8266.
 
 Installing
 -----------
@@ -67,19 +65,25 @@ The app depends on the following libraries. They must either be downloaded from 
 * [FastLED](https://github.com/FastLED/FastLED)
 * [IRremoteESP8266](https://github.com/sebastienwarin/IRremoteESP8266)
 * [Arduino WebSockets](https://github.com/Links2004/arduinoWebSockets)
+* [Arduino JSON](https://arduinojson.org)
+* [lolrol LittleFS](https://github.com/lorol/LITTLEFS) -- (integrated into ESP32 core v2, which is not used here yet)
+
 
 Download the app code from GitHub using the green Clone or Download button from [the GitHub project main page](https://github.com/jasoncoon/esp8266-fastled-webserver) and click Download ZIP. Decompress the ZIP file in your Arduino sketch folder.
 
-The web app needs to be uploaded to the ESP8266's SPIFFS.  You can do this within the Arduino IDE after installing the [Arduino ESP8266FS tool](http://esp8266.github.io/Arduino/versions/2.3.0/doc/filesystem.html#uploading-files-to-file-system).
+Here are the board settings I use:
 
-With ESP8266FS installed upload the web app using `ESP8266 Sketch Data Upload` command in the Arduino Tools menu.
+![image](https://user-images.githubusercontent.com/3598755/135755572-52d4d0db-1dba-4388-a86c-a293e4f13878.png)
 
-Then enter your wi-fi network SSID and password in the WiFi.h file, and upload the sketch using the Upload button.
+The web app needs to be uploaded to the ESP8266's file system.
+You can do this within the Arduino IDE after installing the [Arduino ESP8266 LittleFS](https://github.com/earlephilhower/arduino-esp8266littlefs-plugin).
+
+With the upload tool installed, upload the web app using `ESP8266 LittleFS Data Upload` command in the Arduino Tools menu.
 
 Compression
 -----------
 
-The web app files can be gzip compressed before uploading to SPIFFS by running the following command:
+The web app files can be gzip compressed before uploading to the ESP8266's file system by running the following command:
 
 `gzip -r data/`
 
