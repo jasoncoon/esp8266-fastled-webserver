@@ -983,9 +983,19 @@ void palettebow()
 
 void coolerpalettebow()
 {
-  static uint8_t startindex = 0;
-  startindex--;
-  fill_palette( leds, NUM_PIXELS, startindex, (256 / NUM_PIXELS) + 1, palettes[currentPaletteIndex], 255, LINEARBLEND);
+  static uint8_t paletteStartIndex = 0;
+  // Why is it safe to use a `paletteStartIndex` over 16?
+  // The palettes array is defined as an array of `CRGBPalette16`,
+  // which means there are exactly 16 CRGB elements. Therefore,
+  // the only valid indices are [0..15].
+  //
+  // fill_palette<CRGBPalette16>() calls ColorFromPalette<CRGBPalette16>().
+  // Manual review shows that *each* of the ColorFromPalette<>() functions safely
+  // accept any `uint8_t` value for the start index.  Therefore, there's an
+  // undocumented contract that the `uint8_t startIndex` provided to the function
+  // can be any value, without causing out-of-bounds access of the palette array.
+  paletteStartIndex--;
+  fill_palette( leds, NUM_PIXELS, paletteStartIndex, (256 / NUM_PIXELS) + 1, palettes[currentPaletteIndex], 255, LINEARBLEND);
 }
 
 void palettebowglitter()
@@ -1337,7 +1347,7 @@ void colorWavesFibonacci()
 #endif
 
 // Alternate rendering function just scrolls the current palette
-// across the defined LED strip.a
+// across the defined LED strip.
 void palettetest( CRGB* ledarray, uint16_t numleds, const CRGBPalette16& gCurrentPalette) {
   static uint8_t startindex = 0;
   startindex--;
