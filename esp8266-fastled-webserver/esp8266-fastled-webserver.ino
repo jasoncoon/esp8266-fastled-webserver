@@ -20,7 +20,10 @@
 
 WiFiManager wifiManager;
 ESP8266WebServer webServer(80);
-//WebSocketsServer webSocketsServer = WebSocketsServer(81);
+
+#if ENABLE_WEBSOCKETS
+WebSocketsServer webSocketsServer = WebSocketsServer(81);
+#endif // ENABLE_WEBSOCKETS
 ESP8266HTTPUpdateServer httpUpdateServer;
 
 int utcOffsetInSeconds = -6 * 60 * 60;
@@ -640,9 +643,11 @@ void setup() {
   webServer.begin();
   Serial.println("HTTP web server started");
 
-  //webSocketsServer.begin();
-  //webSocketsServer.onEvent(webSocketEvent);
-  //Serial.println("Web socket server started");
+#if ENABLE_WEBSOCKETS
+  webSocketsServer.begin();
+  webSocketsServer.onEvent(webSocketEvent);
+  Serial.println("Web socket server started");
+#endif // ENABLE_WEBSOCKETS
 
   autoPlayTimeout = millis() + (autoplayDuration * 1000);
 #if ENABLE_ARDUINO_OTA
@@ -664,14 +669,24 @@ void sendString(String value)
 
 void broadcastInt(String name, uint8_t value)
 {
+#if ENABLE_WEBSOCKETS
   String json = "{\"name\":\"" + name + "\",\"value\":" + String(value) + "}";
-  //webSocketsServer.broadcastTXT(json);
+  webSocketsServer.broadcastTXT(json);
+#else
+  (void)name;
+  (void)value;
+#endif // ENABLE_WEBSOCKETS
 }
 
 void broadcastString(String name, String value)
 {
+#if ENABLE_WEBSOCKETS
   String json = "{\"name\":\"" + name + "\",\"value\":\"" + String(value) + "\"}";
-  //webSocketsServer.broadcastTXT(json);
+  webSocketsServer.broadcastTXT(json);
+#else
+  (void)name;
+  (void)value;
+#endif // ENABLE_WEBSOCKETS
 }
 
 // TODO: Add board-specific entropy sources
@@ -761,7 +776,9 @@ void loop() {
 
 }
 
-/* TODO -- Move websocket support to separate file
+// TODO -- Move websocket support to separate file
+#if ENABLE_WEBSOCKETS
+/* Have to explicitly comment this out ... else Arduino build fails (Arduino attempts to pull all functions out of .ino, and WStype_t isn't defined)
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
 
   switch (type) {
@@ -782,12 +799,11 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
     case WStype_TEXT:
       Serial.printf("[%u] get Text: %s\n", num, payload);
 
-      
       //send message to client
-      //webSocketsServer.sendTXT(num, payload);
+      webSocketsServer.sendTXT(num, payload);
 
       //send data to all connected clients
-      //webSocketsServer.broadcastTXT(payload);
+      webSocketsServer.broadcastTXT(payload);
       
       break;
 
@@ -801,6 +817,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
   }
 }
 */
+#endif // ENABLE_WEBSOCKETS
 
 // TODO: Save settings in file system, not EEPROM!
 const uint8_t SETTINGS_MAGIC_BYTE = 0x96;

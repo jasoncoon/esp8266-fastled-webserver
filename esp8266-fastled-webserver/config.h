@@ -177,6 +177,17 @@
     #if ((ENABLE_ARDUINO_OTA != 0) && (ENABLE_ARDUINO_OTA != 1))
         #error "ENABLE_ARDUINO_OTA must be undefined (defaults to 0), 0, or 1"
     #endif
+    #if !defined(ENABLE_WEBSOCKETS)
+        #define ENABLE_WEBSOCKETS 0
+    #endif
+    #if ((ENABLE_WEBSOCKETS != 0) && (ENABLE_WEBSOCKETS != 1))
+        #error "ENABLE_WEBSOCKETS must be undefined (defaults to 0), 0, or 1"
+    #endif
+    #if ENABLE_WEBSOCKETS
+        #warning "ENABLE_WEBSOCKETS is still in development, and is NOT supported"
+    #endif
+
+
 #endif
 
 
