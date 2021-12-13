@@ -254,47 +254,6 @@ const CRGBPalette16 palettes[] = {
   ForestColors_p,
   PartyColors_p,
   HeatColors_p,
-  Sunset_Real_gp,
-  es_rivendell_15_gp,
-
-  es_ocean_breeze_036_gp,
-  rgi_15_gp,
-  retro2_16_gp,
-  Analogous_1_gp,
-  es_pinksplash_08_gp,
-
-  Coral_reef_gp,
-  es_ocean_breeze_068_gp,
-  es_pinksplash_07_gp,
-  es_vintage_01_gp,
-  departure_gp,
-
-  es_landscape_64_gp,
-  es_landscape_33_gp,
-  rainbowsherbet_gp,
-  gr65_hult_gp,
-  gr64_hult_gp,
-
-  GMT_drywet_gp,
-  ib_jul01_gp,
-  es_vintage_57_gp,
-  ib15_gp,
-  Fuschia_7_gp,
-
-  es_emerald_dragon_08_gp,
-  lava_gp,
-  fire_gp,
-  Colorfull_gp,
-  Magenta_Evening_gp,
-
-  Pink_Purple_gp,
-  es_autumn_19_gp,
-  BlacK_Blue_Magenta_White_gp,
-  BlacK_Magenta_Red_gp,
-  BlacK_Red_Magenta_Yellow_gp,
-
-  Blue_Cyan_Yellow_gp,
-  Vapour_gp,
 };
 const uint8_t paletteCount = ARRAY_SIZE2(palettes);
 
@@ -308,48 +267,6 @@ const String paletteNames[] = {
   "Forest",
   "Party",
   "Heat",
-  "Sunset Real gp",
-  "rivendell 15",
-
-  "ocean breeze 036",
-  "rgi 15",
-  "retro2 16",
-  "Analogous 1",
-  "pinksplash 08",
-
-  "Coral reef",
-  "ocean breeze 068",
-  "pinksplash 07",
-  "vintage 01",
-  "departure",
-
-  "landscape 64",
-  "landscape 33",
-  "rainbowsherbet",
-  "gr65 hult",
-  "gr64 hult",
-
-  "GMT drywet",
-  "ib jul01",
-  "vintage 57",
-  "ib15",
-  "Fuschia 7",
-
-  "emerald dragon 08",
-  "lava",
-  "fire",
-  "Colorfull",
-  "Magenta Evening",
-
-  "Pink Purple",
-  "autumn 19",
-  "BlacK Blue Magenta White",
-  "BlacK Magenta Red",
-  "BlacK Red Magenta Yellow",
-
-  "Blue Cyan Yellow",
-  "Vapourwave",
-
 };
 const uint8_t paletteNameCount = ARRAY_SIZE2(paletteNames);
 static_assert(paletteCount == paletteNameCount, "");
