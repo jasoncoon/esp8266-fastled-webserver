@@ -64,7 +64,7 @@ ESP8266HTTPUpdateServer httpUpdateServer;
 #define COLOR_ORDER   GRB
 #define NUM_LEDS      30
 
-#define MILLI_AMPS         8000 // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
+#define MILLI_AMPS         2000 // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
 #define FRAMES_PER_SECOND  120  // here you can control the speed. With the Access Point / Web Server the animations run a bit slower.
 
 String nameString;
@@ -313,7 +313,7 @@ void setup() {
 
   FastLED.setBrightness(brightness);
 
-  irReceiver.enableIRIn(); // Start the receiver
+  //irReceiver.enableIRIn(); // Start the receiver
 
   Serial.println();
   Serial.print( F("Heap: ") ); Serial.println(system_get_free_heap_size());
@@ -528,9 +528,9 @@ void setup() {
   webServer.begin();
   Serial.println("HTTP web server started");
 
-  webSocketsServer.begin();
-  webSocketsServer.onEvent(webSocketEvent);
-  Serial.println("Web socket server started");
+  //webSocketsServer.begin();
+  //webSocketsServer.onEvent(webSocketEvent);
+  //Serial.println("Web socket server started");
 
   autoPlayTimeout = millis() + (autoplayDuration * 1000);
 
