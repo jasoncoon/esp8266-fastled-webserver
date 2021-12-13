@@ -63,7 +63,7 @@ The app is installed via the Arduino IDE which can be [downloaded here](https://
 The app depends on the following libraries. They must either be downloaded from GitHub and placed in the Arduino 'libraries' folder, or installed as [described here](https://www.arduino.cc/en/Guide/Libraries) by using the Arduino library manager.
 
 * [FastLED](https://github.com/FastLED/FastLED)
-* [IRremoteESP8266](https://github.com/sebastienwarin/IRremoteESP8266)
+* [IRremoteESP8266](https://github.com/crankyoldgit/IRremoteESP8266)
 * [Arduino WebSockets](https://github.com/Links2004/arduinoWebSockets)
 * [Arduino JSON](https://arduinojson.org)
 * [lolrol LittleFS](https://github.com/lorol/LITTLEFS) -- (integrated into ESP32 core v2, which is not used here yet)

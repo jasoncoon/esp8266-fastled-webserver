@@ -21,9 +21,6 @@
 WiFiManager wifiManager;
 ESP8266WebServer webServer(80);
 
-#if ENABLE_WEBSOCKETS
-WebSocketsServer webSocketsServer = WebSocketsServer(81);
-#endif // ENABLE_WEBSOCKETS
 ESP8266HTTPUpdateServer httpUpdateServer;
 
 int utcOffsetInSeconds = -6 * 60 * 60;
@@ -326,7 +323,7 @@ void setup() {
   FastLED.setBrightness(brightness);
 
 #if defined(ENABLE_IR)
-  irReceiver.enableIRIn(); // Start the receiver
+  InitializeIR();
 #endif
 
   Serial.println();
@@ -644,9 +641,7 @@ void setup() {
   Serial.println("HTTP web server started");
 
 #if ENABLE_WEBSOCKETS
-  webSocketsServer.begin();
-  webSocketsServer.onEvent(webSocketEvent);
-  Serial.println("Web socket server started");
+  InitializeWebSocketServer();
 #endif // ENABLE_WEBSOCKETS
 
   autoPlayTimeout = millis() + (autoplayDuration * 1000);
@@ -664,29 +659,6 @@ void sendInt(uint8_t value)
 void sendString(String value)
 {
   webServer.send(200, "text/plain", value);
-}
-
-
-void broadcastInt(String name, uint8_t value)
-{
-#if ENABLE_WEBSOCKETS
-  String json = "{\"name\":\"" + name + "\",\"value\":" + String(value) + "}";
-  webSocketsServer.broadcastTXT(json);
-#else
-  (void)name;
-  (void)value;
-#endif // ENABLE_WEBSOCKETS
-}
-
-void broadcastString(String name, String value)
-{
-#if ENABLE_WEBSOCKETS
-  String json = "{\"name\":\"" + name + "\",\"value\":\"" + String(value) + "\"}";
-  webSocketsServer.broadcastTXT(json);
-#else
-  (void)name;
-  (void)value;
-#endif // ENABLE_WEBSOCKETS
 }
 
 // TODO: Add board-specific entropy sources
@@ -775,49 +747,6 @@ void loop() {
 #endif
 
 }
-
-// TODO -- Move websocket support to separate file
-#if ENABLE_WEBSOCKETS
-/* Have to explicitly comment this out ... else Arduino build fails (Arduino attempts to pull all functions out of .ino, and WStype_t isn't defined)
-void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
-
-  switch (type) {
-    case WStype_DISCONNECTED:
-      Serial.printf("[%u] Disconnected!\n", num);
-      break;
-
-    case WStype_CONNECTED:
-      {
-        IPAddress ip = webSocketsServer.remoteIP(num);
-        Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
-
-        //send message to client
-        webSocketsServer.sendTXT(num, "Connected");
-      }
-      break;
-
-    case WStype_TEXT:
-      Serial.printf("[%u] get Text: %s\n", num, payload);
-
-      //send message to client
-      webSocketsServer.sendTXT(num, payload);
-
-      //send data to all connected clients
-      webSocketsServer.broadcastTXT(payload);
-      
-      break;
-
-    case WStype_BIN:
-      Serial.printf("[%u] get binary length: %u\n", num, length);
-      hexdump(payload, length);
-
-      //send message to client
-      webSocketsServer.sendBIN(num, payload, length);
-      break;
-  }
-}
-*/
-#endif // ENABLE_WEBSOCKETS
 
 // TODO: Save settings in file system, not EEPROM!
 const uint8_t SETTINGS_MAGIC_BYTE = 0x96;

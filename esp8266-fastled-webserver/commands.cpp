@@ -18,14 +18,13 @@
 
 #include "common.h"
 
-#if defined(ENABLE_IR)
+#if ENABLE_IR
 
 #include <IRremoteESP8266.h>
 #include <IRrecv.h>
 #include <IRutils.h>
-extern IRrecv irReceiver;
 
-IRrecv irReceiver(RECV_PIN);
+IRrecv irReceiver(IR_RECV_PIN);
 
 enum class InputCommand {
   None,
@@ -492,6 +491,10 @@ void handleIrInput()
   }
 
   switch (command) {
+    case InputCommand::None: {
+      // does nothing, but must be handled due to use of scoped enumeration
+      break;
+    }
     case InputCommand::Up: {
       adjustPattern(true);
       break;
@@ -688,5 +691,11 @@ void handleIrInput()
     }
   }
 }
+
+
+void InitializeIR(void) {
+  irReceiver.enableIRIn(); // Start the receiver
+}
+
 
 #endif
