@@ -66,6 +66,9 @@ void InitializeWebSocketServer(void) {
     webSocketsServer.onEvent(webSocketEvent);
     Serial.println("Web socket server started");
 }
+void handleWebSocketLoop(void) {
+    webSocketsServer.loop();
+}
 void broadcastInt(String name, uint8_t value) {
     String json = "{\"name\":\"" + name + "\",\"value\":" + String(value) + "}";
     webSocketsServer.broadcastTXT(json);

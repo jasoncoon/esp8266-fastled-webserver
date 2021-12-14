@@ -253,6 +253,7 @@ extern CRGB leds[NUM_PIXELS];
 
 #if ENABLE_WEBSOCKETS
   void InitializeWebSocketServer(void);
+  void handleWebSocketLoop(void);
   void broadcastInt(String name, uint8_t value);
   void broadcastString(String name, String value);
 #else

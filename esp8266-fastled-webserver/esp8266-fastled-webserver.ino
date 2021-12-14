@@ -672,8 +672,6 @@ void loop() {
   // Modify random number generator seed; we use a lot of it.  (Note: this is still deterministic)
   random16_add_entropy(random(65535));
 
-  //webSocketsServer.loop();
-
   wifiManager.process();
   webServer.handleClient();
   MDNS.update();
@@ -705,6 +703,9 @@ void loop() {
 #if ENABLE_IR
   handleIrInput();  // empty function when ENABLE_IR is not defined
 #endif // ENABLE_IR
+#if ENABLE_WEBSOCKETS
+  handleWebSocketLoop();
+#endif
 
   if (power == 0) {
     fill_solid(leds, NUM_PIXELS, CRGB::Black);
