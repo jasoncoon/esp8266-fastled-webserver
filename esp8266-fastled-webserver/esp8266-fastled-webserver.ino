@@ -780,21 +780,42 @@ void loop() {
 
 // TODO: Save settings in file system, not EEPROM!
 
-const uint8_t SETTINGS_MAGIC_BYTE = 0x96;
+
+const uint8_t SETTINGS_MAGIC_BYTE = 0x77;
 void readSettings()
 {
+  //T &get<T>(int const address, T &t);
+  //const T &put<T>(int const address, const T &t);
+
   // check for "magic number" so we know settings have been written to EEPROM
   // and it's not just full of random bytes
-
   if (EEPROM.read(511) != SETTINGS_MAGIC_BYTE) {
     return;
   }
 
   brightness = EEPROM.read(0);
 
-  currentPatternIndex = EEPROM.read(1);
-  if (currentPatternIndex >= patternCount) {
-    currentPatternIndex = patternCount - 1;
+  if (1) { // get pattern index and verify name's hash matches
+    uint8_t tmp = EEPROM.read(1);
+    if (tmp >= patternCount) {
+      tmp = patternCount - 1;
+    }
+
+    uint32_t expectedHash = 0;
+    expectedHash = EEPROM.get(20, expectedHash);
+
+    uint32_t actualHash = MurmurHash3_32(patterns[tmp].name);
+    if (expectedHash != actualHash) {
+      tmp = DEFAULT_PATTERN_INDEX; // use default if no hash match found
+      for (int i = 0; i < patternCount; i++) {
+        actualHash = MurmurHash3_32(patterns[i].name);
+        if (expectedHash == actualHash) {
+          tmp = i;
+          break;   // out of for loop ... found the index to use
+        }
+      }
+    }
+    currentPatternIndex = tmp;
   }
 
   byte r = EEPROM.read(2);
@@ -814,9 +835,27 @@ void readSettings()
   autoplay = EEPROM.read(6);
   autoplayDuration = EEPROM.read(7);
 
-  currentPaletteIndex = EEPROM.read(8);
-  if (currentPaletteIndex >= paletteCount) {
-    currentPaletteIndex = paletteCount - 1;
+  if (1) { // get palette index and verify the name's hash matches
+    uint8_t tmp = EEPROM.read(8);
+    if (tmp >= paletteCount) {
+      tmp = paletteCount - 1;
+    }
+
+    uint32_t expectedHash = 0;
+    expectedHash = EEPROM.get(24, expectedHash);
+
+    uint32_t actualHash = MurmurHash3_32(paletteNames[tmp]);
+    if (expectedHash != actualHash) {
+      tmp = 0; // use first palette if no hash match found
+      for (int i = 0; i < paletteCount; i++) {
+        actualHash = MurmurHash3_32(paletteNames[i]);
+        if (expectedHash == actualHash) {
+          tmp = i;
+          break;   // out of for loop ... found the index to use
+        }
+      }
+    }
+    currentPaletteIndex = tmp;
   }
 
   twinkleSpeed = EEPROM.read(9);
@@ -851,6 +890,15 @@ void writeAndCommitSettings() {
   EEPROM.write(14, showClock);
   EEPROM.write(15, clockBackgroundFade);
   EEPROM.write(16, utcOffsetIndex);
+  EEPROM.write(17, 0xFF); // reserved for future use
+  EEPROM.write(18, 0xFF); // reserved for future use
+  EEPROM.write(19, 0xFF); // reserved for future use
+
+  uint32_t currentPatternNameHash = MurmurHash3_32(patterns[currentPatternIndex].name);
+  uint32_t currentPaletteNameHash = MurmurHash3_32(paletteNames[currentPaletteIndex]);
+  EEPROM.put(20, currentPatternNameHash);
+  EEPROM.put(24, currentPaletteNameHash);
+  
   EEPROM.write(511, SETTINGS_MAGIC_BYTE);
   EEPROM.commit();
 }
