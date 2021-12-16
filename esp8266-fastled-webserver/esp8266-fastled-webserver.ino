@@ -55,42 +55,34 @@ uint8_t speed = 30;
 
 ///////////////////////////////////////////////////////////////////////
 
+// function prototypes for the locally-defined effects functions
+void pride();
+void colorWaves();
+void wheel();
+void rainbow();
+void rainbowWithGlitter();
+void rainbowSolid();
+void confetti();
+void sinelon();
+void bpm();
+void juggle();
+void fire();
+void water();
+void strandTest();
+void showSolidColor();
 
-uint8_t gCurrentPaletteNumber = 0;
+#if IS_FIBONACCI
+  void colorWavesFibonacci();
+  void prideFibonacci();
+  void swirlFibonacci();
+  void fireFibonacci();
+  void waterFibonacci();
+  void emitterFibonacci();
+#endif
+#if (PARALLEL_OUTPUT_CHANNELS > 1)
+  void multi_test();
+#endif
 
-CRGBPalette16 gCurrentPalette( CRGB::Black);
-CRGBPalette16 gTargetPalette( gGradientPalettes[0] );
-
-CRGBPalette16 IceColors_p = CRGBPalette16(CRGB::Black, CRGB::Blue, CRGB::Aqua, CRGB::White);
-
-uint8_t currentPatternIndex = DEFAULT_PATTERN_INDEX; // Index number of which pattern is current
-uint8_t autoplay = 0;
-
-uint8_t autoplayDuration = 10;
-unsigned long autoPlayTimeout = 0;
-
-uint8_t showClock = 0;
-uint8_t clockBackgroundFade = 160;
-uint8_t utcOffsetIndex = 24; // map(-6, -12, 14, 0, 104); -12 to 14 in 15 minute increments, mapped to 0 to 104
-
-uint8_t currentPaletteIndex = 0;
-
-uint8_t gHue = 0; // rotating "base color" used by many of the patterns
-
-CRGB solidColor = CRGB::Blue;
-
-// scale the brightness of all pixels down
-void dimAll(byte value)
-{
-  for (auto led : leds) {
-    led.nscale8(value);
-  }
-}
-
-// List of patterns to cycle through.  Each is defined as a separate function below.
-
-// NOTE: HAS_POLAR_COORDS implies HAS_COORDINATE_MAP
-//       IS_FIBONACCI     implies HAS_COORDINATE_MAP
 
 const PatternAndName patterns[] = {
   { pride,                             "Pride" },
@@ -238,6 +230,14 @@ const PatternAndName patterns[] = {
 
 const uint8_t patternCount = ARRAY_SIZE2(patterns);
 
+constexpr uint8_t patternIndexForFunction(Pattern toFind, uint8_t index = 0) {
+  return
+    (index >= patternCount            ) ? patternCount :
+    (patterns[index].pattern == toFind) ? index :
+    patternIndexForFunction(toFind, index+1);
+}
+
+
 const CRGBPalette16 palettes[] = {
     RainbowColors_p,
     RainbowStripeColors_p,
@@ -261,6 +261,48 @@ const String paletteNames[paletteCount] = {
     "Party",
     "Heat",
 };
+
+
+uint8_t gCurrentPaletteNumber = 0;
+
+CRGBPalette16 gCurrentPalette( CRGB::Black);
+CRGBPalette16 gTargetPalette( gGradientPalettes[0] );
+
+CRGBPalette16 IceColors_p = CRGBPalette16(CRGB::Black, CRGB::Blue, CRGB::Aqua, CRGB::White);
+
+const uint8_t productDefaultPatternIndex =
+  (patternIndexForFunction(DEFAULT_PATTERN_FUNCTION) <= patternCount) ?
+  patternIndexForFunction(DEFAULT_PATTERN_FUNCTION) : 0; // Index number of which pattern is current
+
+uint8_t currentPatternIndex = productDefaultPatternIndex;
+uint8_t autoplay = 0;
+
+uint8_t autoplayDuration = 10;
+unsigned long autoPlayTimeout = 0;
+
+uint8_t showClock = 0;
+uint8_t clockBackgroundFade = 160;
+uint8_t utcOffsetIndex = 24; // map(-6, -12, 14, 0, 104); -12 to 14 in 15 minute increments, mapped to 0 to 104
+
+uint8_t currentPaletteIndex = 0;
+
+uint8_t gHue = 0; // rotating "base color" used by many of the patterns
+
+CRGB solidColor = CRGB::Blue;
+
+// scale the brightness of all pixels down
+void dimAll(byte value)
+{
+  for (auto led : leds) {
+    led.nscale8(value);
+  }
+}
+
+// List of patterns to cycle through.  Each is defined as a separate function below.
+
+// NOTE: HAS_POLAR_COORDS implies HAS_COORDINATE_MAP
+//       IS_FIBONACCI     implies HAS_COORDINATE_MAP
+
 
 // TODO / BUGBUG -- should this be ESP8266-specific?  Is this only for when IR enabled ???
 // FIB128 did not have this...
@@ -806,7 +848,7 @@ void readSettings()
 
     uint32_t actualHash = MurmurHash3_32(patterns[tmp].name);
     if (expectedHash != actualHash) {
-      tmp = DEFAULT_PATTERN_INDEX; // use default if no hash match found
+      tmp = productDefaultPatternIndex; // use default if no hash match found
       for (int i = 0; i < patternCount; i++) {
         actualHash = MurmurHash3_32(patterns[i].name);
         if (expectedHash == actualHash) {

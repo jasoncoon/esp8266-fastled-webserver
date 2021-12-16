@@ -7,7 +7,7 @@ inline namespace {
     //-----------------------------------------------------------------------------
     // Block read - if your platform needs to do endian-swapping or can only
     // handle aligned reads, do the conversion here
-    FORCE_INLINE uint32_t getblock32 ( const uint32_t * p, int i ) {
+    inline uint32_t getblock32 ( const uint32_t * p, int i ) {
         return p[i];
     }
     inline uint32_t rotl32(uint32_t x, int8_t r) {
@@ -18,13 +18,12 @@ inline namespace {
     }
     //-----------------------------------------------------------------------------
     // Finalization mix - force all bits of a hash block to avalanche
-    FORCE_INLINE uint32_t fmix32(uint32_t h) {
+    inline uint32_t fmix32(uint32_t h) {
         h ^= h >> 16;
         h *= 0x85ebca6b;
         h ^= h >> 13;
         h *= 0xc2b2ae35;
         h ^= h >> 16;
-
         return h;
     }
     //-----------------------------------------------------------------------------
