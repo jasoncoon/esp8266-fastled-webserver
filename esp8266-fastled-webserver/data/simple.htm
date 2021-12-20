@@ -8,10 +8,10 @@
   <title>ESP8266 + FastLED by Evil Genius Labs</title>
 
   <!-- request CSS from internet CDN -->
-  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
   <!-- request CSS from the ESP8266 web server -->
-  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <!-- <link rel="stylesheet" href="css/bootstrap-5.1.3.min.css"> -->
 
   <link rel="stylesheet" href="css/simple.css">
 
@@ -22,37 +22,36 @@
 
   <div id="container" class="container">
 
-    <div style="margin: 5px;">
-      <button type="button" class="btn btn-default" id="btnOn">On</button>
-      <button type="button" class="btn btn-default" id="btnOff">Off</button>
+    <div class="row g-1" style="margin-bottom: 4px; margin-top: 4px;">
+      <button type="button" class="col-2 btn btn-outline-secondary" id="btnOn" style="margin-right: 4px">On</button>
+      <button type="button" class="col-2 btn btn-outline-secondary" id="btnOff">Off</button>
     </div>
 
-    <div id="patternGrid" class="grid-pattern"></div>
+    <div id="patterns" class="row g-1" style="margin-bottom: 4px;"></div>
 
-    <div id="colorButtonsRow" class="grid-color"></div>
+    <div id="colors" class="row" style="margin-left: 0px; margin-right: 0px;"></div>
 
+    <span class="navbar-text" id="status">Loading, please wait...</span>
+    
   </div>
 
   <div id="templates" style="display: none">
 
-    <div id="colorButtonTemplate" class="grid-item-color"></div>
+    <button id="patternButtonTemplate" class="col btn btn-outline-secondary pattern" style="margin-right: 4px;"></button>
+    
+    <button id="colorButtonTemplate" class="col-1 btn btn-outline-secondary color" style="border: none; border-radius: 0px; height: 42px;"></div>
 
-    <button id="patternButtonTemplate" class="grid-item-pattern btn btn-default"></button>
-
-  </div>
+    </div>
 
   <!-- request js from internet CDN -->
-  <!-- <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script> -->
-  <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script> -->
-  <!-- <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script> -->
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js" integrity="sha256-A4JwlcDvqO4JXpvEtvWY1RH8JAEMu5W21wP8GUXLUNs=" crossorigin="anonymous"></script> -->
-
-  <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js" integrity="sha512-B4skI5FiLurS86aioJx9VfozI1wjqrn6aTdJH+YQUmCZum/ZibPBTX55k5d9XM6EsKePDInkLVrN7vPmJxc1qA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
 
   <!-- request js from the ESP8266 web server -->
-  <script src="js/jquery-3.1.1.min.js"></script>
-  <script src="js/bootstrap.min.js"></script>
-  <script src="js/r-websocket.min.js"></script>
+  <!-- <script src="js/jquery-3.1.1.min.js"></script> -->
+  <!-- <script src="js/bootstrap.min.js"></script> -->
+  <!-- <script src="js/r-websocket.min.js"></script> -->
 
   <script src="js/simple.js"></script>
 

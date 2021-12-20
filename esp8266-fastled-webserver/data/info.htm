@@ -8,39 +8,40 @@
   <title>ESP8266 + FastLED by Evil Genius Labs</title>
 
   <!-- request CSS from internet CDN -->
-  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
   <!-- request CSS from the ESP8266 web server -->
-  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <!-- <link rel="stylesheet" href="css/bootstrap-5.1.3.min.css"> -->
 
   <link rel="stylesheet" href="css/styles.css">
 
   <link rel="icon" href="images/atom196.png">
+
+  <style>
+    .dt {
+      text-align: right;
+    }
+  </style>
 </head>
 
 <body>
 
-  <nav class="navbar navbar-default navbar-static-top" id="top" role="banner">
-    <div class="container">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="https://www.evilgeniuslabs.org" target="_blank"><img src="/images/atom196.png" style="width: 24px; height: 24px;" /></a>
-        <a class="navbar-brand" href="https://www.evilgeniuslabs.org" target="_blank">Evil Genius Labs</a>
-      </div>
-      <div class="collapse navbar-collapse" id="navbar-collapse-1">
-        <ul class="nav navbar-nav">
-          <li><a href="/" id="product">ESP8266 + FastLED</a></li>
-          <!-- <li><a href="/simple.htm" target="_blank" title="Simple Mode">Simple</a></li> -->
-          <li class="active"><a href="/info.htm" title="Info">Info <span class="sr-only">(current)</span></a></li>
-          <li><a href="/edit.htm" target="_blank" title="Edit Files">Files</a></li>
-          <li><a href="/update" target="_blank" title="Update Firmware">Firmware</a></li>
+  <nav class="navbar navbar-expand-md navbar-light bg-light mb-4" id="top" role="banner">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="https://www.evilgeniuslabs.org" target="_blank"><img src="/images/atom196.png" style="width: 24px; height: 24px;" /></a>
+      <a class="navbar-brand" href="https://www.evilgeniuslabs.org" target="_blank">Evil Genius Labs</a>
+      <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="navbar-collapse collapse" id="navbarCollapse">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" aria-current="page" href="/" id="product">ESP8266 + FastLED</a></li>
+          <li class="nav-item"><a class="nav-link" href="/simple.htm" title="Simple Mode">Simple</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/info.htm" title="Info">Info</a></li>
+          <li class="nav-item"><a class="nav-link" href="/edit.htm" title="Edit Files">Files</a></li>
+          <li class="nav-item"><a class="nav-link" href="/update" title="Update Firmware">Firmware</a></li>
         </ul>
-        <ul class="nav navbar-nav navbar-right">
+        <ul class="navbar-nav d-flex">
           <li>
             <a href="https://github.com/jasoncoon/esp8266-fastled-webserver">
               <img style="height: 16px;" src="/images/github.ico" />
@@ -53,23 +54,23 @@
 
   <div id="container" class="container">
 
-    <dl id="infoDl" class="dl-horizontal">
+    <dl id="infoDl" class="row">
     </dl>
 
-    <dl id="templates" style="display: none">
-      <dt id="infoDtTemplate"></dt>
-      <dd id="infoDdTemplate"></dd>
+    <dl id="templates" class="row" style="display: none">
+      <dt id="infoDtTemplate" class="col-sm-3 dt"></dt>
+      <dd id="infoDdTemplate" class="col-sm-9"></dd>
     </dl>
 
   </div>
 
   <!-- request js from internet CDN -->
-  <!-- <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script> -->
-  <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
   <!-- request js from the ESP8266 web server -->
-  <script src="js/jquery-3.1.1.min.js"></script>
-  <script src="js/bootstrap.min.js"></script>
+  <!-- <script src="js/jquery-3.6.0.min.js"></script> -->
+  <!-- <script src="js/bootstrap-5.1.3.min.js"></script> -->
 
   <script src="js/info.js"></script>
 

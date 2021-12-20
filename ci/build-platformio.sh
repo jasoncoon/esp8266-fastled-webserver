@@ -15,4 +15,10 @@ python3 get-platformio.py
 pio platform install "espressif8266"
 
 # Compile project
-pio run
+if [[ ! -v FIB_PRODUCT ]]; then
+    pio run
+    pio run --target buildfs
+else
+    pio run --environment ${FIB_PRODUCT}
+    pio run --target buildfs --environment ${FIB_PRODUCT}
+fi

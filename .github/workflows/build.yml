@@ -10,16 +10,40 @@ jobs:
       - name: Build with Arduino-CLI
         run: bash ci/build-arduino.sh
 
-  pio-build:
+  pio-builds:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        product:
+          - fastled_webserver
+          - esp_thing
+          - kraken64
+          - chamaeleon64
+          - 1628_rings
+          - fib1024
+          - fib512
+          - fib256
+          - fib128
+          - fib64_full
+          - fib64_mini
+          - fib32
+        platform:
+          - d1_mini
+          # - mini32 # When ESP32 is supported, one-line change to enable 2x product builds
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Build with PlatformIO
+      - name: Build
+        env:
+          FIB_PRODUCT: ${{ matrix.product }}__${{ matrix.platform }}
         run: bash ci/build-platformio.sh
 
       - uses: actions/upload-artifact@v2
         with:
           name: firmware
-          path: .pio/build/*/firmware.bin
+          path: |
+            .pio/build/*/firmware.bin
+            .pio/build/*/firmware.elf
+            .pio/build/*/littlefs.bin
