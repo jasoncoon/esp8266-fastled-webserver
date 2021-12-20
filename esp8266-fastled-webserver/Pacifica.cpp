@@ -58,7 +58,7 @@ void pacifica_one_layer( CRGBPalette16& p, uint16_t cistart, uint16_t wavescale,
     uint8_t sindex8 = scale16( sindex16, 240);
     CRGB c = ColorFromPalette( p, sindex8, bri, LINEARBLEND);
 #if IS_FIBONACCI
-    uint16_t idx = useFibonacciOrder ? physicalToFibonacci[i] : i;
+    uint16_t idx = useFibonacciOrder ? fibonacciToPhysical[i] : i;
 #else
     (void)useFibonacciOrder; // unused parameter
     uint16_t idx = i;
@@ -75,7 +75,7 @@ void pacifica_add_whitecaps(bool useFibonacciOrder)
   
   for( uint16_t i = 0; i < NUM_PIXELS; i++) {
 #if IS_FIBONACCI
-    uint16_t idx = useFibonacciOrder ? physicalToFibonacci[i] : i;
+    uint16_t idx = useFibonacciOrder ? fibonacciToPhysical[i] : i;
 #else
     (void)useFibonacciOrder; // unused parameter
     uint16_t idx = i;
@@ -97,7 +97,7 @@ void pacifica_deepen_colors(bool useFibonacciOrder)
 {
   for( uint16_t i = 0; i < NUM_PIXELS; i++) {
 #if IS_FIBONACCI
-    uint16_t idx = useFibonacciOrder ? physicalToFibonacci[i] : i;
+    uint16_t idx = useFibonacciOrder ? fibonacciToPhysical[i] : i;
 #else
     (void)useFibonacciOrder; // unused parameter
     uint16_t idx = i;

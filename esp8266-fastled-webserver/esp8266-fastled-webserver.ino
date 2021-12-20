@@ -89,8 +89,7 @@ void dimAll(byte value)
 
 // List of patterns to cycle through.  Each is defined as a separate function below.
 
-// NOTE: HAS_POLAR_COORDS implies HAS_COORDINATE_MAP
-//       IS_FIBONACCI     implies HAS_COORDINATE_MAP
+// NOTE: IS_FIBONACCI implies HAS_COORDINATE_MAP
 
 const PatternAndName patterns[] = {
   { pride,                             "Pride" },
@@ -142,10 +141,8 @@ const PatternAndName patterns[] = {
   { xGradientPalette,                  "X Axis Gradient Palette" },
   { yGradientPalette,                  "Y Axis Gradient Palette" },
   { xyGradientPalette,                 "XY Axis Gradient Palette" },
-#endif
 
-#if HAS_POLAR_COORDS
-  // noise patterns (Polar variations)
+  // noise patterns
   { gradientPalettePolarNoise,         "Gradient Palette Polar Noise" },
   { palettePolarNoise,                 "Palette Polar Noise" },
   { firePolarNoise,                    "Fire Polar Noise" },
@@ -159,10 +156,9 @@ const PatternAndName patterns[] = {
   { oceanPolarNoise,                   "Ocean Polar Noise" },
   { blackAndWhitePolarNoise,           "Black & White Polar Noise" },
   { blackAndBluePolarNoise,            "Black & Blue Polar Noise" },
-#endif
 
-#if HAS_COORDINATE_MAP
-  // noise patterns
+  { gradientPaletteNoise,              "Gradient Palette Noise" },
+  { paletteNoise,                      "Palette Noise" },
   { fireNoise,                         "Fire Noise" },
   { fireNoise2,                        "Fire Noise 2" },
   { lavaNoise,                         "Lava Noise" },
@@ -174,11 +170,11 @@ const PatternAndName patterns[] = {
   { oceanNoise,                        "Ocean Noise" },
   { blackAndWhiteNoise,                "Black & White Noise" },
   { blackAndBlueNoise,                 "Black & Blue Noise" },
+  
+  { drawAnalogClock,                   "Analog Clock" },
 #endif
 
 #if IS_FIBONACCI
-  { drawAnalogClock,                   "Analog Clock" },
-
   { drawSpiralAnalogClock13,           "Spiral Analog Clock 13" },
   { drawSpiralAnalogClock21,           "Spiral Analog Clock 21" },
   { drawSpiralAnalogClock34,           "Spiral Analog Clock 34" },
@@ -427,26 +423,22 @@ void setup() {
 
   webServer.on("/all", HTTP_GET, []() {
     String json = getFieldsJson();
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     webServer.send(200, "application/json", json);
   });
   
   webServer.on("/product", HTTP_GET, []() {
     String json = "{\"productName\":\"" PRODUCT_FRIENDLY_NAME "\"}";
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     webServer.send(200, "application/json", json);
   });
 
   webServer.on("/info", HTTP_GET, []() {
     String json = getInfoJson();
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     webServer.send(200, "application/json", json);
   });
 
   webServer.on("/fieldValue", HTTP_GET, []() {
     String name = webServer.arg("name");
     String value = getFieldValue(name);
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     webServer.send(200, "text/json", value);
   });
 
@@ -454,14 +446,12 @@ void setup() {
     String name = webServer.arg("name");
     String value = webServer.arg("value");
     String newValue = setFieldValue(name, value);
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     webServer.send(200, "text/json", newValue);
   });
 
   webServer.on("/power", HTTP_POST, []() {
     String value = webServer.arg("value");
     setPower(value.toInt());
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(power);
   });
 
@@ -469,7 +459,6 @@ void setup() {
     String value = webServer.arg("value");
     cooling = value.toInt();
     broadcastInt("cooling", cooling);
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(cooling);
   });
 
@@ -477,7 +466,6 @@ void setup() {
     String value = webServer.arg("value");
     sparking = value.toInt();
     broadcastInt("sparking", sparking);
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(sparking);
   });
 
@@ -485,7 +473,6 @@ void setup() {
     String value = webServer.arg("value");
     speed = value.toInt();
     broadcastInt("speed", speed);
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(speed);
   });
 
@@ -500,7 +487,6 @@ void setup() {
     twinkleSpeed = (uint8_t)tmp;
     writeAndCommitSettings();
     broadcastInt("twinkleSpeed", twinkleSpeed);
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(twinkleSpeed);
   });
 
@@ -515,7 +501,6 @@ void setup() {
     twinkleDensity = tmp;
     writeAndCommitSettings();
     broadcastInt("twinkleDensity", twinkleDensity);
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(twinkleDensity);
   });
 
@@ -539,55 +524,47 @@ void setup() {
     String b = webServer.arg("b");
     setSolidColor(r.toInt(), g.toInt(), b.toInt());
     sendString(String(solidColor.r) + "," + String(solidColor.g) + "," + String(solidColor.b));
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
   });
 
   webServer.on("/pattern", HTTP_POST, []() {
     String value = webServer.arg("value");
     setPattern(value.toInt());
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(currentPatternIndex);
   });
 
   webServer.on("/patternName", HTTP_POST, []() {
     String value = webServer.arg("value");
     setPatternName(value);
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(currentPatternIndex);
   });
 
   webServer.on("/palette", HTTP_POST, []() {
     String value = webServer.arg("value");
     setPalette(value.toInt());
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(currentPaletteIndex);
   });
 
   webServer.on("/paletteName", HTTP_POST, []() {
     String value = webServer.arg("value");
     setPaletteName(value);
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(currentPaletteIndex);
   });
 
   webServer.on("/brightness", HTTP_POST, []() {
     String value = webServer.arg("value");
     setBrightness(value.toInt());
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(brightness);
   });
 
   webServer.on("/autoplay", HTTP_POST, []() {
     String value = webServer.arg("value");
     setAutoplay(value.toInt());
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(autoplay);
   });
 
   webServer.on("/autoplayDuration", HTTP_POST, []() {
     String value = webServer.arg("value");
     setAutoplayDuration(value.toInt());
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     sendInt(autoplayDuration);
   });
 
@@ -632,7 +609,8 @@ void setup() {
     webServer.send(200, "text/plain", "");
   }, handleFileUpload);
 
-  webServer.serveStatic("/", MYFS, "/", "max-age=86400");
+  webServer.enableCORS(true);
+  webServer.serveStatic("/", LittleFS, "/", "max-age=86400");
 
   MDNS.begin(nameChar);
   MDNS.setHostname(nameChar);
@@ -737,7 +715,7 @@ void loop() {
   // Call the current pattern function once, updating the 'leds' array
   patterns[currentPatternIndex].pattern();
 
-  #if IS_FIBONACCI
+  #if HAS_COORDINATE_MAP
   if (showClock) drawAnalogClock();
   #endif
 

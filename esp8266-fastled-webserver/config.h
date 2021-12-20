@@ -26,6 +26,7 @@
 
 #if !defined(BUILDING_USING_PLATFORMIO)
     #define PRODUCT_DEFAULT
+    // #define PRODUCT_FIBONACCI1024
     // #define PRODUCT_FIBONACCI512
     // #define PRODUCT_FIBONACCI256
     // #define PRODUCT_FIBONACCI128
@@ -72,6 +73,8 @@
         #include "./include/configs/product/fibonacci256.h"
     #elif defined(PRODUCT_FIBONACCI512)
         #include "./include/configs/product/fibonacci512.h"
+    #elif defined(PRODUCT_FIBONACCI1024)
+        #include "./include/configs/product/fibonacci1024.h"
     #elif defined(PRODUCT_ESP8266_THING) // aka parallel
         #include "./include/configs/product/esp8266_thing.h"
     #else
@@ -155,18 +158,14 @@
     #if IS_FIBONACCI && (!HAS_COORDINATE_MAP)
         #error "IS_FIBONACCI is true, so HAS_COORDINATE_MAP must also be true (but is not)"
     #endif
-    #if !defined(HAS_POLAR_COORDS) || ((HAS_POLAR_COORDS != 0) && (HAS_POLAR_COORDS != 1))
-        #error "HAS_POLAR_COORDS must be defined to zero or one"
-    #endif
-    #if HAS_POLAR_COORDS && (!HAS_COORDINATE_MAP)
-        #error "HAS_POLAR_COORDS is true, so HAS_COORDINATE_MAP must also be true (but is not)"
-    #endif
     #if !defined(PARALLEL_OUTPUT_CHANNELS)
         #error "PARALLEL_OUTPUT_CHANNELS must be defined"
     #elif (PARALLEL_OUTPUT_CHANNELS == 1)
         // nothing to test here
     #elif (PARALLEL_OUTPUT_CHANNELS == 4)
         static_assert(NUM_PIXELS == (PIXELS_ON_DATA_PIN_1 + PIXELS_ON_DATA_PIN_2 + PIXELS_ON_DATA_PIN_3 + PIXELS_ON_DATA_PIN_4), "");
+    #elif (PARALLEL_OUTPUT_CHANNELS == 5)
+        static_assert(NUM_PIXELS == (PIXELS_ON_DATA_PIN_1 + PIXELS_ON_DATA_PIN_2 + PIXELS_ON_DATA_PIN_3 + PIXELS_ON_DATA_PIN_4 + PIXELS_ON_DATA_PIN_5), "");
     #elif (PARALLEL_OUTPUT_CHANNELS == 6)
         static_assert(NUM_PIXELS == (PIXELS_ON_DATA_PIN_1 + PIXELS_ON_DATA_PIN_2 + PIXELS_ON_DATA_PIN_3 + PIXELS_ON_DATA_PIN_4 + PIXELS_ON_DATA_PIN_5 + PIXELS_ON_DATA_PIN_6), "");
     #else

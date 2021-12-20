@@ -158,6 +158,8 @@ $(document).ready(function() {
         inline: true
       });
 
+      $("#accordionImportExport").show();
+
       $("#status").html("Ready");
     })
     .fail(function(errorThrown) {
@@ -171,12 +173,12 @@ function addNumberField(field) {
   template.attr("id", "form-group-" + field.name);
   template.attr("data-field-type", field.type);
 
-  var label = template.find(".control-label");
+  var label = template.find(".col-form-label");
   label.attr("for", "input-" + field.name);
   label.text(field.label);
 
   var input = template.find(".input");
-  var slider = template.find(".slider");
+  var slider = template.find(".form-range");
   slider.attr("id", "input-" + field.name);
   if (field.min) {
     input.attr("min", field.min);
@@ -220,7 +222,7 @@ function addBooleanField(field) {
   template.attr("id", "form-group-" + field.name);
   template.attr("data-field-type", field.type);
 
-  var label = template.find(".control-label");
+  var label = template.find(".col-form-label");
   label.attr("for", "btn-group-" + field.name);
   label.text(field.label);
 
@@ -233,8 +235,8 @@ function addBooleanField(field) {
   btnOn.attr("id", "btnOn" + field.name);
   btnOff.attr("id", "btnOff" + field.name);
 
-  btnOn.attr("class", field.value ? "btn btn-primary" : "btn btn-default");
-  btnOff.attr("class", !field.value ? "btn btn-primary" : "btn btn-default");
+  btnOn.attr("class", field.value ? "btn btn-primary" : "btn btn-outline-secondary");
+  btnOff.attr("class", !field.value ? "btn btn-primary" : "btn btn-outline-secondary");
 
   btnOn.click(function() {
     setBooleanFieldValue(field, btnOn, btnOff, 1)
@@ -254,7 +256,7 @@ function addSelectField(field) {
 
   var id = "input-" + field.name;
 
-  var label = template.find(".control-label");
+  var label = template.find(".col-form-label");
   label.attr("for", id);
   label.text(field.label);
 
@@ -310,7 +312,7 @@ function addUtcOffsetIndexField(field) {
 
   var id = "input-" + field.name;
 
-  var label = template.find(".control-label");
+  var label = template.find(".col-form-label");
   label.attr("for", id);
   label.text(field.label);
 
@@ -485,7 +487,7 @@ function addColorFieldPalette(field) {
 
   var buttons = template.find(".btn-color");
 
-  var label = template.find(".control-label");
+  var label = template.find(".col-form-label");
   label.text(field.label);
 
   buttons.each(function(index, button) {
@@ -536,7 +538,7 @@ function addStringField(field, readonly) {
   template.attr("id", "form-group-" + field.name);
   template.attr("data-field-type", field.type);
 
-  var label = template.find(".control-label");
+  var label = template.find(".col-form-label");
   label.attr("for", "input-" + field.name);
   label.text(field.label);
 
@@ -566,8 +568,8 @@ function updateFieldValue(name, value) {
     var btnOn = group.find("#btnOn" + name);
     var btnOff = group.find("#btnOff" + name);
 
-    btnOn.attr("class", value ? "btn btn-primary" : "btn btn-default");
-    btnOff.attr("class", !value ? "btn btn-primary" : "btn btn-default");
+    btnOn.attr("class", value ? "btn btn-primary" : "btn btn-outline-secondary");
+    btnOff.attr("class", !value ? "btn btn-primary" : "btn btn-outline-secondary");
 
   } else if (type == "Select") {
     var select = group.find(".form-control");
@@ -581,8 +583,8 @@ function updateFieldValue(name, value) {
 function setBooleanFieldValue(field, btnOn, btnOff, value) {
   field.value = value;
 
-  btnOn.attr("class", field.value ? "btn btn-primary" : "btn btn-default");
-  btnOff.attr("class", !field.value ? "btn btn-primary" : "btn btn-default");
+  btnOn.attr("class", field.value ? "btn btn-primary" : "btn btn-outline-secondary");
+  btnOff.attr("class", !field.value ? "btn btn-primary" : "btn btn-outline-secondary");
 
   postValue(field.name, field.value);
 }

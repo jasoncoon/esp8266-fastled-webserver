@@ -5,50 +5,56 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>&nbsp;</title>
+  <title>ESP8266 + FastLED</title>
 
   <!-- request CSS from internet CDN -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.2.4/jquery.minicolors.min.css" integrity="sha256-4wnSkPYU5B4yngAlx/rEb8LdfMah4teUth4AfhGEuaY=" crossorigin="anonymous" />
-
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.3.6/jquery.minicolors.min.css" integrity="sha512-BVeRnUOL0G7d4gXmj+0VxpoiQuEibKQtlkclADKvCdNrESs0LA6+H8s1lU455VqWFtHBfF/pKDGw/CMat2hqOg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.min.css">
+  
   <!-- request CSS from the ESP8266 web server -->
-  <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
-  <!-- <link rel="stylesheet" href="css/minicolors.min.css"> -->
+  <!-- <link rel="stylesheet" href="css/bootstrap-5.1.3.min.css"> -->
+  <!-- <link rel="stylesheet" href="css/minicolors-2.3.6.min.css"> -->
+  <!-- <link rel="stylesheet" href="css/bootstrap-icons.min.css"> -->
 
   <link rel="stylesheet" href="css/styles.css">
 
   <link rel="icon" href="images/atom196.png">
+
+  <style>
+    .col-form-label {
+      text-align: right;
+    }
+
+    .btn-color {
+      width: 40px;
+    }
+  </style>
 </head>
 
-<body>
+<body style="padding-bottom: 80px;">
 
-  <nav class="navbar navbar-default navbar-static-top" id="top" role="banner">
-    <div class="container">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="https://www.evilgeniuslabs.org" target="_blank"><img src="/images/atom196.png" style="width: 24px; height: 24px;" /></a>
-        <a class="navbar-brand" href="https://www.evilgeniuslabs.org" target="_blank">Evil Genius Labs</a>
-      </div>
-      <div class="collapse navbar-collapse" id="navbar-collapse-1">
-        <ul class="nav navbar-nav">
-          <li class="active"><a href="/" id="product">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="sr-only">(current)</span></a></li>
-          <li><a href="/simple.htm" target="_blank" title="Simple Mode">Simple</a></li>
-          <li><a href="/info.htm" title="Info">Info</a></li>
-          <li><a href="/edit.htm" target="_blank" title="Edit Files">Files</a></li>
-          <li><a href="/update" target="_blank" title="Update Firmware">Firmware</a></li>
-          <li>
-            <button id="btnScrollToBottom" type="button" class="btn btn-default navbar-btn btn-sm" aria-label="Scroll to bottom" title="Scroll to bottom">
-              <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+  <nav class="navbar navbar-expand-md navbar-light bg-light mb-4" id="top" role="banner">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="https://www.evilgeniuslabs.org" target="_blank"><img src="/images/atom196.png" style="width: 24px; height: 24px;" /></a>
+      <a class="navbar-brand" href="https://www.evilgeniuslabs.org" target="_blank">Evil Genius Labs</a>
+      <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="navbar-collapse collapse" id="navbarCollapse">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="/" id="product">ESP8266 + FastLED</a></li>
+          <li class="nav-item"><a class="nav-link" href="/simple.htm" title="Simple Mode">Simple</a></li>
+          <li class="nav-item"><a class="nav-link" href="/info.htm" title="Info">Info</a></li>
+          <li class="nav-item"><a class="nav-link" href="/edit.htm" title="Edit Files">Files</a></li>
+          <li class="nav-item"><a class="nav-link" href="/update" title="Update Firmware">Firmware</a></li>
+          <li class="nav-item">
+            <button id="btnScrollToBottom" type="button" class="btn btn-outline-secondary btn-sm" aria-label="Scroll to bottom" title="Scroll to bottom">
+              <i class="bi bi-arrow-down"></i>
             </button>
           </li>
-          <!-- <li><a href="/wifi.htm" target="_blank" title="Wi-Fi Settings">Wi-Fi</a></li> -->
         </ul>
-        <ul class="nav navbar-nav navbar-right">
+        <ul class="navbar-nav d-flex">
           <li>
             <a href="https://github.com/jasoncoon/esp8266-fastled-webserver">
               <img style="height: 16px;" src="/images/github.ico" />
@@ -59,66 +65,61 @@
     </div>
   </nav>
 
-  <div id="container" class="container">
+  <div id="container" class="container-fluid">
 
-    <form class="form-horizontal" id="form">
+    <form id="form">
     </form>
 
-    <div class="panel-group" id="accordionImportExport" role="tablist" aria-multiselectable="true">
-      <div class="panel panel-default">
-        <div class="panel-heading" role="tab" id="headingImportExport">
-          <h4 class="panel-title">
-            <a role="button" data-toggle="collapse" data-parent="#accordionImportExport" href="#collapseImportExport" aria-expanded="true" aria-controls="collapseImportExport">
-              Import / Export
-            </a>
-          </h4>
-        </div>
-        <div id="collapseImportExport" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingImportExport">
-          <div class="panel-body">
-            <div class="btn-toolbar" role="toolbar" aria-label="...">
-              <div class="btn-group" role="group" aria-label="...">
-                <button type="button" class="btn btn-default" id="btnExport">
-                  <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+    <div class="accordion" id="accordionImportExport" style="display: none;">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingImportExport">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseImportExport" aria-expanded="false" aria-controls="collapseOne">
+            Import / Export
+          </button>
+        </h2>
+        <div id="collapseImportExport" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+          <div class="accordion-body">
+
+            <div class="btn-toolbar" role="toolbar">
+              <div class="btn-group me-2" role="group">
+                <button type="button" class="btn btn-outline-secondary" id="btnExport">
+                  <i class="bi bi-download"></i>
                   Load Values
                 </button>
-                <button type="button" class="btn btn-default" id="btnImport">
-                  <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+                <button type="button" class="btn btn-outline-secondary" id="btnImport">
+                  <i class="bi bi-upload"></i>
                   Set Values
                 </button>
-                <button type="button" class="btn btn-default" id="btnCopy">
-                  <span class="glyphicon glyphicon-copy" aria-hidden="true"></span>
+                <button type="button" class="btn btn-outline-secondary" id="btnCopy">
+                  <i class="bi bi-clipboard"></i>
                   Copy
                 </button>
               </div>
 
-              <div class="btn-group" role="group" aria-label="...">
-                <button type="button" class="btn btn-default" id="btnTop">
-                  <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+              <div class="btn-group me-2" role="group">
+                <button type="button" class="btn btn-outline-secondary" id="btnTop">
+                  <i class="bi bi-arrow-up"></i>
                   Scroll to Top
                 </button>
               </div>
 
-              <div class="btn-group" role="group" style="margin: 4px 4px">
                 <div class="input-group">
-                  <span class="input-group-btn input-group-custom">
-                    <input id="inputFilename" type="text" class="form-control" style="width: 180px;" value="preset1.json" />
-                    <button type="button" class="btn btn-default" id="btnSave">
-                      <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
-                      Save
-                    </button>
+                  <input id="inputFilename" type="text" class="form-control" style="width: 180px;" value="preset1.json" />
+                  <button type="button" class="btn btn-outline-secondary" id="btnSave">
+                    <i class="bi bi-save"></i>
+                    Save
+                  </button>
 
-                    <input type="file" id="inputFile" style="display: none;" />
-                    <button type="button" class="btn btn-default" id="btnOpen">
-                      <span class="glyphicon glyphicon-open" aria-hidden="true"></span>
-                      Open
-                    </button>
-                  </span>
+                  <input type="file" id="inputFile" style="display: none;" />
+
+                  <button type="button" class="btn btn-outline-secondary" id="btnOpen">
+                    <i class="bi bi-folder2-open"></i>
+                    Open
+                  </button>
                 </div>
 
-              </div>
-
             </div>
-            <textarea id="textareaFields" class="form-control" rows="24"></textarea>
+            <textarea id="textareaFields" class="form-control mt-1" rows="24"></textarea>
           </div>
         </div>
       </div>
@@ -128,54 +129,54 @@
 
   <div id="templates" style="display: none">
 
-    <div id="sectionTemplate" class="form-group">
+    <div id="sectionTemplate" class="row mb-3">
       <div class="col-sm-12">
         <hr style="margin-bottom: 5px;margin-top: 5px;" />
       </div>
       <div class="col-sm-2 section-header-text"></div>
     </div>
 
-    <div id="numberTemplate" class="form-group">
-      <label class="col-sm-2 control-label"></label>
+    <div id="numberTemplate" class="row mb-3">
+      <label class="col-sm-2 col-form-label"></label>
       <div class="col-sm-2">
         <input class="form-control input" type="number" step="1" min="0" max="255" />
       </div>
       <div class="col-sm-8">
-        <input class="form-control slider" type="range" step="1" min="0" max="255" />
+        <input type="range" class="form-range" step="1" min="0" max="255" />
       </div>
     </div>
 
-    <div id="booleanTemplate" class="form-group">
-      <label class="col-sm-2 control-label"></label>
+    <div id="booleanTemplate" class="row mb-3">
+      <label class="col-sm-2 col-form-label"></label>
       <div class="col-sm-10">
         <div class="btn-group" role="group">
-          <button type="button" class="btn btn-default" id="btnOn">On</button>
-          <button type="button" class="btn btn-default" id="btnOff">Off</button>
+          <button type="button" class="btn btn-outline-secondary" id="btnOn">On</button>
+          <button type="button" class="btn btn-outline-secondary" id="btnOff">Off</button>
         </div>
       </div>
     </div>
 
-    <div id="selectTemplate" class="form-group">
-      <label class="col-sm-2 control-label"></label>
+    <div id="selectTemplate" class="row mb-3">
+      <label class="col-sm-2  "></label>
       <div class="col-sm-8">
         <select class="form-control"></select>
       </div>
       <div class="col-sm-2">
-        <div class="btn-group" role="group" aria-label="...">
-          <button type="button" class="btn btn-default btn-previous"
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-outline-secondary btn-previous"
                   aria-label="Previous" title="Previous">
-            <span class="glyphicon glyphicon-chevron-left"></span>
+            <i class="bi bi-chevron-left"></i>
           </button>
-          <button type="button" class="btn btn-default btn-next"
+          <button type="button" class="btn btn-outline-secondary btn-next"
                   aria-label="Next" title="Next">
-            <span class="glyphicon glyphicon-chevron-right"></span>
+            <i class="bi bi-chevron-right"></i>
           </button>
         </div>
       </div>
     </div>
 
-    <div id="utcOffsetIndexTemplate" class="form-group">
-      <label class="col-sm-2 control-label"></label>
+    <div id="utcOffsetIndexTemplate" class="row mb-3">
+      <label class="col-sm-2 col-form-label"></label>
       <div class="col-sm-8">
         <select class="form-control">
           <option value="0">-12:00</option>
@@ -286,115 +287,113 @@
         </select>
       </div>
       <div class="col-sm-2">
-        <div class="btn-group" role="group" aria-label="...">
-          <button type="button" class="btn btn-default btn-previous"
-                  aria-label="Previous" title="Previous">
-            <span class="glyphicon glyphicon-chevron-left"></span>
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-outline-secondary btn-previous" aria-label="Previous" title="Previous">
+            <i class="bi bi-chevron-left"></i>
           </button>
-          <button type="button" class="btn btn-default btn-next"
-                  aria-label="Next" title="Next">
-            <span class="glyphicon glyphicon-chevron-right"></span>
+          <button type="button" class="btn btn-outline-secondary btn-next" aria-label="Next" title="Next">
+            <i class="bi bi-chevron-right"></i>
           </button>
-          <a class="btn btn-default" href="https://en.wikipedia.org/wiki/List_of_UTC_time_offsets" role="button" 
+          <a class="btn btn-outline-secondary" href="https://en.wikipedia.org/wiki/List_of_UTC_time_offsets" role="button" 
               title="List of UTC time offsets" target="_blank" rel="noopener noreferrer">
-              <span class="glyphicon glyphicon-question-sign"></span>
+            <i class="bi bi-question-circle-fill"></i>
           </a>
         </div>
       </div>
     </div>
 
-    <div id="colorPaletteTemplate" class="form-group">
-      <label class="col-sm-2 control-label color-label"></label>
+    <div id="colorPaletteTemplate" class="row mb-3">
+      <label class="col-sm-2 col-form-label color-label"></label>
       <div class="col-sm-10">
         <div class="btn-group btn-group-justified" role="group">
           <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default btn-color" style="background: #FF0000;" title="Red">&nbsp;</button>
+            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #FF0000;" title="Red">&nbsp;</button>
           </div>
           <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default btn-color" style="background: #FF8000;" title="Orange">&nbsp;</button>
+            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #FF8000;" title="Orange">&nbsp;</button>
           </div>
           <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default btn-color" style="background: #FFFF00;" title="Yellow">&nbsp;</button>
+            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #FFFF00;" title="Yellow">&nbsp;</button>
           </div>
           <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default btn-color" style="background: #80FF00;" title="Chartreuse">&nbsp;</button>
+            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #80FF00;" title="Chartreuse">&nbsp;</button>
           </div>
           <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default btn-color" style="background: #00FF00;" title="Green">&nbsp;</button>
+            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #00FF00;" title="Green">&nbsp;</button>
           </div>
           <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default btn-color" style="background: #00FF80;" title="Spring Green">&nbsp;</button>
+            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #00FF80;" title="Spring Green">&nbsp;</button>
           </div>
           <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default btn-color" style="background: #00FFFF;" title="Cyan">&nbsp;</button>
+            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #00FFFF;" title="Cyan">&nbsp;</button>
           </div>
           <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default btn-color" style="background: #0080FF;" title="Azure">&nbsp;</button>
+            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #0080FF;" title="Azure">&nbsp;</button>
           </div>
           <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default btn-color" style="background: #0000FF;" title="Blue">&nbsp;</button>
+            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #0000FF;" title="Blue">&nbsp;</button>
           </div>
           <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default btn-color" style="background: #8000FF;" title="Violet">&nbsp;</button>
+            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #8000FF;" title="Violet">&nbsp;</button>
           </div>
           <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default btn-color" style="background: #FF00FF;" title="Magenta">&nbsp;</button>
+            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #FF00FF;" title="Magenta">&nbsp;</button>
           </div>
           <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default btn-color" style="background: #FF0080;" title="Rose">&nbsp;</button>
+            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #FF0080;" title="Rose">&nbsp;</button>
           </div>
           <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default btn-color" style="background: #FFFFFF;" title="White">&nbsp;</button>
+            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #FFFFFF;" title="White">&nbsp;</button>
           </div>
         </div>
       </div>
     </div>
 
     <div id="colorTemplate">
-      <div class="form-group">
-        <!-- <label class="col-sm-2 control-label color-label"></label> -->
-        <div class="col-sm-12 col-sm-offset-2">
+      <div class="row mb-3">
+        <!-- <label class="col-sm-2 col-form-label color-label"></label> -->
+        <div class="col-sm-12 offset-sm-2">
           <input type="text" class="form-control minicolors" />
         </div>
       </div>
-      <div class="form-group">
-        <label class="col-sm-2 control-label">Red</label>
+      <div class="row mb-3">
+        <label class="col-sm-2 col-form-label">Red</label>
         <div class="col-sm-2">
           <input class="form-control color-red-input" type="number" step="1" min="0" max="255" />
         </div>
         <div class="col-sm-8">
-          <input class="form-control color-red-slider" type="range" step="1" min="0" max="255" />
+          <input class="form-range color-red-slider" type="range" step="1" min="0" max="255" />
         </div>
       </div>
-      <div class="form-group">
-        <label class="col-sm-2 control-label">Green</label>
+      <div class="row mb-3">
+        <label class="col-sm-2 col-form-label">Green</label>
         <div class="col-sm-2">
           <input class="form-control color-green-input" type="number" step="1" min="0" max="255" />
         </div>
         <div class="col-sm-8">
-          <input class="form-control color-green-slider" type="range" step="1" min="0" max="255" />
+          <input class="form-range color-green-slider" type="range" step="1" min="0" max="255" />
         </div>
       </div>
-      <div class="form-group">
-        <label class="col-sm-2 control-label">Blue</label>
+      <div class="row mb-3">
+        <label class="col-sm-2 col-form-label">Blue</label>
         <div class="col-sm-2">
           <input class="form-control color-blue-input" type="number" step="1" min="0" max="255" />
         </div>
         <div class="col-sm-8">
-          <input class="form-control color-blue-slider" type="range" step="1" min="0" max="255" />
+          <input class="form-range color-blue-slider" type="range" step="1" min="0" max="255" />
         </div>
       </div>
     </div>
 
-    <div id="stringTemplate" class="form-group">
-      <label class="col-sm-2 control-label"></label>
+    <div id="stringTemplate" class="row mb-3">
+      <label class="col-sm-2 col-form-label"></label>
       <div class="col-sm-10">
         <input class="form-control input" />
       </div>
     </div>
 
-    <div id="labelTemplate" class="form-group">
-      <label class="col-sm-2 control-label"></label>
+    <div id="labelTemplate" class="row mb-3">
+      <label class="col-sm-2 col-form-label"></label>
       <div class="col-sm-10">
         <input class="form-control input" readonly />
       </div>
@@ -402,42 +401,37 @@
 
   </div>
 
-  <nav class="navbar navbar-default navbar-fixed-bottom">
-    <div class="container">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-2" aria-expanded="false">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-      </div>
-      <div class="collapse navbar-collapse" id="navbar-collapse-2">
-        <ul class="nav navbar-nav">
-          <li>
-            <a href="/" aria-label="Refresh" title="Refresh">
-              <span class="glyphicon glyphicon-refresh" id="btnRefresh"></span>
-            </a>
-          </li>
-          <li><p class="navbar-text" id="status">Loading, please wait...</p></li>
-        </ul>
-      </div>
+  <nav class="navbar navbar-expand-sm fixed-bottom navbar-light bg-light">
+    <div class="container-fluid">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/" aria-label="Refresh" title="Refresh">
+            <i class="bi bi-arrow-clockwise"></i>
+          </a>
+        </li>
+        <li class="nav-item">
+          <button id="btnScrollToTop" type="button" class="btn btn-outline-secondary btn-sm" aria-label="Scroll to top" title="Scroll to top">
+            <i class="bi bi-arrow-up"></i>
+          </button>
+        </li>
+      </ul>
+      <span class="navbar-text" id="status">Loading, please wait...</span>
     </div>
   </nav>
 
   <!-- request js from internet CDN -->
-  <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.2.4/jquery.minicolors.min.js" integrity="sha256-XAFQ9dZ6hy8p/GRhU8h/8pMvM1etymiJLZW1CiHV3bQ=" crossorigin="anonymous"></script>
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js" integrity="sha256-A4JwlcDvqO4JXpvEtvWY1RH8JAEMu5W21wP8GUXLUNs=" crossorigin="anonymous"></script> -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.2/FileSaver.min.js" integrity="sha512-k8F8QynmFNURwbUJC8drKA+fo3YfNvjqKzStdydD6au+MzvxBoRnxH8E31RJXwDY9DrnEiPhh9wBoDSIxhkyHQ==" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.3.6/jquery.minicolors.min.js" integrity="sha512-vBqPkpOdZM0O7YezzE8xaoUdyt4Z2d+gLrY0AMvmNPLdLuNzvreTopyuaM9/FiRzHs1bwWzYDJgH6STcuNXpqg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js" integrity="sha512-B4skI5FiLurS86aioJx9VfozI1wjqrn6aTdJH+YQUmCZum/ZibPBTX55k5d9XM6EsKePDInkLVrN7vPmJxc1qA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js" integrity="sha512-Qlv6VSKh1gDKGoJbnyA5RMXYcvnpIqhO++MhIM2fStMcGT9i2T//tSwYFlcyoRRDcDZ+TYHpH8azBBCyhpSeqw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <!-- request js from the ESP8266 web server -->
-  <!-- <script src="js/jquery-3.1.1.min.js"></script> -->
-  <!-- <script src="js/bootstrap.min.js"></script> -->
-  <!-- <script src="js/minicolors.min.js"></script> -->
-  <!-- <script src="js/r-websocket.min.js"></script> -->
-  <!-- <script src="js/FileSaver.min.js"></script> -->
+  <!-- <script src="js/jquery-3.6.0.min.js"></script> -->
+  <!-- <script src="js/bootstrap-5.1.3.min.js"></script> -->
+  <!-- <script src="js/jquery.minicolors-2.3.6.min.js"></script> -->
+  <!-- <script src="js/r-websocket-1.0.0.min.js"></script> -->
+  <!-- <script src="js/FileSaver-2.0.5.min.js"></script> -->
 
   <script src="js/app.js"></script>
 

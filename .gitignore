@@ -5,7 +5,12 @@ buildcache/
 arduino.json
 c_cpp_properties.json
 
+cppcheck-addon-ctu-file-list
+*.ctu-info
+*.dump
+
 /.vscode/
+/.vs
 /release
 /platformio_override.ini
 /.pio/

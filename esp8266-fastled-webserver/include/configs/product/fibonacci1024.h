@@ -17,8 +17,8 @@
 */
 #pragma once
 
-#if !defined(ESP8266_FASTLED_WEBSERVER_PRODUCT_FIB512_MINI_H)
-#define ESP8266_FASTLED_WEBSERVER_PRODUCT_FIB512_MINI_H
+#if !defined(ESP8266_FASTLED_WEBSERVER_PRODUCT_FIB1024_MINI_H)
+#define ESP8266_FASTLED_WEBSERVER_PRODUCT_FIB1024_MINI_H
 
 #if !defined(LED_TYPE)
    #define LED_TYPE                      WS2812B
@@ -27,10 +27,10 @@
    #define COLOR_ORDER                   GRB
 #endif
 #if !defined(NUM_PIXELS)
-   #define NUM_PIXELS                    512
+   #define NUM_PIXELS                    1024
 #endif
 #if !defined(AVAILABLE_MILLI_AMPS)
-   #define AVAILABLE_MILLI_AMPS          2000 // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
+   #define AVAILABLE_MILLI_AMPS          10000 // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
 #endif
 #if !defined(MAX_MILLI_AMPS_PER_PIXEL)
    #define MAX_MILLI_AMPS_PER_PIXEL      48   // IMPORTANT: set to larger value if necessary
@@ -48,10 +48,10 @@
    #define DEFAULT_COLOR_CORRECTION      TypicalSMD5050
 #endif
 #if !defined(NAME_PREFIX)
-   #define NAME_PREFIX                   "Fibonacci512-"
+   #define NAME_PREFIX                   "Fibonacci1024-"
 #endif
 #if !defined(PRODUCT_FRIENDLY_NAME)
-   #define PRODUCT_FRIENDLY_NAME         "Fibonacci512"
+   #define PRODUCT_FRIENDLY_NAME         "Fibonacci1024"
 #endif
 #if !defined(IS_FIBONACCI)
    #define IS_FIBONACCI                  1
@@ -60,20 +60,45 @@
    #define HAS_COORDINATE_MAP            1
 #endif
 #if !defined(PARALLEL_OUTPUT_CHANNELS)
-   #define PARALLEL_OUTPUT_CHANNELS      4
+   #define PARALLEL_OUTPUT_CHANNELS      5
 #endif
 #if !defined(PIXELS_ON_DATA_PIN_1)
-   #define PIXELS_ON_DATA_PIN_1 121
+   #define PIXELS_ON_DATA_PIN_1 205
 #endif
 #if !defined(PIXELS_ON_DATA_PIN_2)
-   #define PIXELS_ON_DATA_PIN_2 120
+   #define PIXELS_ON_DATA_PIN_2 205
 #endif
 #if !defined(PIXELS_ON_DATA_PIN_3)
-   #define PIXELS_ON_DATA_PIN_3 121
+   #define PIXELS_ON_DATA_PIN_3 205
 #endif
 #if !defined(PIXELS_ON_DATA_PIN_4)
-   #define PIXELS_ON_DATA_PIN_4 150
+   #define PIXELS_ON_DATA_PIN_4 205
+#endif
+#if !defined(PIXELS_ON_DATA_PIN_5)
+   #define PIXELS_ON_DATA_PIN_5 204
 #endif
 
+#if defined(ARDUINO_ARCH_ESP8266)
+   // This board uses different data pins....
+   #if !defined(DATA_PIN)
+      #define DATA_PIN      D5 // d1 mini
+   #endif
+   #if !defined(DATA_PIN_2) && PARALLEL_OUTPUT_CHANNELS >= 2
+      #define DATA_PIN_2    D7 // d1 mini
+   #endif
+   #if !defined(DATA_PIN_3) && PARALLEL_OUTPUT_CHANNELS >= 3
+      #define DATA_PIN_3    D6 // d1 mini
+   #endif
+   #if !defined(DATA_PIN_4) && PARALLEL_OUTPUT_CHANNELS >= 4
+      #define DATA_PIN_4    D1 // d1 mini
+   #endif
+   #if !defined(DATA_PIN_5) && PARALLEL_OUTPUT_CHANNELS >= 5
+      #define DATA_PIN_5    D2 // d1 mini
+   #endif
+#elif defined(ARDUINO_ARCH_ESP32)
+   #error "F1024 currently only supports ESP8266"
+#else
+   #error "F1024 currently only supports ESP8266"
+#endif
 
-#endif // ESP8266_FASTLED_WEBSERVER_PRODUCT_FIB512_MINI_H
+#endif // ESP8266_FASTLED_WEBSERVER_PRODUCT_FIB1024_MINI_H

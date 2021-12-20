@@ -48,20 +48,16 @@
    #define DEFAULT_COLOR_CORRECTION      UncorrectedColor // 1628-Rings did not specify; This is FastLED default
 #endif
 #if !defined(NAME_PREFIX)
-   #define NAME_PREFIX                   "ESP8266-"
+   #define NAME_PREFIX                   "sol-v2-"
 #endif
 #if !defined(PRODUCT_FRIENDLY_NAME)
-   #define PRODUCT_FRIENDLY_NAME         "ESP8266 FastLED Webserver"
+   #define PRODUCT_FRIENDLY_NAME         "Sol v2"
 #endif
 #if !defined(IS_FIBONACCI)
    #define IS_FIBONACCI                  0
 #endif
 #if !defined(HAS_COORDINATE_MAP)
    #define HAS_COORDINATE_MAP            1
-#endif
-// TODO: combine HAS_POLAR_COORDS with HAS_COORDINATE_MAP
-#if !defined(HAS_POLAR_COORDS)
-   #define HAS_POLAR_COORDS              1
 #endif
 #if !defined(PARALLEL_OUTPUT_CHANNELS) // WARNING:  Refresh rate for 1628 pixels over single output is ~15 frames / second MAXIMUM....
    #define PARALLEL_OUTPUT_CHANNELS      1
