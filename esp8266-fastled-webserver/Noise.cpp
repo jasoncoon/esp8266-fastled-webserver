@@ -88,9 +88,6 @@ static uint16_t noisescale = 1; // scale is set dynamically once we've started u
 
 static uint8_t colorLoop = 0;
 
-
-
-
 static const CRGBPalette16 blackAndWhiteStripedPalette {
   CRGB::White, CRGB::Black, CRGB::Black, CRGB::Black,
   CRGB::White, CRGB::Black, CRGB::Black, CRGB::Black,
@@ -145,47 +142,6 @@ void drawNoise(CRGBPalette16 palette, uint8_t hueReduce = 0)
   noisez += noisespeedz;
 }
 
-#if HAS_POLAR_COORDS // change to "HAS_CONCENTRIC_RINGS" ?
-
-// drawPolarNoise() uses angles[] and radii[]
-void drawPolarNoise(CRGBPalette16 palette, uint8_t hueReduce = 0)
-{
-  for (uint16_t i = 0; i < NUM_PIXELS; i++) {
-    uint8_t x = angles[i];
-    uint8_t y = radii[i] / 2u; // divide by 2 to change range of values from [0..255] to [0..127]
-
-    int xoffset = noisescale * x;
-    int yoffset = noisescale * y;
-    leds[i] = noiseXYZ(palette, hueReduce, x + xoffset + noisex, y + yoffset + noisey, noisez);
-  }
-  noisex += noisespeedx;
-  noisey += noisespeedy;
-  noisez += noisespeedz;
-}
-#endif // HAS_POLAR_COORDS
-
-#if HAS_POLAR_COORDS //  gradientPalettePolarNoise() uses drawPolarNoise()
-// TODO: Check if gradientPalettePolarNoise() is equivalent to angleGradientPalette()?
-void gradientPalettePolarNoise() {
-  noisespeedx = 4;
-  noisespeedy = 0;
-  noisespeedz = 0;
-  noisescale = 1;
-  colorLoop = 0;
-  drawPolarNoise(gCurrentPalette);
-}
-#endif
-#if HAS_POLAR_COORDS // palettePolarNoise() uses drawPolarNoise()
-void palettePolarNoise() {
-  noisespeedx = 9;
-  noisespeedy = 0;
-  noisespeedz = 0;
-  noisescale = 1;
-  colorLoop = 0;
-  drawPolarNoise(palettes[currentPaletteIndex]);
-}
-#endif
-
 void rainbowNoise() {
   noisespeedx = 0;
   noisespeedy = -1;
@@ -194,17 +150,6 @@ void rainbowNoise() {
   colorLoop = 0;
   drawNoise(RainbowColors_p);
 }
-
-#if HAS_POLAR_COORDS // rainbowPolarNoise() uses drawPolarNoise()
-void rainbowPolarNoise() {
-  noisespeedx = 0;
-  noisespeedy = 2;
-  noisespeedz = 0;
-  noisescale = 0;
-  colorLoop = 0;
-  drawPolarNoise(RainbowColors_p);
-}
-#endif // HAS_POLAR_COORDS
 
 void rainbowStripeNoise() {
   noisespeedx = 0;
@@ -215,17 +160,6 @@ void rainbowStripeNoise() {
   drawNoise(RainbowStripeColors_p);
 }
 
-#if HAS_POLAR_COORDS // rainbowStripePolarNoise() uses drawPolarNoise()
-void rainbowStripePolarNoise() {
-  noisespeedx = 0;
-  noisespeedy = 2;
-  noisespeedz = 0;
-  noisescale = 0;
-  colorLoop = 0;
-  drawPolarNoise(RainbowStripeColors_p);
-}
-#endif
-
 void partyNoise() {
   noisespeedx = -9;
   noisespeedy = 0;
@@ -234,17 +168,6 @@ void partyNoise() {
   colorLoop = 0;
   drawNoise(PartyColors_p);
 }
-
-#if HAS_POLAR_COORDS // partyPolarNoise() uses drawPolarNoise()
-void partyPolarNoise() {
-  noisespeedx = 9;
-  noisespeedy = 0;
-  noisespeedz = 0;
-  noisescale = 1;
-  colorLoop = 0;
-  drawPolarNoise(PartyColors_p);
-}
-#endif
 
 void forestNoise() {
   noisespeedx = -9;
@@ -255,17 +178,6 @@ void forestNoise() {
   drawNoise(ForestColors_p);
 }
 
-#if HAS_POLAR_COORDS // forestPolarNoise() uses drawPolarNoise()
-void forestPolarNoise() {
-  noisespeedx = 9;
-  noisespeedy = 0;
-  noisespeedz = 0;
-  noisescale = 1;
-  colorLoop = 0;
-  drawPolarNoise(ForestColors_p);
-}
-#endif
-
 void cloudNoise() {
   noisespeedx = -2;
   noisespeedy = 0;
@@ -274,17 +186,6 @@ void cloudNoise() {
   colorLoop = 0;
   drawNoise(CloudColors_p);
 }
-
-#if HAS_POLAR_COORDS // cloudPolarNoise() uses drawPolarNoise()
-void cloudPolarNoise() {
-  noisespeedx = 2;
-  noisespeedy = 0;
-  noisespeedz = 0;
-  noisescale = 0;
-  colorLoop = 0;
-  drawPolarNoise(CloudColors_p);
-}
-#endif
 
 void fireNoise() {
   noisespeedx = 0; // 24;
@@ -295,7 +196,176 @@ void fireNoise() {
   drawNoise(HeatColors_p, 60);
 }
 
-#if HAS_POLAR_COORDS // firePolarNoise() uses drawPolarNoise()
+void fireNoise2() {
+  noisespeedx = 0;
+  noisespeedy = -8;
+  noisespeedz = 3;
+  noisescale = 8;
+  colorLoop = 0;
+  drawNoise(HeatColors_p);
+}
+
+void lavaNoise() {
+  noisespeedx = 0;
+  noisespeedy = -1;
+  noisespeedz = 1;
+  noisescale = 6;
+  colorLoop = 0;
+  drawNoise(LavaColors_p);
+}
+
+void oceanNoise() {
+  noisespeedx = -2;
+  noisespeedy = 0;
+  noisespeedz = 4;
+  noisescale = 6;
+  colorLoop = 0;
+  drawNoise(OceanColors_p);
+}
+
+void blackAndWhiteNoise() {
+  noisespeedx = -12;
+  noisespeedy = 0;
+  noisespeedz = 0;
+  noisescale = 6;
+  colorLoop = 0;
+  drawNoise(blackAndWhiteStripedPalette);
+}
+
+void blackAndBlueNoise() {
+  noisespeedx = 0;
+  noisespeedy = 8;
+  noisespeedz = 0;
+  noisescale = 8;
+  colorLoop = 0;
+  drawNoise(blackAndBlueStripedPalette);
+}
+
+void gradientPaletteNoise() {
+  noisespeedx = 4;
+  noisespeedy = 0;
+  noisespeedz = 0;
+  noisescale = 1;
+  colorLoop = 0;
+  drawNoise(gCurrentPalette);
+}
+
+void paletteNoise() {
+  noisespeedx = 4;
+  noisespeedy = 0;
+  noisespeedz = 0;
+  noisescale = 1;
+  colorLoop = 0;
+  drawNoise(palettes[currentPaletteIndex]);
+}
+
+// drawPolarNoise() uses angles[] and radiusProxy[]
+void drawPolarNoise(CRGBPalette16 palette, uint8_t hueReduce = 0)
+{
+  for (uint16_t i = 0; i < NUM_PIXELS; i++) {
+    uint8_t x = angles[i];
+    uint8_t y = radiusProxy[i] / 2u; // divide by 2 to change range of values from [0..255] to [0..127]
+
+    int xoffset = noisescale * x;
+    int yoffset = noisescale * y;
+    leds[i] = noiseXYZ(palette, hueReduce, x + xoffset + noisex, y + yoffset + noisey, noisez);
+  }
+  noisex += noisespeedx;
+  noisey += noisespeedy;
+  noisez += noisespeedz;
+}
+
+// TODO: Check if gradientPalettePolarNoise() is equivalent to angleGradientPalette()?
+void gradientPalettePolarNoise() {
+  noisespeedx = 4;
+  noisespeedy = 0;
+  noisespeedz = 0;
+  noisescale = 1;
+  colorLoop = 0;
+  drawPolarNoise(gCurrentPalette);
+}
+
+void palettePolarNoise() {
+  noisespeedx = 9;
+  noisespeedy = 0;
+  noisespeedz = 0;
+  noisescale = 1;
+  colorLoop = 0;
+  drawPolarNoise(palettes[currentPaletteIndex]);
+}
+
+void oceanPolarNoise() {
+  noisespeedx = -1; // beatsin8(6, 0, 2) - 1;
+  noisespeedy = 0;
+  noisespeedz = 1;
+  noisescale = 0;
+  colorLoop = 0;
+  drawPolarNoise(OceanColors_p);
+}
+
+void blackAndWhitePolarNoise() {
+  noisespeedx = -4; // beatsin8(8, 0, 9) - 4;
+  noisespeedy = 0;
+  noisespeedz = 0;
+  noisescale = 0;
+  colorLoop = 0;
+  drawPolarNoise(blackAndWhiteStripedPalette);
+}
+
+void blackAndBluePolarNoise() {
+  noisespeedx = 0;
+  noisespeedy = -8; // beatsin8(8, 0, 16) - 8;
+  noisespeedz = 0;
+  noisescale = 1;
+  colorLoop = 0;
+  drawPolarNoise(blackAndBlueStripedPalette);
+}
+
+void rainbowPolarNoise() {
+  noisespeedx = 0;
+  noisespeedy = 2;
+  noisespeedz = 0;
+  noisescale = 0;
+  colorLoop = 0;
+  drawPolarNoise(RainbowColors_p);
+}
+
+void rainbowStripePolarNoise() {
+  noisespeedx = 0;
+  noisespeedy = 2;
+  noisespeedz = 0;
+  noisescale = 0;
+  colorLoop = 0;
+  drawPolarNoise(RainbowStripeColors_p);
+}
+
+void partyPolarNoise() {
+  noisespeedx = 9;
+  noisespeedy = 0;
+  noisespeedz = 0;
+  noisescale = 1;
+  colorLoop = 0;
+  drawPolarNoise(PartyColors_p);
+}
+
+void forestPolarNoise() {
+  noisespeedx = 9;
+  noisespeedy = 0;
+  noisespeedz = 0;
+  noisescale = 1;
+  colorLoop = 0;
+  drawPolarNoise(ForestColors_p);
+}
+
+void cloudPolarNoise() {
+  noisespeedx = 2;
+  noisespeedy = 0;
+  noisespeedz = 0;
+  noisescale = 0;
+  colorLoop = 0;
+  drawPolarNoise(CloudColors_p);
+}
+
 void firePolarNoise() {
 //  noisespeedx = 0; // 24;
 //  noisespeedy = -24;
@@ -309,18 +379,7 @@ void firePolarNoise() {
   colorLoop = 0;
   drawPolarNoise(HeatColors_p, 60);
 }
-#endif
 
-void fireNoise2() {
-  noisespeedx = 0;
-  noisespeedy = -8;
-  noisespeedz = 3;
-  noisescale = 8;
-  colorLoop = 0;
-  drawNoise(HeatColors_p);
-}
-
-#if HAS_POLAR_COORDS // firePolarNoise2() uses drawPolarNoise()
 void firePolarNoise2() {
 //  noisespeedx = 0;
 //  noisespeedy = -8;
@@ -334,18 +393,7 @@ void firePolarNoise2() {
   colorLoop = 0;
   drawPolarNoise(HeatColors_p);
 }
-#endif
 
-void lavaNoise() {
-  noisespeedx = 0;
-  noisespeedy = -1;
-  noisespeedz = 1;
-  noisescale = 6;
-  colorLoop = 0;
-  drawNoise(LavaColors_p);
-}
-
-#if HAS_POLAR_COORDS // lavaPolarNoise() uses drawPolarNoise()
 void lavaPolarNoise() {
   noisespeedx = 0;
   noisespeedy = -1;
@@ -354,66 +402,5 @@ void lavaPolarNoise() {
   colorLoop = 0;
   drawPolarNoise(LavaColors_p);
 }
-#endif
-
-void oceanNoise() {
-  noisespeedx = -2;
-  noisespeedy = 0;
-  noisespeedz = 4;
-  noisescale = 6;
-  colorLoop = 0;
-  drawNoise(OceanColors_p);
-}
-
-#if HAS_POLAR_COORDS // oceanPolarNoise() uses drawPolarNoise()
-void oceanPolarNoise() {
-  noisespeedx = -1; // beatsin8(6, 0, 2) - 1;
-  noisespeedy = 0;
-  noisespeedz = 1;
-  noisescale = 0;
-  colorLoop = 0;
-  drawPolarNoise(OceanColors_p);
-}
-#endif
-
-void blackAndWhiteNoise() {
-  noisespeedx = -12;
-  noisespeedy = 0;
-  noisespeedz = 0;
-  noisescale = 6;
-  colorLoop = 0;
-  drawNoise(blackAndWhiteStripedPalette);
-}
-
-#if HAS_POLAR_COORDS // blackAndWhitePolarNoise() uses drawPolarNoise()
-void blackAndWhitePolarNoise() {
-  noisespeedx = -4; // beatsin8(8, 0, 9) - 4;
-  noisespeedy = 0;
-  noisespeedz = 0;
-  noisescale = 0;
-  colorLoop = 0;
-  drawPolarNoise(blackAndWhiteStripedPalette);
-}
-#endif
-
-void blackAndBlueNoise() {
-  noisespeedx = 0;
-  noisespeedy = 8;
-  noisespeedz = 0;
-  noisescale = 8;
-  colorLoop = 0;
-  drawNoise(blackAndBlueStripedPalette);
-}
-
-#if HAS_POLAR_COORDS // blackAndBluePolarNoise() uses drawPolarNoise()
-void blackAndBluePolarNoise() {
-  noisespeedx = 0;
-  noisespeedy = -8; // beatsin8(8, 0, 16) - 8;
-  noisespeedz = 0;
-  noisescale = 1;
-  colorLoop = 0;
-  drawPolarNoise(blackAndBlueStripedPalette);
-}
-#endif
 
 #endif // HAS_COORDINATE_MAP

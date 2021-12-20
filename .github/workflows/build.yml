@@ -6,15 +6,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        
+
       - name: Build with Arduino-CLI
         run: bash ci/build-arduino.sh
-        
+
   pio-build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        
+
       - name: Build with PlatformIO
         run: bash ci/build-platformio.sh
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: firmware
+          path: .pio/build/*/firmware.bin

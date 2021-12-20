@@ -3,7 +3,7 @@ var address = location.hostname;
 var urlBase = "";
 
 // used when hosting the site somewhere other than the ESP8266 (handy for testing without waiting forever to upload to SPIFFS/LittleFS)
-// var address = "192.168.1.13";
+// var address = "192.168.86.30";
 // var urlBase = "http://" + address + "/";
 
 var postColorTimer = {};
@@ -46,32 +46,32 @@ var patterns = [
   "Water"
 ];
 
-var ws = new ReconnectingWebSocket('ws://' + address + ':81/', ['arduino']);
-ws.debug = true;
+// var ws = new ReconnectingWebSocket('ws://' + address + ':81/', ['arduino']);
+// ws.debug = true;
 
-ws.onmessage = function(evt) {
-  if(evt.data != null)
-  {
-    var data = JSON.parse(evt.data);
-    if(data == null) return;
-    switch(data.name) {
-      case "power":
-        if(data.value == 1) {
-          $("#btnOn").attr("class", "btn btn-primary");
-          $("#btnOff").attr("class", "btn btn-default");
-        } else {
-          $("#btnOff").attr("class", "btn btn-primary");
-          $("#btnOn").attr("class", "btn btn-default");
-        }
-        break;
+// ws.onmessage = function(evt) {
+//   if(evt.data != null)
+//   {
+//     var data = JSON.parse(evt.data);
+//     if(data == null) return;
+//     switch(data.name) {
+//       case "power":
+//         if(data.value == 1) {
+//           $("#btnOn").attr("class", "btn btn-primary");
+//           $("#btnOff").attr("class", "btn btn-outline-secondary");
+//         } else {
+//           $("#btnOff").attr("class", "btn btn-primary");
+//           $("#btnOn").attr("class", "btn btn-outline-secondary");
+//         }
+//         break;
 
-      case "pattern":
-        $(".grid-item-pattern").attr("class", "grid-item-pattern btn btn-default");
-        $("#pattern-button-" + data.value).attr("class", "grid-item-pattern btn btn-primary");
-        break;
-    }
-  }
-}
+//       case "pattern":
+//         $(".grid-item-pattern").attr("class", "grid-item-pattern btn btn-outline-secondary");
+//         $("#pattern-button-" + data.value).attr("class", "grid-item-pattern btn btn-primary");
+//         break;
+//     }
+//   }
+// }
 
 $(document).ready(function() {
   $("#status").html("Connecting, please wait...");
@@ -79,13 +79,20 @@ $(document).ready(function() {
   $.get(urlBase + "all", function(data) {
     $("#status").html("Loading, please wait...");
 
+    // get product name for main page
+    $.get(urlBase + "product", function (data) {
+      const name = data['productName'];
+      // Set overall page title
+      $(document).attr("title", name + " by EvilGenius Labs");
+    });
+
     $.each(data, function(index, field) {
       switch (field.name) {
         case "power":
           if(field.value == 1) {
-            $("#btnOn").attr("class", "btn btn-primary");
+            $("#btnOn").attr("class", "col-2 btn btn-primary");
           } else {
-            $("#btnOff").attr("class", "btn btn-primary");
+            $("#btnOff").attr("class", "col-2 btn btn-primary");
           }
           break;
 
@@ -94,27 +101,29 @@ $(document).ready(function() {
           break;
       }
     });
+
+    $("#status").html("");
   });
 
   addColorButtons();
 
   $("#btnOn").click(function() {
     postValue("power", 1);
-    $("#btnOn").attr("class", "btn btn-primary");
-    $("#btnOff").attr("class", "btn btn-default");
+    $("#btnOn").attr("class", "col-2 btn btn-primary");
+    $("#btnOff").attr("class", "col-2 btn btn-outline-secondary");
   });
 
   $("#btnOff").click(function() {
     postValue("power", 0);
-    $("#btnOff").attr("class", "btn btn-primary");
-    $("#btnOn").attr("class", "btn btn-default");
+    $("#btnOff").attr("class", "col-2 btn btn-primary");
+    $("#btnOn").attr("class", "col-2 btn btn-outline-secondary");
   });
 
   $("#status").html("Ready");
 });
 
 function addColorButtons() {
-  var hues = 25;
+  var hues = 12;
   var hueStep = 360 / hues;
 
   var levels = 10;
@@ -125,12 +134,6 @@ function addColorButtons() {
       addColorButton(h * hueStep, 100, l);
     }
   }
-
-  $('.grid-color').isotope({
-    itemSelector: '.grid-item-color',
-    layoutMode: 'fitRows'
-  });
-
 }
 
 var colorButtonIndex = 0;
@@ -144,13 +147,13 @@ function addColorButton(h, s, l) {
     var rgb = $(this).css('backgroundColor');
     var components = rgbToComponents(rgb);
 
-    $(".grid-item-color").css("border", "none");
+    $(".color").css("border", "none");
     $(this).css("border", "1px solid");
 
     postColor("solidColor", components);
   });
 
-  $("#colorButtonsRow").append(template);
+  $("#colors").append(template);
 }
 
 function addPatternButtons(patternField) {
@@ -163,20 +166,14 @@ function addPatternButtons(patternField) {
     template.text(pattern);
     template.click(function() {
       postValue("patternName", pattern);
-      $(".grid-item-color").css("border", "none");
-      $(".grid-item-pattern").attr("class", "grid-item-pattern btn btn-default");
-      $(this).attr("class", "grid-item-pattern btn btn-primary");
+      $(".pattern").attr("class", "col btn btn-outline-secondary pattern");
+      $(this).attr("class", "col btn btn-primary pattern");
     });
 
-    $("#patternGrid").append(template);
+    $("#patterns").append(template);
   });
 
-  $('.grid-pattern').isotope({
-    itemSelector: '.grid-item-pattern',
-    layoutMode: 'fitRows'
-  });
-
-  $("#pattern-button-" + patternField.value).attr("class", "grid-item-pattern btn btn-primary");
+  $("#pattern-button-" + patternField.value).attr("class", "col btn btn-primary pattern");
 }
 
 function postValue(name, value) {

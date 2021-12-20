@@ -1,23 +1,15 @@
-body { padding-bottom: 70px; }
-
-.btn-group-custom .btn {
-  border-right-width: 0;
+body {
+  padding-bottom: 80px;
 }
 
-.btn-group-custom .btn:hover {
-  border-right-width: 1px;
+.col-form-label {
+  text-align: right;
 }
 
-.btn-group-custom .btn:hover + .btn {
-  border-left-width: 0;
+.infoDtTemplate {
+  text-align: right;
 }
 
-#ButtonSearch {
-  border-left-width: 1px;
-  border-right-width: 0;
-  margin-left: 16px;
-}
-
-#ButtonExport {
-  border-right-width: 1px;
+.btn-color {
+  width: 40px;
 }

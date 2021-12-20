@@ -124,13 +124,6 @@
    #define HAS_COORDINATE_MAP            1
 #endif
 
-// HAS_POLAR_COORDS is true when there are mappings to define
-// ... TODO: add definition for polar coordinates define ...
-#if !defined(HAS_POLAR_COORDS)
-   #define HAS_POLAR_COORDS              0
-#endif
-
-
 // PARALLEL_OUTPUT_CHANNELS indicates the number of independent channels
 // that should be configured.  When this value == 1, DATA_PIN is used to
 // control all pixels.
