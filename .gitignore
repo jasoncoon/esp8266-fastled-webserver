@@ -5,3 +5,4 @@ buildcache/
 arduino.json
 c_cpp_properties.json
 .vscode
+.pio
