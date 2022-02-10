@@ -35,5 +35,6 @@ DECLARE_GRADIENT_PALETTE( BlacK_Blue_Magenta_White_gp );
 DECLARE_GRADIENT_PALETTE( BlacK_Magenta_Red_gp );
 DECLARE_GRADIENT_PALETTE( BlacK_Red_Magenta_Yellow_gp );
 DECLARE_GRADIENT_PALETTE( Blue_Cyan_Yellow_gp );
+DECLARE_GRADIENT_PALETTE( Vapour_gp );
 
 #endif

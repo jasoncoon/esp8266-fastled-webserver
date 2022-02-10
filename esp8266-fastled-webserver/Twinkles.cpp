@@ -78,7 +78,7 @@ void colortwinkles()
     // Make each pixel brighter or darker, depending on
     // its 'direction' flag.
     brightenOrDarkenEachPixel( FADE_IN_SPEED, FADE_OUT_SPEED);
-  
+
     // Now consider adding a new random twinkle
     if ( random8() < DENSITY ) {
       int pos = random16(NUM_PIXELS);
@@ -88,6 +88,12 @@ void colortwinkles()
       }
     }
   }
+}
+
+void currentPaletteTwinkles()
+{
+  gCurrentPalette = palettes[currentPaletteIndex];
+  colortwinkles();
 }
 
 void cloudTwinkles()
@@ -117,4 +123,3 @@ void incandescentTwinkles()
   gCurrentPalette = CRGBPalette16( l, l, l, l, l, l, l, l, l, l, l, l, l, l, l, l );
   colortwinkles();
 }
-

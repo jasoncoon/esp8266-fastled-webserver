@@ -468,10 +468,22 @@ DEFINE_GRADIENT_PALETTE( Blue_Cyan_Yellow_gp ) {
   255, 255,255,  0};
 
 
+// Two copies of "Vapour" exist ... one explicitly as a "Gradient Palette",
+// and one 
+DEFINE_GRADIENT_PALETTE( Vapour_gp ) {
+    0, 111, 234, 230,
+   64, 246, 163, 239,
+  128,  80, 216, 236,
+  192, 221, 109, 251,
+  255, 238, 205, 105
+};
+
+
 // Single array of defined cpt-city color palettes.
 // This will let us programmatically choose one based on
 // a number, rather than having to activate each explicitly
 // by name every time.
+//
 // Since it is const, this array could also be moved
 // into PROGMEM to save SRAM, but for simplicity of illustration
 // we'll keep it in a regular SRAM array.
@@ -511,9 +523,12 @@ const TProgmemRGBGradientPalettePtr gGradientPalettes[] = {
   BlacK_Blue_Magenta_White_gp,
   BlacK_Magenta_Red_gp,
   BlacK_Red_Magenta_Yellow_gp,
-  Blue_Cyan_Yellow_gp };
+  Blue_Cyan_Yellow_gp,
+  Vapour_gp,
+};
 
 
 // Count of how many cpt-city gradients are defined:
 const uint8_t gGradientPaletteCount = ARRAY_SIZE2(gGradientPalettes);
+
 

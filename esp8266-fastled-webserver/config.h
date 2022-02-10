@@ -130,7 +130,16 @@
     #if !defined(DEFAULT_COLOR_CORRECTION)
         #error "DEFAULT_COLOR_CORRECTION must be defined by product"
     #endif
-    #if defined(ENABLE_IR) && !defined(IR_RECV_PIN)
+    #if !defined(ENABLE_IR)
+        #define ENABLE_IR 0
+    #endif
+    #if ((ENABLE_IR != 0) && (ENABLE_IR != 1))
+        #error "ENABLE_IR must be undefined (defaults to 0), 0, or 1"
+    #endif
+    #if ENABLE_IR
+        #warning "ENABLE_IR is still in development, and is NOT supported"
+    #endif
+    #if ENABLE_IR && !defined(IR_RECV_PIN)
         #error "IR_RECV_PIN must be defined by product when ENABLE_IR is defined"
     #endif
     #if !defined(NAME_PREFIX)
@@ -170,6 +179,23 @@
     #if (NTP_UPDATE_THROTTLE_MILLLISECONDS < (15UL * 1000UL))
         #error "NTP_UPDATE_THROTTLE_MILLLISECONDS less than 15 seconds ... may exceed rate limits"
     #endif
+    #if !defined(ENABLE_ARDUINO_OTA)
+        #define ENABLE_ARDUINO_OTA 0
+    #endif
+    #if ((ENABLE_ARDUINO_OTA != 0) && (ENABLE_ARDUINO_OTA != 1))
+        #error "ENABLE_ARDUINO_OTA must be undefined (defaults to 0), 0, or 1"
+    #endif
+    #if !defined(ENABLE_WEBSOCKETS)
+        #define ENABLE_WEBSOCKETS 0
+    #endif
+    #if ((ENABLE_WEBSOCKETS != 0) && (ENABLE_WEBSOCKETS != 1))
+        #error "ENABLE_WEBSOCKETS must be undefined (defaults to 0), 0, or 1"
+    #endif
+    #if ENABLE_WEBSOCKETS
+        #warning "ENABLE_WEBSOCKETS is still in development, and is NOT supported"
+    #endif
+
+
 #endif
 
 

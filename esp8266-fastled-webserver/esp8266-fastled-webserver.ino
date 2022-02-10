@@ -20,7 +20,7 @@
 
 WiFiManager wifiManager;
 ESP8266WebServer webServer(80);
-//WebSocketsServer webSocketsServer = WebSocketsServer(81);
+
 ESP8266HTTPUpdateServer httpUpdateServer;
 
 int utcOffsetInSeconds = -6 * 60 * 60;
@@ -192,6 +192,7 @@ const PatternAndName patterns[] = {
 #endif
 
   // twinkle patterns
+  { currentPaletteTwinkles, "Palette Twinkles" },
   { rainbowTwinkles,        "Rainbow Twinkles" },
   { snowTwinkles,           "Snow Twinkles" },
   { cloudTwinkles,          "Cloud Twinkles" },
@@ -213,6 +214,9 @@ const PatternAndName patterns[] = {
   { cloud2Twinkles,         "Cloud 2 Twinkles" },
   { oceanTwinkles,          "Ocean Twinkles" },
 
+  { coolerpalettebow,       "PaletteBow" },
+  { palettebowglitter,      "PaletteBow With Glitter" },
+  { palettebow,             "Solid PaletteBow" },
   { rainbow,                "Rainbow" },
   { rainbowWithGlitter,     "Rainbow With Glitter" },
   { rainbowSolid,           "Solid Rainbow" },
@@ -222,6 +226,8 @@ const PatternAndName patterns[] = {
   { juggle,                 "Juggle" },
   { fire,                   "Fire" },
   { water,                  "Water" },
+  { firepal,                "PaletteFire" },
+  { waterpal,               "PaletteWater" },
 
   { strandTest,             "Strand Test" },
 #if (PARALLEL_OUTPUT_CHANNELS > 1)
@@ -234,28 +240,32 @@ const PatternAndName patterns[] = {
 const uint8_t patternCount = ARRAY_SIZE2(patterns);
 
 const CRGBPalette16 palettes[] = {
-    RainbowColors_p,
-    RainbowStripeColors_p,
-    CloudColors_p,
-    LavaColors_p,
-    OceanColors_p,
-    ForestColors_p,
-    PartyColors_p,
-    HeatColors_p
-};
+  RainbowColors_p,
+  RainbowStripeColors_p,
+  CloudColors_p,
+  LavaColors_p,
+  OceanColors_p,
 
+  ForestColors_p,
+  PartyColors_p,
+  HeatColors_p,
+};
 const uint8_t paletteCount = ARRAY_SIZE2(palettes);
 
-const String paletteNames[paletteCount] = {
-    "Rainbow",
-    "Rainbow Stripe",
-    "Cloud",
-    "Lava",
-    "Ocean",
-    "Forest",
-    "Party",
-    "Heat",
+const String paletteNames[] = {
+  "Rainbow",
+  "Rainbow Stripe",
+  "Cloud",
+  "Lava",
+  "Ocean",
+
+  "Forest",
+  "Party",
+  "Heat",
 };
+const uint8_t paletteNameCount = ARRAY_SIZE2(paletteNames);
+static_assert(paletteCount == paletteNameCount, "");
+
 
 // TODO / BUGBUG -- should this be ESP8266-specific?  Is this only for when IR enabled ???
 // FIB128 did not have this...
@@ -264,7 +274,7 @@ const String paletteNames[paletteCount] = {
 #endif
 
 void setup() {
-  WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP    
+  WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
 
   Serial.begin(115200);
@@ -307,9 +317,9 @@ void setup() {
 
   FastLED.setBrightness(brightness);
 
-#if defined(ENABLE_IR)
-  irReceiver.enableIRIn(); // Start the receiver
-#endif
+#if ENABLE_IR
+  InitializeIR();
+#endif // ENABLE_IR
 
   Serial.println();
   Serial.println(F("System Info:"));
@@ -401,13 +411,13 @@ void setup() {
 
   //automatically connect using saved credentials if they exist
   //If connection fails it starts an access point with the specified name
-  if(wifiManager.autoConnect(nameChar)){
+  if (wifiManager.autoConnect(nameChar)) {
     Serial.println("Wi-Fi connected");
   }
   else {
     Serial.println("Wi-Fi manager portal running");
   }
-  
+
   httpUpdateServer.setup(&webServer);
 
   webServer.on("/all", HTTP_GET, []() {
@@ -594,8 +604,9 @@ void setup() {
   //first callback is called after the request has ended with all parsed arguments
   //second callback handles file uploads at that location
   webServer.on("/edit", HTTP_POST, []() {
-        webServer.send(200, "text/plain", "");
-      }, handleFileUpload);
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
+    webServer.send(200, "text/plain", "");
+  }, handleFileUpload);
 
   webServer.enableCORS(true);
   webServer.serveStatic("/", LittleFS, "/", "max-age=86400");
@@ -606,11 +617,14 @@ void setup() {
   webServer.begin();
   Serial.println("HTTP web server started");
 
-  //  webSocketsServer.begin();
-  //  webSocketsServer.onEvent(webSocketEvent);
-  //  Serial.println("Web socket server started");
+#if ENABLE_WEBSOCKETS
+  InitializeWebSocketServer();
+#endif // ENABLE_WEBSOCKETS
 
   autoPlayTimeout = millis() + (autoplayDuration * 1000);
+#if ENABLE_ARDUINO_OTA
+  ArduinoOTA.begin();
+#endif
   timeClient.begin();
 }
 
@@ -624,18 +638,6 @@ void sendString(String value)
   webServer.send(200, "text/plain", value);
 }
 
-void broadcastInt(String name, uint8_t value)
-{
-  String json = "{\"name\":\"" + name + "\",\"value\":" + String(value) + "}";
-  //  webSocketsServer.broadcastTXT(json);
-}
-
-void broadcastString(String name, String value)
-{
-  String json = "{\"name\":\"" + name + "\",\"value\":\"" + String(value) + "\"}";
-  //  webSocketsServer.broadcastTXT(json);
-}
-
 // TODO: Add board-specific entropy sources
 // e.g., using `uint32_t esp_random()`, if exposed in Arduino ESP32 / ESP8266 BSPs
 // e.g., directly reading from 0x3FF20E44 on ESP8266 (dangerous! no entropy validation, whitening)
@@ -646,8 +648,6 @@ void broadcastString(String name, String value)
 void loop() {
   // Modify random number generator seed; we use a lot of it.  (Note: this is still deterministic)
   random16_add_entropy(random(65535));
-
-  //  webSocketsServer.loop();
 
   wifiManager.process();
   webServer.handleClient();
@@ -677,7 +677,12 @@ void loop() {
   }
 
   checkPingTimer();
+#if ENABLE_IR
   handleIrInput();  // empty function when ENABLE_IR is not defined
+#endif // ENABLE_IR
+#if ENABLE_WEBSOCKETS
+  handleWebSocketLoop();
+#endif
 
   if (power == 0) {
     fill_solid(leds, NUM_PIXELS, CRGB::Black);
@@ -715,47 +720,13 @@ void loop() {
 
   // insert a delay to keep the framerate modest ... this is guaranteed to call FastLED.show() at least once
   FastLED.delay(1000 / FRAMES_PER_SECOND);
+#if ENABLE_ARDUINO_OTA
+  ArduinoOTA.handle();
+#endif
+
 }
 
-//void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
-//
-//  switch (type) {
-//    case WStype_DISCONNECTED:
-//      Serial.printf("[%u] Disconnected!\n", num);
-//      break;
-//
-//    case WStype_CONNECTED:
-//      {
-//        IPAddress ip = webSocketsServer.remoteIP(num);
-//        Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
-//
-//        // send message to client
-//        // webSocketsServer.sendTXT(num, "Connected");
-//      }
-//      break;
-//
-//    case WStype_TEXT:
-//      Serial.printf("[%u] get Text: %s\n", num, payload);
-//
-//      // send message to client
-//      // webSocketsServer.sendTXT(num, "message here");
-//
-//      // send data to all connected clients
-//      // webSocketsServer.broadcastTXT("message here");
-//      break;
-//
-//    case WStype_BIN:
-//      Serial.printf("[%u] get binary length: %u\n", num, length);
-//      hexdump(payload, length);
-//
-//      // send message to client
-//      // webSocketsServer.sendBIN(num, payload, lenght);
-//      break;
-//  }
-//}
-
 // TODO: Save settings in file system, not EEPROM!
-
 const uint8_t SETTINGS_MAGIC_BYTE = 0x96;
 void readSettings()
 {
@@ -983,6 +954,35 @@ void rainbow()
   fill_rainbow( leds, NUM_PIXELS, gHue, 255 / NUM_PIXELS);
 }
 
+void palettebow()
+{
+  fill_solid(leds, NUM_PIXELS, ColorFromPalette(palettes[currentPaletteIndex], gHue, 255));
+}
+
+void coolerpalettebow()
+{
+  static uint8_t paletteStartIndex = 0;
+  // Why is it safe to use a `paletteStartIndex` over 16?
+  // The palettes array is defined as an array of `CRGBPalette16`,
+  // which means there are exactly 16 CRGB elements. Therefore,
+  // the only valid indices are [0..15].
+  //
+  // fill_palette<CRGBPalette16>() calls ColorFromPalette<CRGBPalette16>().
+  // Manual review shows that *each* of the ColorFromPalette<>() functions safely
+  // accept any `uint8_t` value for the start index.  Therefore, there's an
+  // undocumented contract that the `uint8_t startIndex` provided to the function
+  // can be any value, without causing out-of-bounds access of the palette array.
+  paletteStartIndex--;
+  fill_palette( leds, NUM_PIXELS, paletteStartIndex, (256 / NUM_PIXELS) + 1, palettes[currentPaletteIndex], 255, LINEARBLEND);
+}
+
+void palettebowglitter()
+{
+  // built-in FastLED rainbow, plus some random sparkly glitter
+  palettebow();
+  addGlitter(80);
+}
+
 void rainbowWithGlitter()
 {
   // built-in FastLED rainbow, plus some random sparkly glitter
@@ -1040,7 +1040,7 @@ void juggle()
   static uint8_t thisbright = 255; // How bright should the LED/display be.
   static uint8_t   basebeat =   5; // Higher = faster movement.
 
- static uint8_t lastSecond =  99;  // Static variable, means it's only defined once. This is our 'debounce' variable.
+  static uint8_t lastSecond =  99;  // Static variable, means it's only defined once. This is our 'debounce' variable.
   uint8_t secondHand = (millis() / 1000) % 30; // IMPORTANT!!! Change '30' to a different value to change duration of the loop.
 
   if (lastSecond != secondHand) { // Debounce to make sure we're not repeating an assignment.
@@ -1071,6 +1071,16 @@ void fire()
 void water()
 {
   heatMap(IceColors_p, false);
+}
+
+void firepal()
+{
+  heatMap(palettes[currentPaletteIndex], true);
+}
+
+void waterpal()
+{
+  heatMap(palettes[currentPaletteIndex], false);
 }
 
 // Pride2015 by Mark Kriegsman: https://gist.github.com/kriegsman/964de772d64c502760e5
@@ -1131,6 +1141,7 @@ void prideFibonacci() {
   fillWithPride(true);
 }
 #endif
+
 
 void fillRadialPaletteShift(bool useFibonacciOrder)
 {
@@ -1315,8 +1326,7 @@ void colorWavesFibonacci()
 
 // Alternate rendering function just scrolls the current palette
 // across the defined LED strip.
-void palettetest( CRGB* ledarray, uint16_t numleds, const CRGBPalette16& gCurrentPalette)
-{
+void palettetest( CRGB* ledarray, uint16_t numleds, const CRGBPalette16& gCurrentPalette) {
   static uint8_t startindex = 0;
   startindex--;
   fill_palette( ledarray, numleds, startindex, (256 / NUM_PIXELS) + 1, gCurrentPalette, 255, LINEARBLEND);

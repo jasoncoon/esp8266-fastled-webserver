@@ -46,10 +46,8 @@
   #include <ESP8266WebServer.h>
   #include <ESP8266HTTPUpdateServer.h>
   #include <ESP8266HTTPClient.h>
-  //#include <WebSocketsServer.h>
   #include <EEPROM.h>
   #include <WiFiManager.h> // https://github.com/tzapu/WiFiManager/tree/development
-
 
   #include "./include/simplehacks/static_eval.h"
   #include "./include/simplehacks/constexpr_strlen.h"
@@ -116,9 +114,6 @@ constexpr int LedCount() {
 }
 
 void writeAndCommitSettings();
-void broadcastInt(String name, uint8_t value);
-void broadcastString(String name, String value);
-
 
 #if defined(ESP32) || defined(ESP8266)
   // Optional: (LGPL) https://github.com/sinricpro/ESPTrueRandom.git#ed198f459da6d7af65dd13317a4fdc97b23991b4
@@ -229,13 +224,39 @@ extern CRGB leds[NUM_PIXELS];
 #include "include/Fields.hpp"
 #include "include/FSBrowser.hpp"
 
+
 // IR (commands.cpp)
-#if defined(ENABLE_IR)
-  #include <IRremoteESP8266.h>
-  extern IRrecv irReceiver;
+#if ENABLE_IR
+  void InitializeIR(void);
   void handleIrInput();
 #else
   inline void handleIrInput() {}
+#endif // ENABLE_IR
+
+// TODO: move these functions out of main .INO file
+// they are currently used by IR & main .INO file
+#if ENABLE_IR
+  void setPower(uint8_t value);
+  void setAutoplay(uint8_t value);
+  //void setAutoplayDuration(uint8_t value);
+  void setSolidColor(CRGB color);
+  //void setSolidColor(uint8_t r, uint8_t g, uint8_t b);
+  void adjustPattern(bool up);
+  void setPattern(uint8_t value);
+  //void setPatternName(String name);
+  void adjustBrightness(bool up);
+#endif // ENABLE_IR
+
+
+#if ENABLE_WEBSOCKETS
+  void InitializeWebSocketServer(void);
+  void handleWebSocketLoop(void);
+  void broadcastInt(String name, uint8_t value);
+  void broadcastString(String name, String value);
+#else
+  // these are put here for convenience
+  inline void broadcastInt(String, uint8_t) {};
+  inline void broadcastString(String, String) {};
 #endif
 
 // ping.cpp
@@ -243,6 +264,7 @@ void checkPingTimer();
 
 // effects
 // twinkles.cpp
+void currentPaletteTwinkles();
 void cloudTwinkles();
 void rainbowTwinkles();
 void snowTwinkles();
