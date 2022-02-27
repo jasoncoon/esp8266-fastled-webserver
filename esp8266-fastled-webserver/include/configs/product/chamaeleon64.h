@@ -38,8 +38,8 @@
 #if !defined(FRAMES_PER_SECOND)
    #define FRAMES_PER_SECOND             120
 #endif
-#if !defined(DEFAULT_PATTERN_INDEX)
-   #define DEFAULT_PATTERN_INDEX         0
+#if !defined(DEFAULT_PATTERN_FUNCTION)
+   #define DEFAULT_PATTERN_FUNCTION      pride
 #endif
 #if !defined(DEFAULT_BRIGHTNESS_INDEX)
    #define DEFAULT_BRIGHTNESS_INDEX      3

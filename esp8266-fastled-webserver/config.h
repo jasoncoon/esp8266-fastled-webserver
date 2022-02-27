@@ -124,8 +124,8 @@
     #if !defined(FRAMES_PER_SECOND)
         #error "FRAMES_PER_SECOND must be defined by product"
     #endif
-    #if !defined(DEFAULT_PATTERN_INDEX)
-        #error "DEFAULT_PATTERN_INDEX must be defined by product"
+    #if !defined(DEFAULT_PATTERN_FUNCTION)
+        #error "DEFAULT_PATTERN_FUNCTION must be defined by product"
     #endif
     #if !defined(DEFAULT_COLOR_CORRECTION)
         #error "DEFAULT_COLOR_CORRECTION must be defined by product"

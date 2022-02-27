@@ -331,6 +331,9 @@ void pridePlaygroundFibonacci();
 void colorWavesPlaygroundFibonacci();
 #endif
 
+// MurmurHash3
+uint32_t MurmurHash3_32(const String & s);
+
 
 
 #endif // ESP8266_FASTLED_WEBSERVER_COMMON_H

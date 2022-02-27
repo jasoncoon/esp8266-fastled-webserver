@@ -71,8 +71,8 @@
 #if !defined(FRAMES_PER_SECOND)
    #define FRAMES_PER_SECOND             120
 #endif
-#if !defined(DEFAULT_PATTERN_INDEX)
-   #define DEFAULT_PATTERN_INDEX         3
+#if !defined(DEFAULT_PATTERN_FUNCTION)
+   #define DEFAULT_PATTERN_FUNCTION      colorWavesFibonacci
 #endif
 #if !defined(DEFAULT_BRIGHTNESS_INDEX)
    #define DEFAULT_BRIGHTNESS_INDEX      3

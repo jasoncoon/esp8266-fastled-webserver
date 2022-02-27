@@ -58,9 +58,9 @@
    #define FRAMES_PER_SECOND             120
 #endif
 
-// DEFAULT_PATTERN_INDEX allows different products to default to different patterns
-#if !defined(DEFAULT_PATTERN_INDEX)
-   #define DEFAULT_PATTERN_INDEX         0
+// DEFAULT_PATTERN_FUNCTION allows different products to default to different patterns
+#if !defined(DEFAULT_PATTERN_FUNCTION)
+   #define DEFAULT_PATTERN_FUNCTION      pride
 #endif
 
 // DEFAULT_BRIGHTNESS_INDEX allows different products to default to different brightness (e.g., from brightness[5] array)
