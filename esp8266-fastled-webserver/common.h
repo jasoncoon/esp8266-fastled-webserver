@@ -155,6 +155,7 @@ extern const uint8_t patternCount;
 extern const PatternAndName patterns[];
 
 extern uint8_t currentPaletteIndex;
+extern uint8_t gHue;
 extern uint8_t autoplay;
 extern uint8_t autoplayDuration;
 extern uint8_t showClock;
@@ -329,8 +330,7 @@ void colorWavesPlayground();
 void pacifica_fibonacci_loop();
 void pridePlaygroundFibonacci();
 void colorWavesPlaygroundFibonacci();
+void fibonacciStars();
 #endif
-
-
 
 #endif // ESP8266_FASTLED_WEBSERVER_COMMON_H
