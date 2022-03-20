@@ -418,19 +418,16 @@ void setup() {
   
   webServer.on("/fieldsWithoutOptions", HTTP_GET, []() {
     String json = getFieldsWithoutOptionsJson();
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     webServer.send(200, "application/json", json);
   });
   
   webServer.on("/patternOptions", HTTP_GET, []() {
     String json = getPatternsJson();
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     webServer.send(200, "application/json", json);
   });
   
   webServer.on("/paletteOptions", HTTP_GET, []() {
     String json = getPalettesJson();
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
     webServer.send(200, "application/json", json);
   });
   
