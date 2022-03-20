@@ -3,8 +3,8 @@
 
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>ESP8266 + FastLED</title>
 
   <!-- request CSS from internet CDN -->
@@ -20,404 +20,399 @@
   <link rel="stylesheet" href="css/styles.css">
 
   <link rel="icon" href="images/atom196.png">
-
-  <style>
-    .col-form-label {
-      text-align: right;
-    }
-
-    .btn-color {
-      width: 40px;
-    }
-  </style>
 </head>
 
 <body style="padding-bottom: 80px;">
 
-  <nav class="navbar navbar-expand-md navbar-light bg-light mb-4" id="top" role="banner">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="https://www.evilgeniuslabs.org" target="_blank"><img src="/images/atom196.png" style="width: 24px; height: 24px;" /></a>
-      <a class="navbar-brand" href="https://www.evilgeniuslabs.org" target="_blank">Evil Genius Labs</a>
-      <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="navbar-collapse collapse" id="navbarCollapse">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item"><a class="nav-link active" aria-current="page" href="/" id="product">ESP8266 + FastLED</a></li>
-          <li class="nav-item"><a class="nav-link" href="/simple.htm" title="Simple Mode">Simple</a></li>
-          <li class="nav-item"><a class="nav-link" href="/info.htm" title="Info">Info</a></li>
-          <li class="nav-item"><a class="nav-link" href="/edit.htm" title="Edit Files">Files</a></li>
-          <li class="nav-item"><a class="nav-link" href="/update" title="Update Firmware">Firmware</a></li>
-          <li class="nav-item">
-            <button id="btnScrollToBottom" type="button" class="btn btn-outline-secondary btn-sm" aria-label="Scroll to bottom" title="Scroll to bottom">
-              <i class="bi bi-arrow-down"></i>
-            </button>
-          </li>
-        </ul>
-        <ul class="navbar-nav d-flex">
-          <li>
-            <a href="https://github.com/jasoncoon/esp8266-fastled-webserver">
-              <img style="height: 16px;" src="/images/github.ico" />
-            </a>
-          </li>
-        </ul>
+  <header>
+    <nav class="navbar navbar-expand-sm navbar-light bg-light mb-4" id="top">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="https://www.evilgeniuslabs.org" target="_blank"><img src="/images/atom196.png" style="width: 24px; height: 24px;" /></a>
+        <a class="navbar-brand" href="https://www.evilgeniuslabs.org" target="_blank">Evil Genius Labs</a>
+        <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse" id="navbarCollapse">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/" id="product">ESP8266 + FastLED</a></li>
+            <li class="nav-item"><a class="nav-link" href="/simple.htm" title="Simple Mode">Simple</a></li>
+            <li class="nav-item"><a class="nav-link" href="/info.htm" title="Info">Info</a></li>
+            <li class="nav-item"><a class="nav-link" href="/edit.htm" title="Edit Files">Files</a></li>
+            <li class="nav-item"><a class="nav-link" href="/update" title="Update Firmware">Firmware</a></li>
+            <li class="nav-item">
+              <button id="btnScrollToBottom" type="button" class="btn btn-outline-secondary btn-sm" aria-label="Scroll to bottom" title="Scroll to bottom">
+                <i class="bi bi-arrow-down"></i>
+              </button>
+            </li>
+          </ul>
+          <ul class="navbar-nav d-flex">
+            <li>
+              <a href="https://github.com/jasoncoon/esp8266-fastled-webserver">
+                <img style="height: 16px;" src="/images/github.ico" />
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
-  </nav>
+    </nav>
+  </header>
 
-  <div id="container" class="container-fluid">
+  <main>
+    <div id="container" class="container-fluid">
 
-    <form id="form">
-    </form>
+      <form id="form">
+      </form>
 
-    <div class="accordion" id="accordionImportExport" style="display: none;">
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="headingImportExport">
-          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseImportExport" aria-expanded="false" aria-controls="collapseOne">
-            Import / Export
-          </button>
-        </h2>
-        <div id="collapseImportExport" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-          <div class="accordion-body">
+      <div class="accordion" id="accordionImportExport" style="display: none;">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingImportExport">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseImportExport" aria-expanded="false" aria-controls="collapseOne">
+              Import / Export
+            </button>
+          </h2>
+          <div id="collapseImportExport" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
 
-            <div class="btn-toolbar" role="toolbar">
-              <div class="btn-group me-2" role="group">
-                <button type="button" class="btn btn-outline-secondary" id="btnExport">
-                  <i class="bi bi-download"></i>
-                  Load Values
-                </button>
-                <button type="button" class="btn btn-outline-secondary" id="btnImport">
-                  <i class="bi bi-upload"></i>
-                  Set Values
-                </button>
-                <button type="button" class="btn btn-outline-secondary" id="btnCopy">
-                  <i class="bi bi-clipboard"></i>
-                  Copy
-                </button>
-              </div>
-
-              <div class="btn-group me-2" role="group">
-                <button type="button" class="btn btn-outline-secondary" id="btnTop">
-                  <i class="bi bi-arrow-up"></i>
-                  Scroll to Top
-                </button>
-              </div>
-
-                <div class="input-group">
-                  <input id="inputFilename" type="text" class="form-control" style="width: 180px;" value="preset1.json" />
-                  <button type="button" class="btn btn-outline-secondary" id="btnSave">
-                    <i class="bi bi-save"></i>
-                    Save
+              <div class="btn-toolbar" role="toolbar">
+                <div class="btn-group me-2" role="group">
+                  <button type="button" class="btn btn-outline-secondary" id="btnExport">
+                    <i class="bi bi-download"></i>
+                    Load Values
                   </button>
-
-                  <input type="file" id="inputFile" style="display: none;" />
-
-                  <button type="button" class="btn btn-outline-secondary" id="btnOpen">
-                    <i class="bi bi-folder2-open"></i>
-                    Open
+                  <button type="button" class="btn btn-outline-secondary" id="btnImport">
+                    <i class="bi bi-upload"></i>
+                    Set Values
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary" id="btnCopy">
+                    <i class="bi bi-clipboard"></i>
+                    Copy
                   </button>
                 </div>
 
+                <div class="btn-group me-2" role="group">
+                  <button type="button" class="btn btn-outline-secondary" id="btnTop">
+                    <i class="bi bi-arrow-up"></i>
+                    Scroll to Top
+                  </button>
+                </div>
+
+                  <div class="input-group">
+                    <input id="inputFilename" type="text" class="form-control" style="width: 180px;" value="preset1.json" />
+                    <button type="button" class="btn btn-outline-secondary" id="btnSave">
+                      <i class="bi bi-save"></i>
+                      Save
+                    </button>
+
+                    <input type="file" id="inputFile" style="display: none;" />
+
+                    <button type="button" class="btn btn-outline-secondary" id="btnOpen">
+                      <i class="bi bi-folder2-open"></i>
+                      Open
+                    </button>
+                  </div>
+
+              </div>
+              <textarea id="textareaFields" class="form-control mt-1" rows="24"></textarea>
             </div>
-            <textarea id="textareaFields" class="form-control mt-1" rows="24"></textarea>
           </div>
         </div>
       </div>
+    
+      <div id="templates" style="display: none">
+        
+        <div id="sectionTemplate" class="row mb-3">
+          <div class="col-sm-10">
+            <hr style="margin-bottom: 5px;margin-top: 5px;" />
+          </div>
+          <div class="col-sm-2 section-header-text"></div>
+        </div>
+
+        <div id="numberTemplate" class="row mb-3">
+          <label class="col-sm-2 col-form-label text-sm-end "></label>
+          <div class="col-sm-2">
+            <input class="form-control input" type="number" step="1" min="0" max="255" />
+          </div>
+          <div class="col-sm-8">
+            <input type="range" class="form-range" step="1" min="0" max="255" />
+          </div>
+        </div>
+
+        <div id="booleanTemplate" class="row mb-3">
+          <label class="col-sm-2 col-form-label text-sm-end"></label>
+          <div class="col-sm-10">
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-outline-secondary" id="btnOn">On</button>
+              <button type="button" class="btn btn-outline-secondary" id="btnOff">Off</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="selectTemplate" class="row mb-3">
+          <label class="col-sm-2 col-form-label text-sm-end"></label>
+          <div class="col-sm-8">
+            <select class="form-control"></select>
+          </div>
+          <div class="col-sm-2">
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-outline-secondary btn-previous"
+                      aria-label="Previous" title="Previous">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <button type="button" class="btn btn-outline-secondary btn-next"
+                      aria-label="Next" title="Next">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="utcOffsetIndexTemplate" class="row mb-3">
+          <label class="col-sm-2 col-form-label text-sm-end"></label>
+          <div class="col-sm-8">
+            <select class="form-control">
+              <option value="0">-12:00</option>
+              <option value="1">-11:45</option>
+              <option value="2">-11:30</option>
+              <option value="3">-11:15</option>
+              <option value="4">-11:00</option>
+              <option value="5">-10:45</option>
+              <option value="6">-10:30</option>
+              <option value="7">-10:15</option>
+              <option value="8">-10:00</option>
+              <option value="9">-9:45</option>
+              <option value="10">-9:30</option>
+              <option value="11">-9:15</option>
+              <option value="12">-9:00</option>
+              <option value="13">-8:45</option>
+              <option value="14">-8:30</option>
+              <option value="15">-8:15</option>
+              <option value="16">-8:00</option>
+              <option value="17">-7:45</option>
+              <option value="18">-7:30</option>
+              <option value="19">-7:15</option>
+              <option value="20">-7:00</option>
+              <option value="21">-6:45</option>
+              <option value="22">-6:30</option>
+              <option value="23">-6:15</option>
+              <option value="24">-6:00</option>
+              <option value="25">-5:45</option>
+              <option value="26">-5:30</option>
+              <option value="27">-5:15</option>
+              <option value="28">-5:00</option>
+              <option value="29">-4:45</option>
+              <option value="30">-4:30</option>
+              <option value="31">-4:15</option>
+              <option value="32">-4:00</option>
+              <option value="33">-3:45</option>
+              <option value="34">-3:30</option>
+              <option value="35">-3:15</option>
+              <option value="36">-3:00</option>
+              <option value="37">-2:45</option>
+              <option value="38">-2:30</option>
+              <option value="39">-2:15</option>
+              <option value="40">-2:00</option>
+              <option value="41">-1:45</option>
+              <option value="42">-1:30</option>
+              <option value="43">-1:15</option>
+              <option value="44">-1:00</option>
+              <option value="45">0:45</option>
+              <option value="46">0:30</option>
+              <option value="47">0:15</option>
+              <option value="48">0:00</option>
+              <option value="49">0:45</option>
+              <option value="50">0:30</option>
+              <option value="51">0:15</option>
+              <option value="52">1:00</option>
+              <option value="53">1:45</option>
+              <option value="54">1:30</option>
+              <option value="55">1:15</option>
+              <option value="56">2:00</option>
+              <option value="57">2:45</option>
+              <option value="58">2:30</option>
+              <option value="59">2:15</option>
+              <option value="60">3:00</option>
+              <option value="61">3:45</option>
+              <option value="62">3:30</option>
+              <option value="63">3:15</option>
+              <option value="64">4:00</option>
+              <option value="65">4:45</option>
+              <option value="66">4:30</option>
+              <option value="67">4:15</option>
+              <option value="68">5:00</option>
+              <option value="69">5:45</option>
+              <option value="70">5:30</option>
+              <option value="71">5:15</option>
+              <option value="72">6:00</option>
+              <option value="73">6:45</option>
+              <option value="74">6:30</option>
+              <option value="75">6:15</option>
+              <option value="76">7:00</option>
+              <option value="77">7:45</option>
+              <option value="78">7:30</option>
+              <option value="79">7:15</option>
+              <option value="80">8:00</option>
+              <option value="81">8:45</option>
+              <option value="82">8:30</option>
+              <option value="83">8:15</option>
+              <option value="84">9:00</option>
+              <option value="85">9:45</option>
+              <option value="86">9:30</option>
+              <option value="87">9:15</option>
+              <option value="88">10:00</option>
+              <option value="89">10:45</option>
+              <option value="90">10:30</option>
+              <option value="91">10:15</option>
+              <option value="92">11:00</option>
+              <option value="93">11:45</option>
+              <option value="94">11:30</option>
+              <option value="95">11:15</option>
+              <option value="96">12:00</option>
+              <option value="97">12:45</option>
+              <option value="98">12:30</option>
+              <option value="99">12:15</option>
+              <option value="100">13:00</option>
+              <option value="101">13:45</option>
+              <option value="102">13:30</option>
+              <option value="103">13:15</option>
+              <option value="104">14:00</option>
+            </select>
+          </div>
+          <div class="col-sm-2">
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-outline-secondary btn-previous" aria-label="Previous" title="Previous">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <button type="button" class="btn btn-outline-secondary btn-next" aria-label="Next" title="Next">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+              <a class="btn btn-outline-secondary" href="https://en.wikipedia.org/wiki/List_of_UTC_time_offsets" role="button" 
+                  title="List of UTC time offsets" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-question-circle-fill"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div id="colorPaletteTemplate" class="row mb-3">
+          <label class="col-sm-2 col-form-label text-sm-end color-label"></label>
+          <div class="col-sm-10">
+            <div class="btn-group btn-group-justified" role="group">
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary btn-color" style="background: #FF0000;" title="Red">&nbsp;</button>
+              </div>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary btn-color" style="background: #FF8000;" title="Orange">&nbsp;</button>
+              </div>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary btn-color" style="background: #FFFF00;" title="Yellow">&nbsp;</button>
+              </div>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary btn-color" style="background: #80FF00;" title="Chartreuse">&nbsp;</button>
+              </div>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary btn-color" style="background: #00FF00;" title="Green">&nbsp;</button>
+              </div>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary btn-color" style="background: #00FF80;" title="Spring Green">&nbsp;</button>
+              </div>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary btn-color" style="background: #00FFFF;" title="Cyan">&nbsp;</button>
+              </div>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary btn-color" style="background: #0080FF;" title="Azure">&nbsp;</button>
+              </div>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary btn-color" style="background: #0000FF;" title="Blue">&nbsp;</button>
+              </div>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary btn-color" style="background: #8000FF;" title="Violet">&nbsp;</button>
+              </div>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary btn-color" style="background: #FF00FF;" title="Magenta">&nbsp;</button>
+              </div>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary btn-color" style="background: #FF0080;" title="Rose">&nbsp;</button>
+              </div>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary btn-color" style="background: #FFFFFF;" title="White">&nbsp;</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="colorTemplate">
+          <div class="row mb-3">
+            <div class="col-sm-12 offset-sm-2">
+              <input type="text" class="form-control minicolors" />
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-sm-end">Red</label>
+            <div class="col-sm-2">
+              <input class="form-control color-red-input" type="number" step="1" min="0" max="255" />
+            </div>
+            <div class="col-sm-8">
+              <input class="form-range color-red-slider" type="range" step="1" min="0" max="255" />
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-sm-end">Green</label>
+            <div class="col-sm-2">
+              <input class="form-control color-green-input" type="number" step="1" min="0" max="255" />
+            </div>
+            <div class="col-sm-8">
+              <input class="form-range color-green-slider" type="range" step="1" min="0" max="255" />
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-sm-end">Blue</label>
+            <div class="col-sm-2">
+              <input class="form-control color-blue-input" type="number" step="1" min="0" max="255" />
+            </div>
+            <div class="col-sm-8">
+              <input class="form-range color-blue-slider" type="range" step="1" min="0" max="255" />
+            </div>
+          </div>
+        </div>
+
+        <div id="stringTemplate" class="row mb-3">
+          <label class="col-sm-2 col-form-label text-sm-end"></label>
+          <div class="col-sm-10">
+            <input class="form-control input" />
+          </div>
+        </div>
+
+        <div id="labelTemplate" class="row mb-3">
+          <label class="col-sm-2 col-form-label text-sm-end"></label>
+          <div class="col-sm-10">
+            <input class="form-control input" readonly />
+          </div>
+        </div>
+
+      </div>
+
     </div>
-  
-  </div>
-
-  <div id="templates" style="display: none">
-
-    <div id="sectionTemplate" class="row mb-3">
-      <div class="col-sm-12">
-        <hr style="margin-bottom: 5px;margin-top: 5px;" />
+  </main>
+    
+  <footer>
+    <nav class="navbar navbar-expand-sm navbar-light fixed-bottom bg-light">
+      <div class="container-fluid">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="/" aria-label="Refresh" title="Refresh">
+              <i class="bi bi-arrow-clockwise"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <button id="btnScrollToTop" type="button" class="btn btn-outline-secondary btn-sm" aria-label="Scroll to top" title="Scroll to top">
+              <i class="bi bi-arrow-up"></i>
+            </button>
+          </li>
+        </ul>
+        <span class="navbar-text" id="status">Loading, please wait...</span>
       </div>
-      <div class="col-sm-2 section-header-text"></div>
-    </div>
-
-    <div id="numberTemplate" class="row mb-3">
-      <label class="col-sm-2 col-form-label"></label>
-      <div class="col-sm-2">
-        <input class="form-control input" type="number" step="1" min="0" max="255" />
-      </div>
-      <div class="col-sm-8">
-        <input type="range" class="form-range" step="1" min="0" max="255" />
-      </div>
-    </div>
-
-    <div id="booleanTemplate" class="row mb-3">
-      <label class="col-sm-2 col-form-label"></label>
-      <div class="col-sm-10">
-        <div class="btn-group" role="group">
-          <button type="button" class="btn btn-outline-secondary" id="btnOn">On</button>
-          <button type="button" class="btn btn-outline-secondary" id="btnOff">Off</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="selectTemplate" class="row mb-3">
-      <label class="col-sm-2  "></label>
-      <div class="col-sm-8">
-        <select class="form-control"></select>
-      </div>
-      <div class="col-sm-2">
-        <div class="btn-group" role="group">
-          <button type="button" class="btn btn-outline-secondary btn-previous"
-                  aria-label="Previous" title="Previous">
-            <i class="bi bi-chevron-left"></i>
-          </button>
-          <button type="button" class="btn btn-outline-secondary btn-next"
-                  aria-label="Next" title="Next">
-            <i class="bi bi-chevron-right"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div id="utcOffsetIndexTemplate" class="row mb-3">
-      <label class="col-sm-2 col-form-label"></label>
-      <div class="col-sm-8">
-        <select class="form-control">
-          <option value="0">-12:00</option>
-          <option value="1">-11:45</option>
-          <option value="2">-11:30</option>
-          <option value="3">-11:15</option>
-          <option value="4">-11:00</option>
-          <option value="5">-10:45</option>
-          <option value="6">-10:30</option>
-          <option value="7">-10:15</option>
-          <option value="8">-10:00</option>
-          <option value="9">-9:45</option>
-          <option value="10">-9:30</option>
-          <option value="11">-9:15</option>
-          <option value="12">-9:00</option>
-          <option value="13">-8:45</option>
-          <option value="14">-8:30</option>
-          <option value="15">-8:15</option>
-          <option value="16">-8:00</option>
-          <option value="17">-7:45</option>
-          <option value="18">-7:30</option>
-          <option value="19">-7:15</option>
-          <option value="20">-7:00</option>
-          <option value="21">-6:45</option>
-          <option value="22">-6:30</option>
-          <option value="23">-6:15</option>
-          <option value="24">-6:00</option>
-          <option value="25">-5:45</option>
-          <option value="26">-5:30</option>
-          <option value="27">-5:15</option>
-          <option value="28">-5:00</option>
-          <option value="29">-4:45</option>
-          <option value="30">-4:30</option>
-          <option value="31">-4:15</option>
-          <option value="32">-4:00</option>
-          <option value="33">-3:45</option>
-          <option value="34">-3:30</option>
-          <option value="35">-3:15</option>
-          <option value="36">-3:00</option>
-          <option value="37">-2:45</option>
-          <option value="38">-2:30</option>
-          <option value="39">-2:15</option>
-          <option value="40">-2:00</option>
-          <option value="41">-1:45</option>
-          <option value="42">-1:30</option>
-          <option value="43">-1:15</option>
-          <option value="44">-1:00</option>
-          <option value="45">0:45</option>
-          <option value="46">0:30</option>
-          <option value="47">0:15</option>
-          <option value="48">0:00</option>
-          <option value="49">0:45</option>
-          <option value="50">0:30</option>
-          <option value="51">0:15</option>
-          <option value="52">1:00</option>
-          <option value="53">1:45</option>
-          <option value="54">1:30</option>
-          <option value="55">1:15</option>
-          <option value="56">2:00</option>
-          <option value="57">2:45</option>
-          <option value="58">2:30</option>
-          <option value="59">2:15</option>
-          <option value="60">3:00</option>
-          <option value="61">3:45</option>
-          <option value="62">3:30</option>
-          <option value="63">3:15</option>
-          <option value="64">4:00</option>
-          <option value="65">4:45</option>
-          <option value="66">4:30</option>
-          <option value="67">4:15</option>
-          <option value="68">5:00</option>
-          <option value="69">5:45</option>
-          <option value="70">5:30</option>
-          <option value="71">5:15</option>
-          <option value="72">6:00</option>
-          <option value="73">6:45</option>
-          <option value="74">6:30</option>
-          <option value="75">6:15</option>
-          <option value="76">7:00</option>
-          <option value="77">7:45</option>
-          <option value="78">7:30</option>
-          <option value="79">7:15</option>
-          <option value="80">8:00</option>
-          <option value="81">8:45</option>
-          <option value="82">8:30</option>
-          <option value="83">8:15</option>
-          <option value="84">9:00</option>
-          <option value="85">9:45</option>
-          <option value="86">9:30</option>
-          <option value="87">9:15</option>
-          <option value="88">10:00</option>
-          <option value="89">10:45</option>
-          <option value="90">10:30</option>
-          <option value="91">10:15</option>
-          <option value="92">11:00</option>
-          <option value="93">11:45</option>
-          <option value="94">11:30</option>
-          <option value="95">11:15</option>
-          <option value="96">12:00</option>
-          <option value="97">12:45</option>
-          <option value="98">12:30</option>
-          <option value="99">12:15</option>
-          <option value="100">13:00</option>
-          <option value="101">13:45</option>
-          <option value="102">13:30</option>
-          <option value="103">13:15</option>
-          <option value="104">14:00</option>
-        </select>
-      </div>
-      <div class="col-sm-2">
-        <div class="btn-group" role="group">
-          <button type="button" class="btn btn-outline-secondary btn-previous" aria-label="Previous" title="Previous">
-            <i class="bi bi-chevron-left"></i>
-          </button>
-          <button type="button" class="btn btn-outline-secondary btn-next" aria-label="Next" title="Next">
-            <i class="bi bi-chevron-right"></i>
-          </button>
-          <a class="btn btn-outline-secondary" href="https://en.wikipedia.org/wiki/List_of_UTC_time_offsets" role="button" 
-              title="List of UTC time offsets" target="_blank" rel="noopener noreferrer">
-            <i class="bi bi-question-circle-fill"></i>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div id="colorPaletteTemplate" class="row mb-3">
-      <label class="col-sm-2 col-form-label color-label"></label>
-      <div class="col-sm-10">
-        <div class="btn-group btn-group-justified" role="group">
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #FF0000;" title="Red">&nbsp;</button>
-          </div>
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #FF8000;" title="Orange">&nbsp;</button>
-          </div>
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #FFFF00;" title="Yellow">&nbsp;</button>
-          </div>
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #80FF00;" title="Chartreuse">&nbsp;</button>
-          </div>
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #00FF00;" title="Green">&nbsp;</button>
-          </div>
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #00FF80;" title="Spring Green">&nbsp;</button>
-          </div>
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #00FFFF;" title="Cyan">&nbsp;</button>
-          </div>
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #0080FF;" title="Azure">&nbsp;</button>
-          </div>
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #0000FF;" title="Blue">&nbsp;</button>
-          </div>
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #8000FF;" title="Violet">&nbsp;</button>
-          </div>
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #FF00FF;" title="Magenta">&nbsp;</button>
-          </div>
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #FF0080;" title="Rose">&nbsp;</button>
-          </div>
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-outline-secondary btn-color" style="background: #FFFFFF;" title="White">&nbsp;</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="colorTemplate">
-      <div class="row mb-3">
-        <!-- <label class="col-sm-2 col-form-label color-label"></label> -->
-        <div class="col-sm-12 offset-sm-2">
-          <input type="text" class="form-control minicolors" />
-        </div>
-      </div>
-      <div class="row mb-3">
-        <label class="col-sm-2 col-form-label">Red</label>
-        <div class="col-sm-2">
-          <input class="form-control color-red-input" type="number" step="1" min="0" max="255" />
-        </div>
-        <div class="col-sm-8">
-          <input class="form-range color-red-slider" type="range" step="1" min="0" max="255" />
-        </div>
-      </div>
-      <div class="row mb-3">
-        <label class="col-sm-2 col-form-label">Green</label>
-        <div class="col-sm-2">
-          <input class="form-control color-green-input" type="number" step="1" min="0" max="255" />
-        </div>
-        <div class="col-sm-8">
-          <input class="form-range color-green-slider" type="range" step="1" min="0" max="255" />
-        </div>
-      </div>
-      <div class="row mb-3">
-        <label class="col-sm-2 col-form-label">Blue</label>
-        <div class="col-sm-2">
-          <input class="form-control color-blue-input" type="number" step="1" min="0" max="255" />
-        </div>
-        <div class="col-sm-8">
-          <input class="form-range color-blue-slider" type="range" step="1" min="0" max="255" />
-        </div>
-      </div>
-    </div>
-
-    <div id="stringTemplate" class="row mb-3">
-      <label class="col-sm-2 col-form-label"></label>
-      <div class="col-sm-10">
-        <input class="form-control input" />
-      </div>
-    </div>
-
-    <div id="labelTemplate" class="row mb-3">
-      <label class="col-sm-2 col-form-label"></label>
-      <div class="col-sm-10">
-        <input class="form-control input" readonly />
-      </div>
-    </div>
-
-  </div>
-
-  <nav class="navbar navbar-expand-sm fixed-bottom navbar-light bg-light">
-    <div class="container-fluid">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link" href="/" aria-label="Refresh" title="Refresh">
-            <i class="bi bi-arrow-clockwise"></i>
-          </a>
-        </li>
-        <li class="nav-item">
-          <button id="btnScrollToTop" type="button" class="btn btn-outline-secondary btn-sm" aria-label="Scroll to top" title="Scroll to top">
-            <i class="bi bi-arrow-up"></i>
-          </button>
-        </li>
-      </ul>
-      <span class="navbar-text" id="status">Loading, please wait...</span>
-    </div>
-  </nav>
+    </nav>
+  </footer>
 
   <!-- request js from internet CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

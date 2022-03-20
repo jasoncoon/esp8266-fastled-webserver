@@ -25,18 +25,32 @@ var ignoreColorChange = false;
 
 var allData = {};
 
+function displayProductName(name) {
+    // Set overall page title
+    $(document).attr("title", name + " by Evil Genius Labs");
+    // Set text of element with id 'product'
+    $("#product").text(name);
+}
+
 $(document).ready(function() {
   $("#status").html("Connecting, please wait...");
 
   // info gathers a lot more information ...
   // just need product name for main page.
-  $.get(urlBase + "product", function (data) {
-    const name = data['productName'];
-    // Set overall page title
-    $(document).attr("title", name + " by EvilGenius Labs");
-    // Set text of element with id 'product'
-    $("#product").text(name);
-  });
+  fetch(`${urlBase}product`).then(response => {
+      if (!response.ok) {
+        console.error(`Failed getting product: ${response.status} ${response.statusText}`);
+        return;
+      }
+      response.json().then(data => {
+        const name = data?.productName;
+        displayProductName(name);
+      }).catch(reason => {
+        console.error(`Failed getting product: ${reason}`);
+        return;
+      });
+    }
+  );
 
   $("#btnTop").click(function () {
     $([document.documentElement, document.body]).animate(
@@ -125,49 +139,49 @@ $(document).ready(function() {
   }
 
   $.get(urlBase + "fieldsWithoutOptions", function(data) {
-      $("#status").html("Loading, please wait...");
+    $("#status").html("Loading, please wait...");
 
-      allData = data;
+    allData = data;
 
-      $.each(data, function(index, field) {
-        if (field.type == "Number") {
-          addNumberField(field);
-        } else if (field.type == "Boolean") {
-          addBooleanField(field);
-        } else if (field.type == "Select") {
-          $.get(`${urlBase}${field.name}Options`, function(selectData) {
-            field.options = selectData;
-            addSelectField(field, index);
-          });
-        } else if (field.type == "Color") {
-          addColorFieldPalette(field);
-          addColorFieldPicker(field);
-        } else if (field.type == "Section") {
-          addSectionField(field);
-        } else if (field.type == "String") {
-          addStringField(field, false);
-        } else if (field.type == "Label") {
-          addStringField(field, true);
-        } else if (field.type == "UtcOffsetIndex") {
-          addUtcOffsetIndexField(field, true);
-        }
-      });
-
-      $(".minicolors").minicolors({
-        theme: "bootstrap",
-        changeDelay: 200,
-        control: "wheel",
-        format: "rgb",
-        inline: true
-      });
-
-      $("#accordionImportExport").show();
-
-      $("#status").html("Ready");
-    })
-    .fail(function(errorThrown) {
-      console.log(errorThrown);
+    $.each(data, function(index, field) {
+      if (field.type == "Number") {
+        addNumberField(field);
+      } else if (field.type == "Boolean") {
+        addBooleanField(field);
+      } else if (field.type == "Select") {
+        $.get(`${urlBase}${field.name}Options`, function(selectData) {
+          field.options = selectData;
+          addSelectField(field, index);
+        });
+      } else if (field.type == "Color") {
+        addColorFieldPalette(field);
+        addColorFieldPicker(field);
+      } else if (field.type == "Section") {
+        addSectionField(field);
+      } else if (field.type == "String") {
+        addStringField(field, false);
+      } else if (field.type == "Label") {
+        addStringField(field, true);
+      } else if (field.type == "UtcOffsetIndex") {
+        addUtcOffsetIndexField(field, true);
+      }
     });
+
+    $(".minicolors").minicolors({
+      theme: "bootstrap",
+      changeDelay: 200,
+      control: "wheel",
+      format: "rgb",
+      inline: true
+    });
+
+    $("#accordionImportExport").show();
+
+    $("#status").html("Ready");
+  })
+  .fail(function(errorThrown) {
+    console.log(errorThrown);
+  });
 });
 
 function addNumberField(field) {
