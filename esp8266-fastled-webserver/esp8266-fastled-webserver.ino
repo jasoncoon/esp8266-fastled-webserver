@@ -112,6 +112,19 @@ const PatternAndName patterns[] = {
   { colorWavesPlaygroundFibonacci,     "Color Waves Playground Fibonacci" },
 #endif
 
+#if defined(PRODUCT_HEXRINGS228)
+  { ringSnake,                         "Ring Snake" },
+  { ringSnakes,                        "Ring Snakes" },
+  { ringSnakes3,                       "Ring Snakes 3" },
+  { ringSnakes4,                       "Ring Snakes 4" },
+  { ringSnakes5,                       "Ring Snakes 5" },
+  { ringSnakes6,                       "Ring Snakes 6" },
+  { ringSnakes7,                       "Ring Snakes 7" },
+  { ringSnakes8,                       "Ring Snakes 8" },
+  { ringGradientPalette,               "Ring Gradient Palette" },
+  { ringAngleGradientPalette,          "Ring Angle Gradient Palette" },
+#endif
+
   { wheel,                             "Wheel" },
   { pacifica_loop,                     "Pacifica" },
 
@@ -1371,6 +1384,9 @@ void swirlFibonacci() {
 
 #if IS_FIBONACCI // fireFibonacci() uses coordsX/coordsY
 // TODO: combine with normal fire effect
+
+// fireFibonacci is based on Perlin noise fire procedure by Yaroslaw Turbin (ldirko):
+// https://pastebin.com/jSSVSRi6
 void fireFibonacci() {
   for (uint16_t i = 0; i < NUM_PIXELS; i++) {
     uint16_t x = coordsX[i];
@@ -1524,3 +1540,143 @@ void multi_test() {
 }
 #endif
 
+#if (PRODUCT_HEXRINGS228)
+const uint8_t rings[NUM_PIXELS] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18 };
+const uint8_t ringAngles[NUM_PIXELS] { 0, 23, 46, 70, 93, 116, 139, 162, 185, 209, 232, 255, 139, 162, 185, 209, 232, 255, 0, 23, 46, 70, 93, 116, 185, 209, 232, 255, 0, 23, 46, 70, 93, 116, 139, 162, 232, 255, 0, 23, 46, 70, 93, 116, 139, 162, 185, 209, 0, 23, 46, 70, 93, 116, 139, 162, 185, 209, 232, 255, 46, 70, 93, 116, 139, 162, 185, 209, 232, 255, 0, 23, 93, 116, 139, 162, 185, 209, 232, 255, 0, 23, 46, 70, 139, 162, 185, 209, 232, 255, 0, 23, 46, 70, 93, 116, 162, 185, 209, 232, 255, 0, 23, 46, 70, 93, 116, 139, 185, 209, 232, 255, 0, 23, 46, 70, 93, 116, 139, 162, 209, 232, 255, 0, 23, 46, 70, 93, 116, 139, 162, 185, 232, 255, 0, 23, 46, 70, 93, 116, 139, 162, 185, 209, 255, 0, 23, 46, 70, 93, 116, 139, 162, 185, 209, 232, 0, 23, 46, 70, 93, 116, 139, 162, 185, 209, 232, 255, 23, 46, 70, 93, 116, 139, 162, 185, 209, 232, 255, 0, 46, 70, 93, 116, 139, 162, 185, 209, 232, 255, 0, 23, 70, 93, 116, 139, 162, 185, 209, 232, 255, 0, 23, 46, 93, 116, 139, 162, 185, 209, 232, 255, 0, 23, 46, 70, 116, 139, 162, 185, 209, 232, 255, 0, 23, 46, 70, 93 };
+
+const uint8_t connections[42][2] {{ 0, 12 }, { 2, 24 }, { 4, 36 }, { 6, 48 }, { 8, 60 }, { 10, 72 }, { 14, 82 }, { 16, 227 }, { 18, 84 }, { 20, 97 }, { 22, 26 }, { 28, 107 }, { 30, 108 }, { 32, 121 }, { 34, 38 }, { 40, 131 }, { 42, 132 }, { 44, 145 }, { 46, 50 }, { 52, 155 }, { 54, 156 }, { 56, 169 }, { 58, 62 }, { 64, 179 }, { 66, 180 }, { 68, 193 }, { 70, 74 }, { 76, 203 }, { 78, 204 }, { 80, 217 }, { 86, 225 }, { 94, 99 }, { 105, 110 }, { 118, 123 }, { 129, 134 }, { 142, 147 }, { 153, 158 }, { 166, 171 }, { 177, 182 }, { 190, 195 }, { 201, 206 }, { 214, 219 }};
+
+void ringAngleGradientPalette() {
+  uint16_t hues = 1;
+
+  for (uint16_t i = 0; i < NUM_PIXELS; i++) {
+    uint16_t x = ringAngles[i];
+
+    leds[i] = ColorFromPalette(gCurrentPalette, beat8(speed) - (x * hues));
+  }
+}
+
+void ringGradientPalette() {
+  const uint8_t hues = 256 / 12;
+  const uint8_t offset = 256 / 19;
+
+  for (uint16_t i = 0; i < NUM_PIXELS; i++) {
+    uint16_t x = ringAngles[i] + (rings[i] * offset);
+
+    leds[i] = ColorFromPalette(gCurrentPalette, beat8(speed) - (x * hues));
+  }
+}
+
+void drawRingSnakes(uint8_t snakeCount = 1)
+{
+  const uint8_t maxSnakeCount = 8;
+  static int8_t directions[maxSnakeCount] = { -1, 1, -1, 1 };
+  static uint8_t currentRings[maxSnakeCount] = { 0, 1, 2, 3 };
+  static int8_t currentRingPixels[maxSnakeCount] = { 0, 6, 11, 0 };
+  static uint32_t lastJumpMilliss[maxSnakeCount] = { 0, 0, 0, 0 };
+
+  fadeToBlackBy(leds, NUM_PIXELS, 4);
+
+  bool move = false;
+
+  EVERY_N_MILLIS(30) { move = true; }
+
+  for (uint8_t snakeIndex = 0; snakeIndex < snakeCount; snakeIndex++)
+  {
+    uint8_t direction = directions[snakeIndex];
+    uint8_t currentRing = currentRings[snakeIndex];
+    int8_t currentRingPixel = currentRingPixels[snakeIndex];
+    uint32_t lastJumpMillis = lastJumpMilliss[snakeIndex];
+
+    uint8_t currentIndex = currentRing * 12 + currentRingPixel;
+
+    if (direction == 0) direction = 1;
+
+    if (move) {
+      bool jumped = false;
+
+      if (random8() > 128 && millis() - lastJumpMillis > 250)
+      { // jump occasionally, but not too often
+        // find jump point
+        uint8_t newIndex = NUM_PIXELS;
+
+        for (uint8_t i = 0; i < 42; i++)
+        {
+          if (connections[i][0] == currentIndex)
+          {
+            newIndex = connections[i][1];
+            jumped = true;
+            break;
+          }
+          else if (connections[i][1] == currentIndex)
+          {
+            newIndex = connections[i][0];
+            jumped = true;
+            break;
+          }
+        }
+
+        if (jumped)
+        {
+          currentRing = newIndex / 12;
+          currentRingPixel = newIndex % 12;
+          lastJumpMillis = millis();
+          direction *= -1; // flip direction every jump
+        }
+      }
+
+      if (!jumped)
+      {
+        currentRingPixel += direction;
+        if (currentRingPixel > 11)
+          currentRingPixel = 0;
+        if (currentRingPixel < 0)
+          currentRingPixel = 11;
+      }
+      
+      currentIndex = currentRing * 12 + currentRingPixel;
+    }
+
+    // leds[currentIndex] += ColorFromPalette(gCurrentPalette, beat8(speed));
+    leds[currentIndex] += CHSV(snakeIndex * (240 / snakeCount), 255, 255);
+
+    directions[snakeIndex] = direction;
+    currentRings[snakeIndex] = currentRing;
+    currentRingPixels[snakeIndex] = currentRingPixel;
+    lastJumpMilliss[snakeIndex] = lastJumpMillis;
+  }
+}
+
+void ringSnake() {
+  drawRingSnakes(1);
+}
+
+void ringSnakes() {
+  drawRingSnakes(2);
+}
+
+void ringSnakes3() {
+  drawRingSnakes(3);
+}
+
+void ringSnakes4() {
+  drawRingSnakes(4);
+}
+
+void ringSnakes5() {
+  drawRingSnakes(5);
+}
+
+void ringSnakes6() {
+  drawRingSnakes(6);
+}
+
+void ringSnakes7() {
+  drawRingSnakes(7);
+}
+
+void ringSnakes8() {
+  drawRingSnakes(8);
+}
+
+#endif

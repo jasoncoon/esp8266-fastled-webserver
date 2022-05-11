@@ -37,6 +37,7 @@
     // #define PRODUCT_FIBONACCI32
     // #define PRODUCT_KRAKEN64
     // #define PRODUCT_CHAMAELEON64
+    // #define PRODUCT_HEXRINGS228
     // #define PRODUCT_ESP8266_THING // aka parallel (6-output)
     // #define PRODUCT_1628_RINGS
 #endif /// !defined(BUILDING_USING_PLATFORMIO)
@@ -63,6 +64,8 @@
         #include "./include/configs/product/kraken64.h"
     #elif defined(PRODUCT_CHAMAELEON64)
         #include "./include/configs/product/chamaeleon64.h"
+    #elif defined(PRODUCT_HEXRINGS228)
+        #include "./include/configs/product/hexRings228.h"
     #elif defined(PRODUCT_FIBONACCI32)
         #include "./include/configs/product/fibonacci32.h"
     #elif defined(PRODUCT_FIBONACCI64_FULL) || defined(PRODUCT_FIBONACCI64_MINI) || defined(PRODUCT_FIBONACCI64_MICRO) || defined(PRODUCT_FIBONACCI64_NANO)
