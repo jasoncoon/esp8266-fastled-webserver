@@ -1111,19 +1111,25 @@ void fillWithPride(bool useFibonacciOrder)
   static uint16_t sLastMillis = 0;
   static uint16_t sHue16 = 0;
 
-  uint8_t sat8 = beatsin88( 87, 220, 250);
-  uint8_t brightdepth = beatsin88( 341, 96, 224);
-  uint16_t brightnessthetainc16 = beatsin88( 203, (25 * 256), (40 * 256));
-  uint8_t msmultiplier = beatsin88(147, 23, 60);
+  // uint8_t sat8 = beatsin88( 87, 220, 250);
+  uint8_t sat8 = beatsin88( 43.5, 220, 250);
+  // uint8_t brightdepth = beatsin88( 341, 96, 224);
+  uint8_t brightdepth = beatsin88(171, 96, 224);
+  // uint16_t brightnessthetainc16 = beatsin88( 203, (25 * 256), (40 * 256));
+  uint16_t brightnessthetainc16 = beatsin88( 102, (25 * 256), (40 * 256));
+  // uint8_t msmultiplier = beatsin88(147, 23, 60);
+  uint8_t msmultiplier = beatsin88(74, 23, 60);
 
   uint16_t hue16 = sHue16;//gHue * 256;
-  uint16_t hueinc16 = beatsin88(113, 1, 3000);
+  // uint16_t hueinc16 = beatsin88(113, 1, 3000);
+  uint16_t hueinc16 = beatsin88(57, 1, 128);
 
   uint16_t ms = millis();
   uint16_t deltams = ms - sLastMillis ;
   sLastMillis  = ms;
   sPseudotime += deltams * msmultiplier;
-  sHue16 += deltams * beatsin88( 400, 5, 9);
+  // sHue16 += deltams * beatsin88( 400, 5, 9);
+  sHue16 += deltams * beatsin88( 200, 5, 9);
   uint16_t brightnesstheta16 = sPseudotime;
 
   for ( uint16_t i = 0 ; i < NUM_PIXELS; i++) {
@@ -1282,18 +1288,23 @@ void fillWithColorwaves( CRGB* ledarray, uint16_t numleds, const CRGBPalette16& 
   static uint16_t sHue16 = 0;
 
   // uint8_t sat8 = beatsin88( 87, 220, 250);
-  uint8_t brightdepth = beatsin88( 341, 96, 224);
-  uint16_t brightnessthetainc16 = beatsin88( 203, (25 * 256), (40 * 256));
-  uint8_t msmultiplier = beatsin88(147, 23, 60);
+  // uint8_t brightdepth = beatsin88( 341, 96, 224);
+  uint8_t brightdepth = beatsin88(171, 96, 224);
+  // uint16_t brightnessthetainc16 = beatsin88( 203, (25 * 256), (40 * 256));
+  uint16_t brightnessthetainc16 = beatsin88( 102, (25 * 256), (40 * 256));
+  // uint8_t msmultiplier = beatsin88(147, 23, 60);
+  uint8_t msmultiplier = beatsin88(74, 23, 60);
 
   uint16_t hue16 = sHue16;//gHue * 256;
-  uint16_t hueinc16 = beatsin88(113, 300, 1500);
+  // uint16_t hueinc16 = beatsin88(113, 300, 1500);
+  uint16_t hueinc16 = beatsin88(57, 1, 128);
 
   uint16_t ms = millis();
   uint16_t deltams = ms - sLastMillis ;
   sLastMillis  = ms;
   sPseudotime += deltams * msmultiplier;
-  sHue16 += deltams * beatsin88( 400, 5, 9);
+  // sHue16 += deltams * beatsin88( 400, 5, 9);
+  sHue16 += deltams * beatsin88( 200, 5, 9);
   uint16_t brightnesstheta16 = sPseudotime;
 
   for ( uint16_t i = 0 ; i < numleds; i++) {
