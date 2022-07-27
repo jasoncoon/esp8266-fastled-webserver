@@ -7,12 +7,45 @@
 
   <title>ESP8266 + FastLED</title>
 
-  <!-- request CSS from internet CDN -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.3.6/jquery.minicolors.min.css" integrity="sha512-BVeRnUOL0G7d4gXmj+0VxpoiQuEibKQtlkclADKvCdNrESs0LA6+H8s1lU455VqWFtHBfF/pKDGw/CMat2hqOg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.min.css">
+  <!-- Fallback to load resources from FileSystem if not available online -->
+  <script>
+    function CssJsFallback(el) {
+      if (el instanceof HTMLScriptElement || el instanceof HTMLLinkElement) {
+        let Url = el.getAttribute('data-fallback');
+        if (Url) {
+          if(el instanceof HTMLScriptElement)
+          {
+            document.write('<script src="'+Url+'">\x3C/script>');
+          }
+          else
+          {
+            el.setAttribute('href', Url);  
+          }
+        }
+        // No integrity check for local resource
+        let integrity = el.getAttribute('integrity');
+        if(integrity) {
+          el.removeAttribute('integrity');
+        }
+      }
+    }
+  </script>
+
+  <!-- request CSS from internet CDN or the webserver if internet cannot be reached -->
+  <link onerror='CssJsFallback(this)' 
+        data-fallback='css/bootstrap-5.1.3.min.css' 
+        rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" 
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"/>
+  <link onerror='CssJsFallback(this)' 
+        data-fallback='css/minicolors-2.3.6.min.css' 
+        rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.3.6/jquery.minicolors.min.css" 
+        integrity="sha512-BVeRnUOL0G7d4gXmj+0VxpoiQuEibKQtlkclADKvCdNrESs0LA6+H8s1lU455VqWFtHBfF/pKDGw/CMat2hqOg==" crossorigin="anonymous" 
+        referrerpolicy="no-referrer" />
+  <link onerror='CssJsFallback(this)' 
+        data-fallback='css/bootstrap-icons-1.7.2.min.css' 
+        rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.min.css"/>
   
-  <!-- request CSS from the ESP8266 web server -->
+  <!-- request CSS from the ESP8266 web server ONLY -->
   <!-- <link rel="stylesheet" href="css/bootstrap-5.1.3.min.css"> -->
   <!-- <link rel="stylesheet" href="css/minicolors-2.3.6.min.css"> -->
   <!-- <link rel="stylesheet" href="css/bootstrap-icons-1.7.2.min.css"> -->
@@ -415,17 +448,41 @@
   </footer>
 
   <!-- request js from internet CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.3.6/jquery.minicolors.min.js" integrity="sha512-vBqPkpOdZM0O7YezzE8xaoUdyt4Z2d+gLrY0AMvmNPLdLuNzvreTopyuaM9/FiRzHs1bwWzYDJgH6STcuNXpqg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js" integrity="sha512-B4skI5FiLurS86aioJx9VfozI1wjqrn6aTdJH+YQUmCZum/ZibPBTX55k5d9XM6EsKePDInkLVrN7vPmJxc1qA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js" integrity="sha512-Qlv6VSKh1gDKGoJbnyA5RMXYcvnpIqhO++MhIM2fStMcGT9i2T//tSwYFlcyoRRDcDZ+TYHpH8azBBCyhpSeqw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script onerror='CssJsFallback(this)' 
+          data-fallback='js/jquery-3.6.0.min.js'
+          src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" 
+          integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" 
+          crossorigin="anonymous" 
+          referrerpolicy="no-referrer"></script>
+  <script onerror='CssJsFallback(this)' 
+          data-fallback='js/bootstrap-5.1.3.min.js'
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" 
+          integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" 
+          crossorigin="anonymous"></script>
+  <script onerror='CssJsFallback(this)' 
+          data-fallback='js/jquery.minicolors-2.3.6.min.js'
+          src="https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.3.6/jquery.minicolors.min.js" 
+          integrity="sha512-vBqPkpOdZM0O7YezzE8xaoUdyt4Z2d+gLrY0AMvmNPLdLuNzvreTopyuaM9/FiRzHs1bwWzYDJgH6STcuNXpqg==" 
+          crossorigin="anonymous" 
+          referrerpolicy="no-referrer"></script>
+  <!-- Websocket currently not implemented -->
+  <!-- <script onerror='CssJsFallback(this)' 
+          data-fallback='js/r-websocket-1.0.0.min.js'
+          src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js" 
+          integrity="sha512-B4skI5FiLurS86aioJx9VfozI1wjqrn6aTdJH+YQUmCZum/ZibPBTX55k5d9XM6EsKePDInkLVrN7vPmJxc1qA==" 
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+  <script onerror='CssJsFallback(this)' 
+          data-fallback='js/FileSaver-2.0.5.min.js'
+          src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js" 
+          integrity="sha512-Qlv6VSKh1gDKGoJbnyA5RMXYcvnpIqhO++MhIM2fStMcGT9i2T//tSwYFlcyoRRDcDZ+TYHpH8azBBCyhpSeqw==" 
+          crossorigin="anonymous" 
+          referrerpolicy="no-referrer"></script>
 
-  <!-- request js from the ESP8266 web server -->
+  <!-- request js from the ESP8266 web server ONLY -->
   <!-- <script src="js/jquery-3.6.0.min.js"></script> -->
   <!-- <script src="js/bootstrap-5.1.3.min.js"></script> -->
   <!-- <script src="js/jquery.minicolors-2.3.6.min.js"></script> -->
-  <!-- <script src="js/r-websocket-1.0.0.min.js"></script> -->
+  <!-- Websocket currently not implemented --> <!-- <script src="js/r-websocket-1.0.0.min.js"></script> -->
   <!-- <script src="js/FileSaver-2.0.5.min.js"></script> -->
 
   <script src="js/app.js"></script>
